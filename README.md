@@ -14,7 +14,7 @@
 # Development Environment Setup
 ### Clone Git Repository
 ```bash
-git clone <GIT_REPO_LINK>
+git clone git@github.com:Wonderwall-Inc/golfin-miniapp-server.git
 cd golfin-miniapp-server
 ```
 ### Create Development Environment
