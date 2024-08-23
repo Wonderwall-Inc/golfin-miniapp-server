@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    container_name: golfin-miniapp-backend
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    ports:
+      - 8000:8000
+      - 5678:5678
+    volumes:
+      - .:/app
+
+
+  nginx:
+    build: ./nginx/.
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+

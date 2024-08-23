@@ -1,0 +1,57 @@
+services:
+  app:
+    build: .
+    image: arm64v8/python:3.11.6-slim
+    container_name: golfin-miniapp-backend
+    environment:
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    ports:
+      - 8000:8000
+      - 5678:5678
+    volumes:
+      - .:/app
+    networks:
+      - golfin
+    depends_on:
+      - db
+
+  # cache:
+  #   build:
+  #     context: ./redis
+  #     dockerfile: Dockerfile
+  #   image: arm64v8/redis:7.2-alpine
+  #   privileged: true
+  #   command: sh -c "./init.sh"
+  #   ports:
+  #     - 6379:6379
+  #   volumes:
+  #     - ./redis/data:/data:rw
+  #   networks:
+  #     - golfin
+  
+  db:
+    image: arm64v8/mysql:latest
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: LocalDB
+      MYSQL_ROOT_PASSWORD: becareful
+    cap_add:
+      - SYS_NICE
+    ports:
+      - 33064:33064
+    volumes:
+      - MySql-db:/var/lib/mysql
+      - ./mysql:/docker-entrypoint-initdb.d
+    networks:
+      - golfin
+
+networks:
+  golfin:
+    driver: bridge
+volumes:
+  MySql-db:

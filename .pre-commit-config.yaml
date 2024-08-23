@@ -1,0 +1,38 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: check-yaml
+    -   id: check-json
+    -   id: requirements-txt-fixer
+    -   id: name-tests-test
+-   repo: local
+    hooks:
+    -   id: pylint
+        name: pylint
+        entry: pylint -d migrations
+        language: system
+        types: [python]
+        exclude: ^migrations/
+        args:
+        - --max-line-length=100
+        # - --errors-only
+        - --disable=W, R
+        - --rcfile=.pylintrc
+-   repo: local
+    hooks:
+    -   id: black
+        name: black
+        entry: black
+        language: system
+        types: [python]
+-   repo: local
+    hooks:
+    -   id: pytest-check
+        name: pytest-check  
+        entry: bash -c 'TESTING=True ./venv/bin/python3 -m pytest tests'
+        language: system
+        pass_filenames: false
+        always_run: true
+
+
