@@ -1,33 +1,140 @@
 """Users Pydantic Schemas"""
 
+from typing import Optional, List
 from pydantic import BaseModel
+from datetime import datetime
+from app.game_character.schemas import GameCharacterBaseSchema
+from app.point.schemas import PointBaseSchema
+from app.activity.schemas import ActivityBaseSchema
+from app.social_media.schemas import SocialMediaBaseSchema
+from app.friend.schemas import FriendBaseSchema
 
 
-class UserSchema(BaseModel):
+class UserBaseSchema(BaseModel):  # default = False
     """User Base Schema"""
+
+    username: str
+    telegram_id: str
+    token_balance: int
+    is_active: bool
+    is_premium: bool
+
+
+class UserPersonalInfoSchema(BaseModel):
+    """User personal Info Schema"""
+
+    location: str
+    nationality: str
+    age: Optional[int]
+    gender: Optional[str]
+    email: Optional[str]
+
+
+class UserTelegramInfoSchema(BaseModel):
+    username: str
+    telegram_id: str
+    token_balance: int
+    is_premium: bool
+    wallet_address: Optional[str]
+    chat_id: List[str]
+
+
+class UserAppInfoSchema(BaseModel):
+    is_active: bool
+    in_game_items: Optional[dict] = []
+    is_admin: Optional[bool] = None
+    skin: List[str]
 
 
 class UserUpdateDetailsSchema(BaseModel):
     """User Update Detail Schema"""
 
+    token_balance: int
+    is_active: bool
+    is_premium: bool
+    in_game_items: Optional[dict] = None
+    skin: List[str]
+    location: str
+    age: int
+    custom_logs: Optional[dict] = None
 
-class UserDetailsSchema(BaseModel):
+
+class UserSchema(BaseModel):
+    id: int
+    app_info: UserAppInfoSchema
+    personal_info: UserPersonalInfoSchema
+    telegram_info: UserTelegramInfoSchema
+    created_at: datetime
+    updated_at: datetime
+    custom_logs: Optional[dict] = None
+
+
+class UserDetailsSchema(BaseModel):  # show the based + relationship
     """User Display Schema"""
 
+    user_base: UserSchema
+    game_characters: Optional[List[GameCharacterBaseSchema]] = []
+    point: Optional[PointBaseSchema] = None
+    activity: Optional[ActivityBaseSchema] = None
+    social_media: Optional[SocialMediaBaseSchema] = None
+    sender: Optional[FriendBaseSchema] = None
+    receiver: Optional[FriendBaseSchema] = None
 
-class UserAccessRequestSchema(BaseModel):
+    class Config:
+        """Pydantic Model Config"""
+
+        from_attributes = True
+
+
+class UserCreateRequestSchema(BaseModel):
+    """User Create Request Schema"""
+
+    access_token: Optional[str]
+    app_info: UserAppInfoSchema
+    personal_info: UserPersonalInfoSchema
+    telegram_info: UserTelegramInfoSchema
+
+
+class UserCreateResponseSchema(BaseModel):
+    """User Create Response Schema"""
+
+    access_token: Optional[str]
+    user_details: UserDetailsSchema
+
+
+class UserRetrivalRequestSchema(BaseModel):
     """User Access Request Schema"""
 
+    # Define fields for access request data as needed
+    access_token: str
+    id: int
+    username: str
+    telegram_id: str
+    wallet_address: Optional[str] = None
+    personal_info: UserPersonalInfoSchema
 
-class UserAccessResponseSchema(BaseModel):
+
+class UserRetrivalResponseSchema(BaseModel):
     """User Access Response Schema"""
+
+    user_details: UserDetailsSchema
+
+
+class UserUpdateRequestSchema(BaseModel):
+    """User Update Request Schema"""
+
+    id: int
+    access_token: str
+    user_payload: Optional[UserUpdateDetailsSchema] = None
+
+
+class UserUpdateResponseSchema(BaseModel):
+    """User Update Response Schema"""
+
+    user_details: UserDetailsSchema
 
 
 class UserDetailsResponseSchema(BaseModel):
     """User Details Response Schema"""
 
     user_details: UserDetailsSchema
-
-
-class UserUpdateSchema(BaseModel):
-    """User Update Schema"""

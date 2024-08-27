@@ -6,12 +6,12 @@ from sqlalchemy.orm import Session
 
 from core import database
 
-from app.point import schemas
-from app.point.api.v1 import service
+from app.game_character import schemas
+from app.game_character.api.v1 import service
 
 
-router = APIRouter(prefix="/api/v1/point", tags=["point"])
+router = APIRouter(prefix="/api/v1/game_character", tags=["game_character"])
 
 @router.get('/')
 def hello():
-    return "point"
+    return "game_character"

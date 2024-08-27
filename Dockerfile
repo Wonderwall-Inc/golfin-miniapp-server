@@ -4,10 +4,15 @@ FROM python:3.11.6-slim
 WORKDIR /app
 
 # install dependencies
-COPY ./requirements.txt .
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+COPY requirements.txt ./
 
-# copy the all files to docker /app folder
+# RUN echo requirements.txt
+
+RUN python -m pip install --upgrade pip && \
+    pip install -r requirements.txt
+
+EXPOSE 8000
+    # copy the all files to docker /app folder
 COPY . .
 
 # start the server

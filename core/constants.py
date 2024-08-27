@@ -17,12 +17,11 @@ class Constants:
     port = os.environ.get("DB_PORT")
     dbName = os.environ.get("DB_NAME")
     dbHost = os.environ.get("DB_HOST")
+    dburl = os.environ.get("MYSQL_CONNECTION_URL")
 
-    SQLALCHAMY_DATABASE_URL = (
-        f"mysql+pymysql://{username}:{password}@{dbHost}:{port}/{dbName}"
-    )
-
-    print(SQLALCHAMY_DATABASE_URL)
+    # TODO: Remote
+    SQLALCHAMY_DATABASE_URL = f"mysql+pymysql://{username}:{password}@{dbHost}:{port}/{dbName}"
+    
     # SECRET_KEY = ""
     # ALGORITHM = "HS256"
     # ACCESS_TOKEN_EXPIRE_MINUTES = 30

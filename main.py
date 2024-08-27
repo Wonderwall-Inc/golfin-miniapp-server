@@ -9,6 +9,8 @@ from app.user.api.v1 import user
 from app.friend.api.v1 import friend
 from app.point.api.v1 import point
 from app.activity.api.v1 import activity
+from app.social_media.api.v1 import social_media
+from app.game_character.api.v1 import game_character
 
 from core import config, database
 
@@ -42,9 +44,11 @@ if not os.getenv("TESTING"):
 
 # * FastAPI Routers
 app.include_router(user.router)
-app.include_router(friend.router)
 app.include_router(point.router)
+app.include_router(friend.router)
 app.include_router(activity.router)
+app.include_router(social_media.router)
+app.include_router(game_character.router)
 
 
 if __name__ == "__main__":

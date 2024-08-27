@@ -1,8 +1,34 @@
 services:
+  db:
+    image: mysql:8.4.2
+    restart: unless-stopped
+    env_file:
+      - path: ./.env
+    environment: 
+      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+    cap_add:
+      - SYS_NICE
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/db:/docker-entrypoint-initdb.d
+      - ./mysql/conf.d:/etc/mysql/conf.d
+    networks:
+      - golfin
+    healthcheck:
+        test: mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD
   app:
     build: .
-    image: arm64v8/python:3.11.6-slim
+    tty: true
+    image: python:3.11.6-slim
     container_name: golfin-miniapp-backend
+    env_file:
+      - path: ./.env
     environment:
       - DB_HOST=db
       - DB_PORT=${DB_PORT}
@@ -11,45 +37,28 @@ services:
       - DB_NAME=${DB_NAME}
     command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
     ports:
-      - 8000:8000
-      - 5678:5678
+      - "8000:8000"
+      - "5678:5678"
     volumes:
       - .:/app
     networks:
       - golfin
     depends_on:
-      - db
-
-  # cache:
-  #   build:
-  #     context: ./redis
-  #     dockerfile: Dockerfile
-  #   image: arm64v8/redis:7.2-alpine
-  #   privileged: true
-  #   command: sh -c "./init.sh"
-  #   ports:
-  #     - 6379:6379
-  #   volumes:
-  #     - ./redis/data:/data:rw
-  #   networks:
-  #     - golfin
-  
-  db:
-    image: arm64v8/mysql:latest
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: LocalDB
-      MYSQL_ROOT_PASSWORD: becareful
-    cap_add:
-      - SYS_NICE
-    ports:
-      - 33064:33064
-    volumes:
-      - MySql-db:/var/lib/mysql
-      - ./mysql:/docker-entrypoint-initdb.d
+      db:
+        condition: service_healthy
+  nginx:
+    build: ./nginx/.
+    restart: always
     networks:
       - golfin
-
+    env_file:
+      - path: ./.env
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
 networks:
   golfin:
     driver: bridge
