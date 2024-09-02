@@ -47,10 +47,17 @@ class PointRetrivalResponseSchema(BaseModel):
     point_base: PointDetailsSchema
 
 
-class PointUpdateRequestSchema(BaseModel):
+class PointUpdateByIdRequestSchema(BaseModel):
+    type: str
     access_token: str
     id: int
-    user_id: Optional[int] = None
+    point_payload: Optional[PointCreateDetailsSchema] = None
+
+
+class PointUpdateByUserIdRequestSchema(BaseModel):
+    type: str
+    access_token: str
+    user_id: int
     point_payload: Optional[PointCreateDetailsSchema] = None
 
 

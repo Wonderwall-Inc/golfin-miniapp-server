@@ -339,6 +339,10 @@ def update_friend_status_by_receiver_id(
         .filter(FriendModel.receiver_id == request.receiver_id)
         .first()
     )
+    if not db_friend:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Friend receiver_id {request.receiver_id} not found"
+        )
     if db_friend:
         if request.friend_payload.status:
             db_friend.status = request.friend_payload.status

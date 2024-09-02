@@ -22,11 +22,6 @@ router = APIRouter(prefix="/api/v1/user", tags=["user"])
 get_db = database.get_db
 
 
-@router.get("/")
-def hello():
-    return "user"
-
-
 @router.post(
     "/create",
     response_model=schemas.UserCreateResponseSchema,

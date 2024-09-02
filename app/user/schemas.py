@@ -50,13 +50,13 @@ class UserAppInfoSchema(BaseModel):
 class UserUpdateDetailsSchema(BaseModel):
     """User Update Detail Schema"""
 
-    token_balance: int
-    is_active: bool
-    is_premium: bool
+    token_balance: Optional[int] = None
+    is_active: Optional[bool] = None
+    is_premium: Optional[bool] = None
     in_game_items: Optional[dict] = None
-    skin: List[str]
-    location: str
-    age: int
+    skin: Optional[List[str]] = []
+    location: Optional[str] = None
+    age: Optional[int] = None
     custom_logs: Optional[dict] = None
 
 

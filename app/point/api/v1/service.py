@@ -1,8 +1,10 @@
 import logging
+from typing import List
 from fastapi import HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session, joinedload
 from app.point.models import PointModel
 from app.point import schemas
+
 # from app.user.schemas import UserSchema
 
 
@@ -52,21 +54,53 @@ def create_point(
     )
 
 
-def retrieve_point(
-    request: schemas.PointRetrivalRequestSchema, db: Session
+def retrieve_point_by_point_id(
+    id: int, db: Session
 ) -> schemas.PointRetrivalResponseSchema:
-    if not request.id or not request.user_id:
+    if not id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Id and User Id are required",
+            detail="Point id is required",
         )
     existing_point = db.query(PointModel).filter(PointModel.id == id).first()
+    if not existing_point:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Point with id {id} not found",
+        )
     try:
-        if not existing_point:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Point with id {request.id} not found",
+        return schemas.PointRetrivalResponseSchema(
+            point_base=schemas.PointDetailsSchema(
+                user_id=existing_point.user_id,
+                point=schemas.PointScehma(
+                    id=existing_point.id,
+                    amount=existing_point.amount,
+                    extra_profit_per_hour=existing_point.extra_profit_per_hour,
+                    created_at=existing_point.created_at,
+                    updated_at=existing_point.updated_at,
+                    custom_logs=existing_point.custom_logs,
+                ),
             )
+        )
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+
+
+def retrieve_point_by_user_id(
+    user_id: int, db: Session
+) -> schemas.PointRetrivalResponseSchema:
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User id is required",
+        )
+    existing_point = db.query(PointModel).filter(PointModel.id == user_id).first()
+    if not existing_point:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Point with user id {user_id} not found",
+        )
+    try:
         return schemas.PointRetrivalResponseSchema(
             point_base=schemas.PointDetailsSchema(
                 user_id=existing_point.user_id,
@@ -85,83 +119,76 @@ def retrieve_point(
 
 
 def retrieve_points(
-    requests: list[schemas.PointRetrivalRequestSchema], db: Session
-) -> list[schemas.PointRetrivalResponseSchema]:
-    for request in requests:
-        if not request.id or not request.user_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Id and User Id are required",
-            )
-        existing_point = (
-            db.query(PointModel).filter(PointModel.id == request.id).first()
+    user_ids: List[int], db: Session
+) -> List[schemas.PointRetrivalResponseSchema]:
+    if not user_ids:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User ids are required",
         )
-        try:
-            if not existing_point:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Point with id {id} not found",
-                )
-            return schemas.PointRetrivalResponseSchema(
+    else:
+        existing_points = (
+            db.query(PointModel).filter(PointModel.user_id.in_(user_ids))
+            # .options(joinedload(PointModel.user))
+            .all()
+        )
+        return [
+            schemas.PointRetrivalResponseSchema(
                 point_base=schemas.PointDetailsSchema(
-                    user_id=existing_point.user_id,
+                    user_id=ex.user_id,
                     point=schemas.PointScehma(
-                        id=existing_point.id,
-                        amount=existing_point.amount,
-                        extra_profit_per_hour=existing_point.extra_profit_per_hour,
-                        created_at=existing_point.created_at,
-                        updated_at=existing_point.updated_at,
-                        custom_logs=existing_point.custom_logs,
+                        id=ex.id,
+                        amount=ex.amount,
+                        extra_profit_per_hour=ex.extra_profit_per_hour,
+                        created_at=ex.created_at,
+                        updated_at=ex.updated_at,
+                        custom_logs=ex.custom_logs,
                     ),
                 )
             )
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
+            for ex in existing_points
+        ]
 
 
-def update_point(
-    type: str, db: Session, request: schemas.PointUpdateRequestSchema
-) -> schemas.PointUpdateResponseSchema:  # add and minus
-    if not type or not request:
+def update_point_by_id(request: schemas.PointUpdateByIdRequestSchema, db: Session):  # add and minus
+    if not request or not request.type:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Type and request are required",
         )
-    if type == "add":
-        try:
-            existing_point = (
-                db.query(PointModel).filter(PointModel.id == request.id).first()
-            )
-            if not existing_point:
+    existing_point = db.query(PointModel).filter(PointModel.id == request.id).first()
+    if not existing_point:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Point with user_id {request.id} not found",
+        )
+    if request.point_payload:
+        if request.point_payload.amount:
+            if request.type == 'add':
+                existing_point.amount += request.point_payload.amount
+            if request.type == 'minus':
+                existing_point.amount -= request.point_payload.amount
+            else:
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Point with id {request.id} not found",
+                    status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+                    detail=f"Method not allowed"
                 )
-            if request.point_payload:
-                if request.point_payload.amount:
-                    existing_point.amount += request.point_payload.amount
-                if request.point_payload.extra_profit_per_hour:
-                    existing_point.extra_profit_per_hour = (
-                        request.point_payload.extra_profit_per_hour
-                    )
-
-            db.commit()
-            db.refresh(existing_point)
-            return schemas.PointUpdateResponseSchema(
-                point_base=schemas.PointDetailsSchema(
-                    user_id=existing_point.user_id,
-                    point=schemas.PointScehma(
-                        id=existing_point.id,
-                        amount=existing_point.amount,
-                        extra_profit_per_hour=existing_point.extra_profit_per_hour,
-                        created_at=existing_point.created_at,
-                        update_point=existing_point.updated_at,
-                        custom_logs=existing_point.custom_logs,
-                    ),
-                )
+        if request.point_payload.extra_profit_per_hour:
+            existing_point.extra_profit_per_hour = request.point_payload.extra_profit_per_hour
+    db.commit()
+    db.refresh(existing_point)
+    print(existing_point)
+    return schemas.PointUpdateResponseSchema(
+        point_base=schemas.PointDetailsSchema(
+            point=schemas.PointScehma(
+                id=existing_point.id,
+                amount=existing_point.amount,
+                extra_profit_per_hour=existing_point.extra_profit_per_hour,
+                created_at=existing_point.created_at,
+                updated_at=existing_point.updated_at,
+                custom_logs=existing_point.custom_logs,
             )
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
+        )
+    )
 
-
-# def delete_point():
+# REVIEW: def delete_point(), batch update
