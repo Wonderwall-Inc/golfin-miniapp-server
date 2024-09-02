@@ -1,9 +1,8 @@
 """User App Business Logics"""
 
-from operator import ge
-from typing import Dict, Any
 from fastapi import HTTPException, status, BackgroundTasks
-from sqlalchemy.orm import Session, joinedload, subqueryload
+from typing import List, Optional
+from sqlalchemy.orm import Session, joinedload
 from app.user.models import UserModel
 from app.user.schemas import (
     UserAppInfoSchema,
@@ -20,98 +19,15 @@ from app.user.schemas import (
     UserSchema,
     UserDetailsResponseSchema,
 )
+from app.friend.schemas import FriendBaseSchema, FriendIds
+from app.game_character.schemas import GameCharacterBaseSchema
 
-
-class SchemaFactory:
-    """Factory for creating schema objects"""
-
-    def __init__(
-        self,
-        payload: (
-            UserCreateRequestSchema
-            | UserSchema
-            | UserDetailsSchema
-            | UserUpdateDetailsSchema
-        ),
-    ):
-        self.payload = payload
-
-    def userAppInfoSchemaMaker(self) -> UserAppInfoSchema:
-        return UserAppInfoSchema(
-            is_active=self.payload.app_info.is_active,
-            in_game_items=self.payload.app_info.is_active,
-            is_admin=self.payload.app_info.is_admin,
-            skin=self.payload.app_info.skin,
-        )
-
-    def userPersonalInfoSchemaMaker(self) -> UserPersonalInfoSchema:
-        return UserAppInfoSchema(
-            location=self.payload.personal_info.location,
-            nationality=self.payload.personal_info.nationality,
-            age=self.payload.personal_info.age,
-            gender=self.payload.personal_info.gender,
-            email=self.payload.personal_info.email,
-        )
-
-    def userTelegramInfoSchemaMaker(self) -> UserTelegramInfoSchema:
-        return UserTelegramInfoSchema(
-            username=self.payload.telegram_info.username,
-            telegram_id=self.payload.telegram_info.telegram_id,
-            token_balance=self.payload.telegram_info.token_balance,
-            is_premium=self.payload.telegram_info.is_premium,
-            wallet_address=self.payload.telegram_info.wallet_address,
-            chat_id=self.payload.telegram_info.chat_id,
-        )
-
-    def userSchemaMaker(self) -> UserSchema:
-        return UserSchema(
-            id=self.payload.id,
-            app_info=self.userAppInfoSchemaMaker(),
-            personal_info=self.userPersonalInfoSchemaMaker(),
-            telegram_info=self.userTelegramInfoSchemaMaker(),
-            created_at=self.payload.created_at,
-            updated_at=self.payload.updated_at,
-            custom_logs=self.payload.custom_logs,
-        )
-
-    def userCreateResponseSchemaMaker(self) -> UserCreateResponseSchema:
-        return UserCreateResponseSchema(
-            access_token=self.payload.access_token,
-            user_details=UserDetailsSchema(user_base=self.userSchemaMaker()),
-        )
-
-    def userDetailsResponseSchemaMaker(self) -> UserDetailsResponseSchema:
-        return UserDetailsSchema(
-            user_base=self.userSchemaMaker(),
-            game_characters=self.payload.game_characters,
-            point=self.payload.point,
-            activity=self.payload.activity,
-            social_media=self.payload.social_media,
-            sender=self.payload.sender,
-            reciver=self.payload.receiver,
-        )
-
-    def userUpdateResponseSchemaMaker(self) -> UserUpdateResponseSchema:
-        return UserUpdateResponseSchema(
-            user_details=self.userDetailsResponseSchemaMaker()
-        )
-
-    # def userUpdateDetailsSchemaMaker(self) -> UserUpdateDetailsSchema:
-    #     return UserUpdateDetailsSchema(
-    #         token_balance=self.payload.token_balance,
-    #         is_active=self.payload.is_active,
-    #         is_premium=self.payload.is_premium,
-    #         in_game_items=self.payload.in_game_items,
-    #         skin=self.payload.skin,
-    #         location=self.payload.location,
-    #         age=self.payload.age,
-    #         custom_logs=self.payload.custom_logs,
-    #     )
+# from core.utils import UserSchemaFactory
 
 
 def create_user(
     request: UserCreateRequestSchema, db: Session, background_tasks: BackgroundTasks
-) -> UserCreateResponseSchema:
+):
     """Create new user account"""
     if (
         not request.telegram_info.username
@@ -134,48 +50,209 @@ def create_user(
         .filter(UserModel.telegram_id == request.telegram_info.telegram_id)
         .first()
     )
+    print(user)
     if user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already exists"
         )
-    schemaFactory = SchemaFactory(request)
+    # new_user_schema_factory = UserSchemaFactory(request)
+    user_app_info = UserAppInfoSchema(
+        is_active=request.app_info.is_active,
+        in_game_items=request.app_info.in_game_items,
+        is_admin=request.app_info.is_admin,
+        skin=request.app_info.skin,
+        custom_logs=request.app_info.custom_logs,
+    )
+    user_personal_info = UserPersonalInfoSchema(
+        location=request.personal_info.location,
+        nationality=request.personal_info.nationality,
+        age=request.personal_info.age,
+        gender=request.personal_info.gender,
+        email=request.personal_info.email,
+    )
+    user_telegram_info = UserTelegramInfoSchema(
+        username=request.telegram_info.username,
+        telegram_id=request.telegram_info.telegram_id,
+        token_balance=request.telegram_info.token_balance,
+        is_premium=request.telegram_info.is_premium,
+        wallet_address=request.telegram_info.wallet_address,
+        chat_id=request.telegram_info.chat_id,
+    )
     new_user = UserModel(
         access_token=request.access_token,
-        app_info=schemaFactory.userAppInfoSchemaMaker(),
-        personal_info=schemaFactory.userPersonalInfoSchemaMaker(),
-        telegran_info=schemaFactory.userTelegramInfoSchemaMaker(),
+        is_active=request.app_info.is_active,
+        in_game_items=request.app_info.in_game_items,
+        is_admin=request.app_info.is_admin,
+        skin=request.app_info.skin,
+        custom_logs=request.app_info.custom_logs,
+        location=request.personal_info.location,
+        nationality=request.personal_info.nationality,
+        age=request.personal_info.age,
+        gender=request.personal_info.gender,
+        email=request.personal_info.email,
+        username=request.telegram_info.username,
+        telegram_id=request.telegram_info.telegram_id,
+        token_balance=request.telegram_info.token_balance,
+        is_premium=request.telegram_info.is_premium,
+        wallet_address=request.telegram_info.wallet_address,
+        chat_id=request.telegram_info.chat_id,
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-
-    # Create Game Character for the new user with bg task
+    # FIXME: Create Game Character for the new user with bg task
     # Create Point for the new user with bg task
     # Create Point for the new user with bg task
     # Create Point for the new user with bg task
     # Create Point for the new user with bg task
 
-    new_user_schemaFactory = SchemaFactory(new_user)
+    # new_user_schema_factory = UserSchemaFactory(new_user)
     return UserCreateResponseSchema(
         access_token=new_user.access_token,
         user_details=UserDetailsSchema(
-            user_base=new_user_schemaFactory.userSchemaMaker()
+            user_base=UserSchema(
+                id=new_user.id,
+                app_info=user_app_info,
+                personal_info=user_personal_info,
+                telegram_info=user_telegram_info,
+                created_at=new_user.created_at,
+                updated_at=new_user.updated_at,
+                custom_logs=new_user.custom_logs,
+            ),
         ),
     )
 
 
-def retrival_user(
-    request: UserRetrivalRequestSchema, db: Session
-) -> UserRetrivalResponseSchema:
+def retrieve_user_by_id(id: int, db: Session):
+    if not id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Missing User id",
+        )
+    existing_user = (
+        db.query(UserModel)
+        .filter(UserModel.id == id)
+        .options(
+            joinedload(UserModel.point),  # Load point with the user
+            joinedload(UserModel.game_characters),  # Load game character with the user
+            joinedload(UserModel.activity),  # Load activity with the user
+            joinedload(UserModel.social_media),  # Load social media with the user
+            joinedload(UserModel.sender),  # Load sender with the user
+            joinedload(UserModel.receiver),  # Load receiver with the user
+        )
+        .first()
+    )
+
+    if not existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with {id} not found",
+        )
+    user_app_info = UserAppInfoSchema(
+        is_active=existing_user.is_active,
+        in_game_items=existing_user.in_game_items,
+        is_admin=existing_user.is_admin,
+        skin=existing_user.skin,
+    )
+    user_personal_info = UserPersonalInfoSchema(
+        location=existing_user.location,
+        nationality=existing_user.nationality,
+        age=existing_user.age,
+        gender=existing_user.gender,
+        email=existing_user.email,
+    )
+    user_telegram_info = UserTelegramInfoSchema(
+        username=existing_user.username,
+        telegram_id=existing_user.telegram_id,
+        token_balance=existing_user.token_balance,
+        is_premium=existing_user.is_premium,
+        wallet_address=existing_user.wallet_address,
+        chat_id=existing_user.chat_id,
+    )
+    # return existing_user
+    user_base = UserSchema(
+        id=existing_user.id,
+        app_info=user_app_info,
+        personal_info=user_personal_info,
+        telegram_info=user_telegram_info,
+        created_at=existing_user.created_at,
+        updated_at=existing_user.updated_at,
+        custom_logs=existing_user.custom_logs,
+    )
+    print("****************************")
+    print(existing_user.sender)
+    print(existing_user.receiver)
+
+    sender_payload = [
+        FriendBaseSchema(
+            id=single_sender.id,
+            sender_id=single_sender.sender_id,
+            receiver_id=single_sender.receiver_id,
+            created_at=single_sender.created_at,
+            updated_at=single_sender.updated_at,
+            status=single_sender.status,
+        )
+        for single_sender in existing_user.sender
+    ]
+
+    receiver_payload = [
+        FriendBaseSchema(
+            id=single_receiver.id,
+            sender_id=single_receiver.sender_id,
+            receiver_id=single_receiver.receiver_id,
+            created_at=single_receiver.created_at,
+            updated_at=single_receiver.updated_at,
+            status=single_receiver.status,
+        )
+        for single_receiver in existing_user.receiver
+    ]
+
+    game_character_payload = [
+        GameCharacterBaseSchema(
+            id=single_game_character.id,
+            first_name=single_game_character.first_name,
+            last_name=single_game_character.last_name,
+            gender=single_game_character.gender,
+            title=single_game_character.title,
+            created_at=single_game_character.created_at,
+            updated_at=single_game_character.updated_at,
+            custom_logs=single_game_character.custom_logs,
+        )
+        for single_game_character in existing_user.game_characters
+    ]
+
+    user_details = UserDetailsSchema(
+        user_base=user_base,
+        game_characters=game_character_payload,
+        point=existing_user.point,
+        activity=existing_user.activity,
+        social_media=existing_user.social_media,
+        receiver=receiver_payload,
+        sender=sender_payload,
+    )
+    return UserRetrivalResponseSchema(user_details=user_details)
+
+
+def retrieve_user(
+    id: int | None,
+    username: str | None,
+    telegram_id: str | None,
+    wallet_address: str | None,
+    db: Session,
+):
     base_query = db.query(UserModel)
-    if request.id:
-        base_query.filter(UserModel.id == request.id)
-    if request.username:
-        base_query.filter(UserModel.username == request.username)
-    if request.telegram_id:
-        base_query.filter(UserModel.telegram_id == request.telegram_id)
-    if request.wallet_address:
-        base_query.filter(UserModel.wallet_address == request.wallet_address)
+    filters = [] # inclusive AND case 
+    if id is not None:
+        filters.append(UserModel.id == id)
+    if username is not None:
+        filters.append(UserModel.username == username)
+    if telegram_id is not None:
+        filters.append(UserModel.telegram_id == telegram_id)
+    if wallet_address is not None:
+        filters.append(UserModel.wallet_address == wallet_address)
+
+    if filters: 
+        base_query = base_query.filter(*filters)
     existing_user = base_query.options(
         joinedload(UserModel.point),  # Load point with the user
         joinedload(UserModel.game_characters),  # Load game character with the user
@@ -187,14 +264,90 @@ def retrival_user(
     if not existing_user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with {request} not found",
+            detail=f"User with {id} not found",
         )
-    return UserRetrivalResponseSchema(
-        user_details=SchemaFactory.userDetailsResponseSchemaMaker(existing_user)
+    user_app_info = UserAppInfoSchema(
+        is_active=existing_user.is_active,
+        in_game_items=existing_user.in_game_items,
+        is_admin=existing_user.is_admin,
+        skin=existing_user.skin,
+    )
+    user_personal_info = UserPersonalInfoSchema(
+        location=existing_user.location,
+        nationality=existing_user.nationality,
+        age=existing_user.age,
+        gender=existing_user.gender,
+        email=existing_user.email,
+    )
+    user_telegram_info = UserTelegramInfoSchema(
+        username=existing_user.username,
+        telegram_id=existing_user.telegram_id,
+        token_balance=existing_user.token_balance,
+        is_premium=existing_user.is_premium,
+        wallet_address=existing_user.wallet_address,
+        chat_id=existing_user.chat_id,
+    )
+
+    sender_payload = [
+        FriendBaseSchema(
+            id=single_sender.id,
+            sender_id=single_sender.sender_id,
+            receiver_id=single_sender.receiver_id,
+            created_at=single_sender.created_at,
+            updated_at=single_sender.updated_at,
+            status=single_sender.status,
+        )
+        for single_sender in existing_user.sender
+    ]
+
+    receiver_payload = [
+        FriendBaseSchema(
+            id=single_receiver.id,
+            sender_id=single_receiver.sender_id,
+            receiver_id=single_receiver.receiver_id,
+            created_at=single_receiver.created_at,
+            updated_at=single_receiver.updated_at,
+            status=single_receiver.status,
+        )
+        for single_receiver in existing_user.receiver
+    ]
+
+    return UserDetailsResponseSchema(
+        user_details=UserDetailsSchema(
+            user_base=UserSchema(
+                id=existing_user.id,
+                app_info=user_app_info,
+                personal_info=user_personal_info,
+                telegram_info=user_telegram_info,
+                created_at=existing_user.created_at,
+                updated_at=existing_user.updated_at,
+                custom_logs=existing_user.custom_logs,
+            ),
+            game_characters=[
+                GameCharacterBaseSchema(
+                    id=single_game_character.id,
+                    first_name=single_game_character.first_name,
+                    last_name=single_game_character.last_name,
+                    gender=single_game_character.gender,
+                    title=single_game_character.title,
+                    created_at=single_game_character.created_at,
+                    updated_at=single_game_character.updated_at,
+                    custom_logs=single_game_character.custom_logs,
+                )
+                for single_game_character in existing_user.game_characters
+            ],
+            point=existing_user.point,
+            activity=existing_user.activity,
+            social_media=existing_user.social_media,
+            sender=sender_payload,
+            receiver=receiver_payload,
+        )
     )
 
 
-def retrival_users(skip: int, limit: int, db: Session):  # no filter
+def retrieve_users(
+    db: Session, skip: int, limit: int
+) -> List[UserDetailsResponseSchema]:  # no filter
     existing_users = (
         db.query(UserModel)
         .options(
@@ -209,7 +362,78 @@ def retrival_users(skip: int, limit: int, db: Session):  # no filter
         .limit(limit)
         .all()
     )
-    return existing_users
+    return [
+        UserDetailsResponseSchema(
+            user_details=UserDetailsSchema(
+                user_base=UserSchema(
+                    id=existing_user.id,
+                    app_info=UserAppInfoSchema(
+                        is_active=existing_user.is_active,
+                        in_game_items=existing_user.in_game_items,
+                        is_admin=existing_user.is_admin,
+                        skin=existing_user.skin,
+                    ),
+                    personal_info=UserPersonalInfoSchema(
+                        location=existing_user.location,
+                        nationality=existing_user.nationality,
+                        age=existing_user.age,
+                        gender=existing_user.gender,
+                        email=existing_user.email,
+                    ),
+                    telegram_info=UserTelegramInfoSchema(
+                        username=existing_user.username,
+                        telegram_id=existing_user.telegram_id,
+                        token_balance=existing_user.token_balance,
+                        is_premium=existing_user.is_premium,
+                        wallet_address=existing_user.wallet_address,
+                        chat_id=existing_user.chat_id,
+                    ),
+                    created_at=existing_user.created_at,
+                    updated_at=existing_user.updated_at,
+                    custom_logs=existing_user.custom_logs,
+                ),
+                game_characters=[
+                    GameCharacterBaseSchema(
+                        id=single_game_character.id,
+                        first_name=single_game_character.first_name,
+                        last_name=single_game_character.last_name,
+                        gender=single_game_character.gender,
+                        title=single_game_character.title,
+                        created_at=single_game_character.created_at,
+                        updated_at=single_game_character.updated_at,
+                        custom_logs=single_game_character.custom_logs,
+                    )
+                    for single_game_character in existing_user.game_characters
+                ],
+                point=existing_user.point,
+                activity=existing_user.activity,
+                social_media=existing_user.social_media,
+                sender=[
+                    FriendBaseSchema(
+                        id=single_sender.id,
+                        sender_id=single_sender.sender_id,
+                        receiver_id=single_sender.receiver_id,
+                        created_at=single_sender.created_at,
+                        updated_at=single_sender.updated_at,
+                        status=single_sender.status,
+                    )
+                    for single_sender in existing_user.sender
+                ],
+                receiver=[
+                    FriendBaseSchema(
+                        id=single_receiver.id,
+                        sender_id=single_receiver.sender_id,
+                        receiver_id=single_receiver.receiver_id,
+                        created_at=single_receiver.created_at,
+                        updated_at=single_receiver.updated_at,
+                        status=single_receiver.status,
+                    )
+                    for single_receiver in existing_user.receiver
+                ],
+            )
+        )
+        for existing_user in existing_users
+    ]
 
 
 def update_user(
@@ -250,7 +474,46 @@ def update_user(
             existing_user.custom_logs = request.user_payload.custom_logs
     db.commit()
     db.refresh(existing_user)
-    return SchemaFactory.userUpdateResponseSchemaMaker(existing_user)
+    user_app_info = UserAppInfoSchema(
+        is_active=existing_user.is_active,
+        in_game_items=existing_user.in_game_items,
+        is_admin=existing_user.is_admin,
+        skin=existing_user.skin,
+    )
+    user_personal_info = UserPersonalInfoSchema(
+        location=existing_user.location,
+        nationality=existing_user.nationality,
+        age=existing_user.age,
+        gender=existing_user.gender,
+        email=existing_user.email,
+    )
+    user_telegram_info = UserTelegramInfoSchema(
+        username=existing_user.username,
+        telegram_id=existing_user.telegram_id,
+        token_balance=existing_user.token_balance,
+        is_premium=existing_user.is_premium,
+        wallet_address=existing_user.wallet_address,
+        chat_id=existing_user.chat_id,
+    )
+    return UserUpdateResponseSchema(
+        user_details=UserDetailsSchema(
+            user_base=UserSchema(
+                id=existing_user.id,
+                app_info=user_app_info,
+                personal_info=user_personal_info,
+                telegram_info=user_telegram_info,
+                created_at=existing_user.created_at,
+                updated_at=existing_user.updated_at,
+                custom_logs=existing_user.custom_logs,
+            ),
+            game_characters=existing_user.game_characters,
+            point=existing_user.point,
+            activity=existing_user.activity,
+            social_media=existing_user.social_media,
+            sender=existing_user.sender,
+            receiver=existing_user.receiver,
+        )
+    )
 
 
 def delete_user(id: int, db: Session):

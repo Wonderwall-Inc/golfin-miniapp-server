@@ -20,16 +20,16 @@ class GameCharacterModel(Base):
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)
     gender: Mapped[int] = mapped_column(Integer, default=1)
-    title: Mapped[str] = mapped_column(String(100), nullable=False)
+    title: Mapped[str] = mapped_column(String(100), nullable=False) # FIXME: Enum
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
     custom_logs: Mapped[Optional[dict]] = mapped_column(JSON)
     
-    user = relationship("UserModel", back_populates="gameCharacters", single_parent=True)
+    user = relationship("UserModel", back_populates="game_characters", single_parent=True)
     stats = relationship("GameCharacterStatsModel", back_populates="game_character")
 
     def __repr__(self) -> str:
-        return f"<CharacterModel first_name={self.first_name} by {self.user.id}>"
+        return f"<CharacterModel first_name={self.first_name} by {self.user_id}>"
 
 
 class GameCharacterStatsModel(Base):
@@ -47,7 +47,7 @@ class GameCharacterStatsModel(Base):
     exp_points: Mapped[int] = mapped_column(Integer, default=0)
     stamina: Mapped[int] = mapped_column(Integer, default=0)
     recovery: Mapped[int] = mapped_column(Integer, default=0)
-    condition: Mapped[int] = mapped_column(Integer, default=0)
+    condition: Mapped[int] = mapped_column(Integer, default=0) # how to use int to represent as condition?
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
     custom_logs: Mapped[Optional[dict]] = mapped_column(JSON)
@@ -57,4 +57,4 @@ class GameCharacterStatsModel(Base):
     __table_args__ = (UniqueConstraint("game_character_id"),)
 
     def __repr__(self) -> str:
-        return f"<GameCharacterStatsModel by {self.game_character.id}>"
+        return f"<GameCharacterStatsModel by {self.game_character_id}>"

@@ -1,22 +1,25 @@
 from datetime import datetime
 from typing import Optional, List, Literal
 from pydantic import BaseModel
-# from app.user.schemas import UserSchema # Forward reference
+
+FriendStatusTpye = Literal["pending", "active", "rejected"]
 
 
-class FriendStatusTpye(BaseModel):
-    statuses: List[Literal["pending", "active", "rejected"]]
+class FriendIds(BaseModel):
+    sender_id: int
+    id: int
+    receiver_id: int
 
 
 class FriendBaseSchema(BaseModel):
-    """
-    Base schema for Friend
-    """
+    """Base schema for Friend"""
 
-    id: int
+    sender_id: int
     status: FriendStatusTpye
-    created_at: datetime
+    id: int
     updated_at: datetime
+    receiver_id: int
+    created_at: datetime
     custom_logs: Optional[dict] = None
 
     class Config:
@@ -28,6 +31,7 @@ class FriendUpdateDetailsSchema(BaseModel):  # what else can be updated
 
     status: FriendStatusTpye
     custom_logs: Optional[dict] = None
+
     class Config:
         use_enum_values = True
 
@@ -40,6 +44,7 @@ class FriendSchema(BaseModel):  # all except the relationship
     created_at: datetime
     updated_at: datetime
     custom_logs: Optional[dict] = None
+
     class Config:
         use_enum_values = True
 
@@ -61,6 +66,7 @@ class FriendCreateRequestSchema(BaseModel):
     sender_id: int
     receiver_id: int
     status: FriendStatusTpye
+
     class Config:
         use_enum_values = True
 
@@ -78,18 +84,37 @@ class FriendRetrivalRequestSchema(BaseModel):
     id: int
 
 
+class FriendWithIdsRetrivalResponseSchema(BaseModel):
+    sender: Optional[List[FriendBaseSchema]] = None
+    receiver: Optional[List[FriendBaseSchema]] = None
+
+
 class FriendRetrivalResponseSchema(BaseModel):
     """Friend Retrival Response Schema"""
 
     friend_details: FriendDetailsSchema
 
 
-class FriendUpdateRequestSchema(BaseModel):
-    """Friend Update Request Schema"""
+class FriendUpdateByIdRequestSchema(BaseModel):
+    """Update the friend by status and user id"""
 
-    id: int
+    id: Optional[int] = None
     access_token: str
-    friend_payload: Optional[FriendUpdateDetailsSchema] = None
+    friend_payload: FriendUpdateDetailsSchema
+
+
+class FriendUpdateBySenderIdRequestSchema(BaseModel):
+    """Update the friend by status and sender id"""
+
+    sender_id: Optional[int] = None
+    access_token: str
+    friend_payload: FriendUpdateDetailsSchema
+
+
+class FriendUpdateByReceiverIdRequestSchema(BaseModel):
+    receiver_id: Optional[int] = None
+    access_token: str
+    friend_payload: FriendUpdateDetailsSchema
 
 
 class FriendDetailsResponseSchema(BaseModel):
