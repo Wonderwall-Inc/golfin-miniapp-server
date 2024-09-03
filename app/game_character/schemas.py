@@ -125,31 +125,31 @@ class GameCharacterCreateResponseSchema(BaseModel):
     character_stats: GameCharacterStatsSchema
 
 
-class GameCharacterRetrivalRequestSchema(BaseModel):
-    """Game Character Retrival Request Schema"""
+class GameCharacterRetrievalRequestSchema(BaseModel):
+    """Game Character Retrieval Request Schema"""
 
     access_token: str
     id: int
     character_details: Optional[GameCharacterDetailsSchema] = None
 
 
-class GameCharacterRetrivalResponseSchema(BaseModel):
-    """Game Character Retrival Response Schema"""
+class GameCharacterRetrievalResponseSchema(BaseModel):
+    """Game Character Retrieval Response Schema"""
 
     character_details: GameCharacterDetailsSchema
     character_stats: List[GameCharacterStatDetailsSchema]
 
 
-class GameCharacterStatRetrivalRequestSchema(BaseModel):
-    """Game Character Stats Retrival Request Schema"""
+class GameCharacterStatRetrievalRequestSchema(BaseModel):
+    """Game Character Stats Retrieval Request Schema"""
 
     access_token: str
     id: int
     character_stats: Optional[GameCharacterStatDetailsSchema] = None
 
 
-class GameCharacterStatRetrivalResponseSchema(BaseModel):
-    """Game Character Stats Retrival Response Schema"""
+class GameCharacterStatRetrievalResponseSchema(BaseModel):
+    """Game Character Stats Retrieval Response Schema"""
 
     game_character_id: int
     character_stats: List[GameCharacterStatsSchema]

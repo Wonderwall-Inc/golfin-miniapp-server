@@ -54,7 +54,6 @@ def get_detail_user(
     db: Session = Depends(get_db),
 ):
     """Get User details of single user"""
-    print("hello")
     return service.retrieve_user(id, username, telegram_id, wallet_address, db)
 
 

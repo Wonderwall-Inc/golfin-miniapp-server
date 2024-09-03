@@ -25,7 +25,7 @@ def create_friend(
 
 
 # REVIEW:  get from user & get from users
-@router.get("/details/{user_id}", response_model=schemas.FriendWithIdsRetrivalResponseSchema)
+@router.get("/details/{user_id}", response_model=schemas.FriendWithIdsRetrievalResponseSchema)
 def get_friend(user_id: int, db: Session = Depends(get_db)):
     """get friendship"""
     return service.retrieve_friends_by_user_id(user_id, db)

@@ -77,20 +77,20 @@ class FriendCreateResponseSchema(BaseModel):
     friend_details: FriendDetailsSchema
 
 
-class FriendRetrivalRequestSchema(BaseModel):
-    """Friend Retrival Request Schema"""
+class FriendRetrievalRequestSchema(BaseModel):
+    """Friend Retrieval Request Schema"""
 
     access_token: str
     id: int
 
 
-class FriendWithIdsRetrivalResponseSchema(BaseModel):
+class FriendWithIdsRetrievalResponseSchema(BaseModel):
     sender: Optional[List[FriendBaseSchema]] = None
     receiver: Optional[List[FriendBaseSchema]] = None
 
 
-class FriendRetrivalResponseSchema(BaseModel):
-    """Friend Retrival Response Schema"""
+class FriendRetrievalResponseSchema(BaseModel):
+    """Friend Retrieval Response Schema"""
 
     friend_details: FriendDetailsSchema
 

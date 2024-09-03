@@ -22,19 +22,19 @@ def create_point(
     return service.create_point(request, db)
 
 
-@router.get("/detail/id/{id}", response_model=schemas.PointRetrivalResponseSchema)
+@router.get("/detail/id/{id}", response_model=schemas.PointRetrievalResponseSchema)
 def get_detail_by_point_id(id: int, db: Session = Depends(get_db)):
     """Get the point detail based on point id"""
     return service.retrieve_point_by_point_id(id, db)
 
 
-@router.get("/detail/{user_id}", response_model=schemas.PointRetrivalResponseSchema)
+@router.get("/detail/{user_id}", response_model=schemas.PointRetrievalResponseSchema)
 def get_detail_by_user_id(user_id: int, db: Session = Depends(get_db)):
     """Get the point detail based on user id"""
     return service.retrieve_point_by_user_id(user_id, db)
 
 
-@router.get("/details", response_model=List[int])
+@router.get("/details", response_model=List[schemas.PointRetrievalResponseSchema])
 def get_details(user_ids: List[int] = Query(...), db: Session = Depends(get_db)):
     """Get the points by list of integers"""
     return service.retrieve_points(user_ids, db)

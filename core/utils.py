@@ -4,8 +4,8 @@
 #     UserTelegramInfoSchema,
 #     UserCreateRequestSchema,
 #     UserCreateResponseSchema,
-#     UserRetrivalRequestSchema,
-#     UserRetrivalResponseSchema,
+#     UserRetrievalRequestSchema,
+#     UserRetrievalResponseSchema,
 #     UserUpdateRequestSchema,
 #     UserUpdateResponseSchema,
 #     UserUpdateDetailsSchema,
@@ -26,10 +26,10 @@
 #     GameCharacterCreateResponseSchema,
 #     GameCharacterUpdateDetailsSchema,
 #     GameCharacterStatsUpdateDetailsSchema,
-#     GameCharacterRetrivalRequestSchema,
-#     GameCharacterRetrivalResponseSchema,
-#     GameCharacterStatRetrivalRequestSchema,
-#     GameCharacterStatRetrivalResponseSchema,
+#     GameCharacterRetrievalRequestSchema,
+#     GameCharacterRetrievalResponseSchema,
+#     GameCharacterStatRetrievalRequestSchema,
+#     GameCharacterStatRetrievalResponseSchema,
 #     GameCharacterUpdateRequestSchema,
 #     GameCharacterUpdateResponseSchema,
 # )
@@ -139,9 +139,9 @@
 #             | GameCharacterStatsUpdateDetailsSchema
 #             | GameCharacterCreateRequestSchema
 #             | GameCharacterCreateResponseSchema
-#             | GameCharacterRetrivalRequestSchema
-#             | GameCharacterStatRetrivalRequestSchema
-#             | GameCharacterStatRetrivalResponseSchema
+#             | GameCharacterRetrievalRequestSchema
+#             | GameCharacterStatRetrievalRequestSchema
+#             | GameCharacterStatRetrievalResponseSchema
 #             | GameCharacterUpdateRequestSchema
 #             | GameCharacterUpdateResponseSchema
 #         ),
@@ -247,35 +247,35 @@
 #             character_stats=self.gameCharacterStatDetailsSchema(),
 #         )
 
-#     def gameCharacterRetrivalRequestSchema(self) -> GameCharacterRetrivalRequestSchema:
-#         return GameCharacterRetrivalRequestSchema(
+#     def gameCharacterRetrievalRequestSchema(self) -> GameCharacterRetrievalRequestSchema:
+#         return GameCharacterRetrievalRequestSchema(
 #             access_token=self.payload.access_token,
 #             id=self.payload.id,
 #             character_details=self.gameCharacterDetailsSchema(),
 #         )
 
-#     def GameCharacterRetrivalResponseSchema(
+#     def GameCharacterRetrievalResponseSchema(
 #         self,
-#     ) -> GameCharacterRetrivalResponseSchema:
-#         return GameCharacterRetrivalResponseSchema(
+#     ) -> GameCharacterRetrievalResponseSchema:
+#         return GameCharacterRetrievalResponseSchema(
 #             character_details=self.gameCharacterDetailsSchema(),
 #             character_stats=self.gameCharacterStatDetailsSchema(),
 #         )
 
-#     def gameCharacterStatRetrivalRequestSchema(
+#     def gameCharacterStatRetrievalRequestSchema(
 #         self,
-#     ) -> GameCharacterStatRetrivalRequestSchema:
-#         return GameCharacterStatRetrivalRequestSchema(
+#     ) -> GameCharacterStatRetrievalRequestSchema:
+#         return GameCharacterStatRetrievalRequestSchema(
 #             access_token=self.payload.access_token,
 #             id=self.payload.id,
 #             character_stats=self.gameCharacterStatDetailsSchema(),
 #         )
 
-#     def gameCharacterStatRetrivalResponseSchema(
+#     def gameCharacterStatRetrievalResponseSchema(
 #         self,
-#     ) -> GameCharacterStatRetrivalRequestSchema:
+#     ) -> GameCharacterStatRetrievalRequestSchema:
 #         character_stats: GameCharacterStatDetailsSchema
-#         return GameCharacterStatRetrivalRequestSchema(character_stats=character_stats)
+#         return GameCharacterStatRetrievalRequestSchema(character_stats=character_stats)
 
 #     def gameCharacterUpdateRequestSchema(self) -> GameCharacterUpdateRequestSchema:
 #         return GameCharacterUpdateRequestSchema(

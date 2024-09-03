@@ -10,12 +10,12 @@ from app.friend.schemas import (
     FriendUpdateDetailsSchema,
     FriendSchema,
     FriendIds,
-    FriendWithIdsRetrivalResponseSchema,
+    FriendWithIdsRetrievalResponseSchema,
     FriendDetailsSchema,
     FriendCreateRequestSchema,
     FriendCreateResponseSchema,
-    FriendRetrivalRequestSchema,
-    FriendRetrivalResponseSchema,
+    FriendRetrievalRequestSchema,
+    FriendRetrievalResponseSchema,
     # FriendUpdateRequestSchema,
     FriendDetailsResponseSchema,
     FriendUpdateByIdRequestSchema,
@@ -90,7 +90,7 @@ def create_friend(
 # This method combines with get_friends_as_receiver ->> total friend from the given user_id
 def get_friends_as_sender(
     user_id: int, db: Session
-) -> List[FriendRetrivalResponseSchema]:
+) -> List[FriendRetrievalResponseSchema]:
     """Retrieve friend by sender id"""
     if not user_id:
         raise HTTPException(
@@ -106,7 +106,7 @@ def get_friends_as_sender(
         .all()
     )
     return [
-        FriendRetrivalResponseSchema(
+        FriendRetrievalResponseSchema(
             friend_details=FriendDetailsSchema(
                 friend_base=FriendSchema(
                     id=friend.sender.id,
@@ -126,7 +126,7 @@ def get_friends_as_sender(
 # This method combines with get_friends_as_sender ->> total friend from the given user_id
 def get_friends_as_receiver(
     user_id: int, db: Session
-) -> List[FriendRetrivalResponseSchema]:
+) -> List[FriendRetrievalResponseSchema]:
     """Retrieve friend by sender id"""
     if not user_id:
         raise HTTPException(
@@ -142,7 +142,7 @@ def get_friends_as_receiver(
         .all()
     )
     return [
-        FriendRetrivalResponseSchema(
+        FriendRetrievalResponseSchema(
             friend_details=FriendDetailsSchema(
                 friend_base=FriendSchema(
                     id=friend.receiver.id,
@@ -160,14 +160,14 @@ def get_friends_as_receiver(
 
 
 def retrieve_friend_by_id(
-    request: FriendRetrivalRequestSchema, db: Session
-) -> FriendRetrivalResponseSchema:
+    request: FriendRetrievalRequestSchema, db: Session
+) -> FriendRetrievalResponseSchema:
     if not request.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Missing friend id"
         )
     friend = db.query(FriendModel).filter(FriendModel.id == id).first()
-    return FriendRetrivalResponseSchema(
+    return FriendRetrievalResponseSchema(
         friend_details=FriendDetailsSchema(
             friend_base=FriendSchema(
                 id=friend.id,
@@ -185,7 +185,7 @@ def retrieve_friend_by_id(
 def retrieve_friends_by_user_id(
     user_id: int,
     db: Session,
-) -> FriendWithIdsRetrivalResponseSchema:
+) -> FriendWithIdsRetrievalResponseSchema:
     """Retrieve Friend by user id"""
     if not user_id:
         raise HTTPException(
@@ -217,14 +217,14 @@ def retrieve_friends_by_user_id(
     ]
 
     # return as_sender_list, as_receiver_list
-    return FriendWithIdsRetrivalResponseSchema(
+    return FriendWithIdsRetrievalResponseSchema(
         sender=as_sender_list, receiver=as_receiver_list
     )
 
 
 def get_Friend_by_sender_id_receiver_id(
     sender_id: int, db: Session, receiver_id: int
-) -> FriendRetrivalResponseSchema:
+) -> FriendRetrievalResponseSchema:
     if not sender_id or not receiver_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -238,7 +238,7 @@ def get_Friend_by_sender_id_receiver_id(
         )
         .first()
     )
-    return FriendRetrivalResponseSchema(
+    return FriendRetrievalResponseSchema(
         friend_details=FriendDetailsSchema(
             friend_base=FriendSchema(
                 id=existing_friend.id,

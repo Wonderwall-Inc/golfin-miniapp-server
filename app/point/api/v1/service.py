@@ -56,7 +56,7 @@ def create_point(
 
 def retrieve_point_by_point_id(
     id: int, db: Session
-) -> schemas.PointRetrivalResponseSchema:
+) -> schemas.PointRetrievalResponseSchema:
     if not id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -69,7 +69,7 @@ def retrieve_point_by_point_id(
             detail=f"Point with id {id} not found",
         )
     try:
-        return schemas.PointRetrivalResponseSchema(
+        return schemas.PointRetrievalResponseSchema(
             point_base=schemas.PointDetailsSchema(
                 user_id=existing_point.user_id,
                 point=schemas.PointScehma(
@@ -88,7 +88,7 @@ def retrieve_point_by_point_id(
 
 def retrieve_point_by_user_id(
     user_id: int, db: Session
-) -> schemas.PointRetrivalResponseSchema:
+) -> schemas.PointRetrievalResponseSchema:
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -101,7 +101,7 @@ def retrieve_point_by_user_id(
             detail=f"Point with user id {user_id} not found",
         )
     try:
-        return schemas.PointRetrivalResponseSchema(
+        return schemas.PointRetrievalResponseSchema(
             point_base=schemas.PointDetailsSchema(
                 user_id=existing_point.user_id,
                 point=schemas.PointScehma(
@@ -120,7 +120,7 @@ def retrieve_point_by_user_id(
 
 def retrieve_points(
     user_ids: List[int], db: Session
-) -> List[schemas.PointRetrivalResponseSchema]:
+) -> List[schemas.PointRetrievalResponseSchema]:
     if not user_ids:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -133,7 +133,7 @@ def retrieve_points(
             .all()
         )
         return [
-            schemas.PointRetrivalResponseSchema(
+            schemas.PointRetrievalResponseSchema(
                 point_base=schemas.PointDetailsSchema(
                     user_id=ex.user_id,
                     point=schemas.PointScehma(
@@ -177,7 +177,6 @@ def update_point_by_id(request: schemas.PointUpdateByIdRequestSchema, db: Sessio
             existing_point.extra_profit_per_hour = request.point_payload.extra_profit_per_hour
     db.commit()
     db.refresh(existing_point)
-    print(existing_point)
     return schemas.PointUpdateResponseSchema(
         point_base=schemas.PointDetailsSchema(
             point=schemas.PointScehma(

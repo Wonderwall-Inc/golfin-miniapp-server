@@ -10,8 +10,8 @@ from app.user.schemas import (
     UserTelegramInfoSchema,
     UserCreateRequestSchema,
     UserCreateResponseSchema,
-    UserRetrivalRequestSchema,
-    UserRetrivalResponseSchema,
+    UserRetrievalRequestSchema,
+    UserRetrievalResponseSchema,
     UserUpdateRequestSchema,
     UserUpdateResponseSchema,
     UserUpdateDetailsSchema,
@@ -22,6 +22,7 @@ from app.user.schemas import (
 from app.friend.schemas import FriendBaseSchema, FriendIds
 from app.game_character.schemas import GameCharacterBaseSchema
 from app.point.schemas import PointScehma
+from app.social_media.schemas import SocialMediaBaseSchema
 
 # from core.utils import UserSchemaFactory
 
@@ -51,7 +52,6 @@ def create_user(
         .filter(UserModel.telegram_id == request.telegram_info.telegram_id)
         .first()
     )
-    print(user)
     if user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already exists"
@@ -180,10 +180,6 @@ def retrieve_user_by_id(id: int, db: Session):
         updated_at=existing_user.updated_at,
         custom_logs=existing_user.custom_logs,
     )
-    print("****************************")
-    print(existing_user.sender)
-    print(existing_user.receiver)
-    print(existing_user.point)
     sender_payload = [
         FriendBaseSchema(
             id=single_sender.id,
@@ -234,17 +230,49 @@ def retrieve_user_by_id(id: int, db: Session):
         for p in existing_user.point
     ]
 
-    print(point_payload)
+    social_media_payload = [
+        SocialMediaBaseSchema(
+            id=so.id,
+            youtube_id=so.youtube_id,
+            youtube_is_following=so.youtube_is_following,
+            youtube_is_viewed=so.youtube_is_viewed,
+            youtube_view_date=so.youtube_view_date,
+            facebook_id=so.facebook_id,
+            facebook_is_following=so.facebook_is_following,
+            facebook_followed_date=so.facebook_followed_date,
+            instagram_id=so.instagram_id,
+            instagram_is_following=so.instagram_is_following,
+            instagram_follow_trigger_verify_date=so.instagram_follow_trigger_verify_date,
+            instagram_followed_date=so.instagram_followed_date,
+            instagram_tagged=so.instagram_tagged,
+            instagram_tagged_date=so.instagram_tagged_date,
+            instagram_reposted=so.instagram_reposted,
+            instagram_reposted_date=so.instagram_reposted_date,
+            telegram_id=so.telegram_id,
+            telegram_is_following=so.telegram_is_following,
+            telegram_followed_date=so.telegram_followed_date,
+            x_id=so.x_id,
+            x_is_following=so.x_is_following,
+            x_followed_date=so.x_followed_date,
+            discord_id=so.discord_id,
+            discord_is_following=so.discord_is_following,
+            discord_followed_date=so.discord_followed_date,
+            custom_logs=so.custom_logs,
+            updated_at=so.updated_at,
+            created_at=so.created_at,
+        )
+        for so in existing_user.social_media
+    ]
     user_details = UserDetailsSchema(
         user_base=user_base,
         game_characters=game_character_payload,
         point=point_payload,
         activity=existing_user.activity,
-        social_media=existing_user.social_media,
+        social_media=social_media_payload,
         receiver=receiver_payload,
         sender=sender_payload,
     )
-    return UserRetrivalResponseSchema(user_details=user_details)
+    return UserRetrievalResponseSchema(user_details=user_details)
 
 
 def retrieve_user(
@@ -325,7 +353,7 @@ def retrieve_user(
         )
         for single_receiver in existing_user.receiver
     ]
-    
+
     point_payload = [
         PointScehma(
             id=p.id,
@@ -336,6 +364,40 @@ def retrieve_user(
             custom_logs=p.custom_logs,
         )
         for p in existing_user.point
+    ]
+
+    social_media_payload = [
+        SocialMediaBaseSchema(
+            id=so.id,
+            youtube_id=so.youtube_id,
+            youtube_is_following=so.youtube_is_following,
+            youtube_is_viewed=so.youtube_is_viewed,
+            youtube_view_date=so.youtube_view_date,
+            facebook_id=so.facebook_id,
+            facebook_is_following=so.facebook_is_following,
+            facebook_followed_date=so.facebook_followed_date,
+            instagram_id=so.instagram_id,
+            instagram_is_following=so.instagram_is_following,
+            instagram_follow_trigger_verify_date=so.instagram_follow_trigger_verify_date,
+            instagram_followed_date=so.instagram_followed_date,
+            instagram_tagged=so.instagram_tagged,
+            instagram_tagged_date=so.instagram_tagged_date,
+            instagram_reposted=so.instagram_reposted,
+            instagram_reposted_date=so.instagram_reposted_date,
+            telegram_id=so.telegram_id,
+            telegram_is_following=so.telegram_is_following,
+            telegram_followed_date=so.telegram_followed_date,
+            x_id=so.x_id,
+            x_is_following=so.x_is_following,
+            x_followed_date=so.x_followed_date,
+            discord_id=so.discord_id,
+            discord_is_following=so.discord_is_following,
+            discord_followed_date=so.discord_followed_date,
+            custom_logs=so.custom_logs,
+            updated_at=so.updated_at,
+            created_at=so.created_at,
+        )
+        for so in existing_user.social_media
     ]
 
     return UserDetailsResponseSchema(
@@ -364,7 +426,7 @@ def retrieve_user(
             ],
             point=point_payload,
             activity=existing_user.activity,
-            social_media=existing_user.social_media,
+            social_media=social_media_payload,
             sender=sender_payload,
             receiver=receiver_payload,
         )
@@ -440,10 +502,42 @@ def retrieve_users(
                         updated_at=p.updated_at,
                         custom_logs=p.custom_logs,
                     )
-                for p in existing_user.point
+                    for p in existing_user.point
                 ],
                 activity=existing_user.activity,
-                social_media=existing_user.social_media,
+                social_media=[
+                    SocialMediaBaseSchema(
+                        id=so.id,
+                        youtube_id=so.youtube_id,
+                        youtube_is_following=so.youtube_is_following,
+                        youtube_is_viewed=so.youtube_is_viewed,
+                        youtube_view_date=so.youtube_view_date,
+                        facebook_id=so.facebook_id,
+                        facebook_is_following=so.facebook_is_following,
+                        facebook_followed_date=so.facebook_followed_date,
+                        instagram_id=so.instagram_id,
+                        instagram_is_following=so.instagram_is_following,
+                        instagram_follow_trigger_verify_date=so.instagram_follow_trigger_verify_date,
+                        instagram_followed_date=so.instagram_followed_date,
+                        instagram_tagged=so.instagram_tagged,
+                        instagram_tagged_date=so.instagram_tagged_date,
+                        instagram_reposted=so.instagram_reposted,
+                        instagram_reposted_date=so.instagram_reposted_date,
+                        telegram_id=so.telegram_id,
+                        telegram_is_following=so.telegram_is_following,
+                        telegram_followed_date=so.telegram_followed_date,
+                        x_id=so.x_id,
+                        x_is_following=so.x_is_following,
+                        x_followed_date=so.x_followed_date,
+                        discord_id=so.discord_id,
+                        discord_is_following=so.discord_is_following,
+                        discord_followed_date=so.discord_followed_date,
+                        custom_logs=so.custom_logs,
+                        updated_at=so.updated_at,
+                        created_at=so.created_at,
+                    )
+                    for so in existing_user.social_media
+                ],
                 sender=[
                     FriendBaseSchema(
                         id=single_sender.id,
@@ -511,31 +605,31 @@ def update_user(
                 existing_user.custom_logs = request.user_payload.custom_logs
             db.commit()
             db.refresh(existing_user)
-            
+
             user_app_info = UserAppInfoSchema(
-            is_active=existing_user.is_active,
-            in_game_items=existing_user.in_game_items,
-            is_admin=existing_user.is_admin,
-            skin=existing_user.skin,
+                is_active=existing_user.is_active,
+                in_game_items=existing_user.in_game_items,
+                is_admin=existing_user.is_admin,
+                skin=existing_user.skin,
             )
-            
+
             user_personal_info = UserPersonalInfoSchema(
-            location=existing_user.location,
-            nationality=existing_user.nationality,
-            age=existing_user.age,
-            gender=existing_user.gender,
-            email=existing_user.email,
+                location=existing_user.location,
+                nationality=existing_user.nationality,
+                age=existing_user.age,
+                gender=existing_user.gender,
+                email=existing_user.email,
             )
-            
+
             user_telegram_info = UserTelegramInfoSchema(
-            username=existing_user.username,
-            telegram_id=existing_user.telegram_id,
-            token_balance=existing_user.token_balance,
-            is_premium=existing_user.is_premium,
-            wallet_address=existing_user.wallet_address,
-            chat_id=existing_user.chat_id,
+                username=existing_user.username,
+                telegram_id=existing_user.telegram_id,
+                token_balance=existing_user.token_balance,
+                is_premium=existing_user.is_premium,
+                wallet_address=existing_user.wallet_address,
+                chat_id=existing_user.chat_id,
             )
-            
+
             sender_payload = [
                 FriendBaseSchema(
                     id=single_sender.id,
@@ -547,7 +641,7 @@ def update_user(
                 )
                 for single_sender in existing_user.sender
             ]
-        
+
             receiver_payload = [
                 FriendBaseSchema(
                     id=single_receiver.id,
@@ -559,7 +653,7 @@ def update_user(
                 )
                 for single_receiver in existing_user.receiver
             ]
-        
+
             game_character_payload = [
                 GameCharacterBaseSchema(
                     id=single_game_character.id,
@@ -573,7 +667,7 @@ def update_user(
                 )
                 for single_game_character in existing_user.game_characters
             ]
-        
+
             point_payload = [
                 PointScehma(
                     id=p.id,
@@ -585,6 +679,41 @@ def update_user(
                 )
                 for p in existing_user.point
             ]
+
+            social_media_payload = [
+                SocialMediaBaseSchema(
+                    id=so.id,
+                    youtube_id=so.youtube_id,
+                    youtube_is_following=so.youtube_is_following,
+                    youtube_is_viewed=so.youtube_is_viewed,
+                    youtube_view_date=so.youtube_view_date,
+                    facebook_id=so.facebook_id,
+                    facebook_is_following=so.facebook_is_following,
+                    facebook_followed_date=so.facebook_followed_date,
+                    instagram_id=so.instagram_id,
+                    instagram_is_following=so.instagram_is_following,
+                    instagram_follow_trigger_verify_date=so.instagram_follow_trigger_verify_date,
+                    instagram_followed_date=so.instagram_followed_date,
+                    instagram_tagged=so.instagram_tagged,
+                    instagram_tagged_date=so.instagram_tagged_date,
+                    instagram_reposted=so.instagram_reposted,
+                    instagram_reposted_date=so.instagram_reposted_date,
+                    telegram_id=so.telegram_id,
+                    telegram_is_following=so.telegram_is_following,
+                    telegram_followed_date=so.telegram_followed_date,
+                    x_id=so.x_id,
+                    x_is_following=so.x_is_following,
+                    x_followed_date=so.x_followed_date,
+                    discord_id=so.discord_id,
+                    discord_is_following=so.discord_is_following,
+                    discord_followed_date=so.discord_followed_date,
+                    custom_logs=so.custom_logs,
+                    updated_at=so.updated_at,
+                    created_at=so.created_at,
+                )
+                for so in existing_user.social_media
+            ]
+
         return UserUpdateResponseSchema(
             user_details=UserDetailsSchema(
                 user_base=UserSchema(
@@ -599,7 +728,7 @@ def update_user(
                 game_characters=game_character_payload,
                 point=point_payload,
                 activity=existing_user.activity,
-                social_media=existing_user.social_media,
+                social_media=social_media_payload,
                 sender=sender_payload,
                 receiver=receiver_payload,
             )

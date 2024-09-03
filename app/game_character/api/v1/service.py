@@ -1,29 +1,27 @@
 import logging
 from typing import List
-from fastapi import HTTPException, status, BackgroundTasks
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 from app.game_character.models import GameCharacterModel, GameCharacterStatsModel
-from app.user.models import UserModel
 from app.game_character.schemas import (
-    GameCharacterBaseSchema,
-    GameCharacterStatBaseSchema,
     GameCharacterStatsSchema,
     GameCharacterSchema,
     GameCharacterDetailsSchema,
     GameCharacterStatDetailsSchema,
-    GameCharacterCreateDetailsSchema,
     GameCharacterCreateRequestSchema,
     GameCharacterCreateResponseSchema,
-    GameCharacterUpdateDetailsSchema,
-    GameCharacterStatsUpdateDetailsSchema,
-    GameCharacterRetrivalRequestSchema,
-    GameCharacterRetrivalResponseSchema,
-    GameCharacterStatRetrivalRequestSchema,
-    GameCharacterStatRetrivalResponseSchema,
+    GameCharacterRetrievalResponseSchema,
+    GameCharacterStatRetrievalResponseSchema,
     GameCharacterUpdateRequestSchema,
     GameCharacterUpdateResponseSchema,
+    GameCharacterBaseSchema,
+    GameCharacterStatBaseSchema,
+    GameCharacterCreateDetailsSchema,
+    GameCharacterUpdateDetailsSchema,
+    GameCharacterStatsUpdateDetailsSchema,
+    GameCharacterRetrievalRequestSchema,
+    GameCharacterStatRetrievalRequestSchema,
 )
-from app.user.schemas import UserSchema
 
 # from core.utils import GameCharacterSchemaFactory
 
@@ -79,7 +77,8 @@ def create_game_character(
     db.add(stats)
     db.commit()
     db.refresh(new_game_character)
-    new_game_character_details = GameCharacterCreateResponseSchema(
+
+    return GameCharacterCreateResponseSchema(
         game_character_id=new_game_character.id,
         character_stats=GameCharacterStatsSchema(
             id=stats.id,
@@ -93,7 +92,6 @@ def create_game_character(
             custom_logs=stats.custom_logs,
         ),
     )
-    return new_game_character_details
 
 
 # FIXME: allow the user id for filtering
@@ -133,9 +131,8 @@ def retrieve_game_character(game_character_id: int, db: Session):
         for stat in existing_character.stats
     ]
 
-    print(stats_payload)
     try:
-        result = GameCharacterRetrivalResponseSchema(
+        return GameCharacterRetrievalResponseSchema(
             character_details=GameCharacterDetailsSchema(
                 game_character_base=GameCharacterSchema(
                     id=existing_character.id,
@@ -150,9 +147,6 @@ def retrieve_game_character(game_character_id: int, db: Session):
             ),
             character_stats=stats_payload,
         )
-        print("**********************************************")
-        print(result)
-        return result
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
@@ -160,7 +154,7 @@ def retrieve_game_character(game_character_id: int, db: Session):
 # FIXME: allow character_id for filtering
 def retrieve_game_character_stat(
     game_character_id: int, db: Session
-) -> GameCharacterStatRetrivalResponseSchema:
+) -> GameCharacterStatRetrievalResponseSchema:
     """Retrieve Game Character Stats of single character"""
     if not game_character_id:
         raise HTTPException(
@@ -179,7 +173,7 @@ def retrieve_game_character_stat(
             detail=f"Character Stats with id {game_character_id} not found",
         )
     try:
-        return GameCharacterStatRetrivalResponseSchema(
+        return GameCharacterStatRetrievalResponseSchema(
             game_character_id=existing_stats.game_character_id,
             character_stats=GameCharacterStatsSchema(
                 id=existing_stats.id,
@@ -303,11 +297,11 @@ def delete_game_character(id: int, db: Session):
 # REVIEW: see if we need
 def retrieve_all_game_characters_info(
     db: Session, skip: int = 0, limit: int = 15
-) -> List[GameCharacterRetrivalResponseSchema]:
+) -> List[GameCharacterRetrievalResponseSchema]:
     """Retrieve all game characters of single user"""
     game_characters = db.query(GameCharacterModel).offset(skip).limit(limit).all()
     return [
-        GameCharacterRetrivalResponseSchema(
+        GameCharacterRetrievalResponseSchema(
             character_details=GameCharacterDetailsSchema(
                 game_character_base=GameCharacterSchema(
                     id=game_character.id,

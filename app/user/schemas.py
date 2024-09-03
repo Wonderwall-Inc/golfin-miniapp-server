@@ -103,7 +103,7 @@ class UserCreateResponseSchema(BaseModel):
     user_details: UserDetailsSchema
 
 
-class UserRetrivalRequestSchema(BaseModel):
+class UserRetrievalRequestSchema(BaseModel):
     """User Access Request Schema"""
 
     # Define fields for access request data as needed
@@ -115,7 +115,7 @@ class UserRetrivalRequestSchema(BaseModel):
     personal_info: UserPersonalInfoSchema
 
 
-class UserRetrivalResponseSchema(BaseModel):
+class UserRetrievalResponseSchema(BaseModel):
     """User Access Response Schema"""
 
     user_details: UserDetailsSchema

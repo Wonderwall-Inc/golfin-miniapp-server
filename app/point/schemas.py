@@ -37,13 +37,13 @@ class PointCreateResponseSchema(BaseModel):
     point_base: PointDetailsSchema
 
 
-class PointRetrivalRequestSchema(BaseModel):
-    access_token: str
+class PointRetrievalRequestSchema(BaseModel):
     id: int
+    access_token: str
     user_id: Optional[int] = None
 
 
-class PointRetrivalResponseSchema(BaseModel):
+class PointRetrievalResponseSchema(BaseModel):
     point_base: PointDetailsSchema
 
 

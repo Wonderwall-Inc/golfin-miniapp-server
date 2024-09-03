@@ -24,18 +24,17 @@ def create_game_character(
 
 @router.get(
     "/detail/{game_character_id}",
-    # response_model=schemas.GameCharacterRetrivalResponseSchema,
+    # response_model=schemas.GameCharacterRetrievalResponseSchema,
 )
 def get_detail_by_character_id(game_character_id: int, db: Session = Depends(get_db)):
     """get detail by id"""
     result = service.retrieve_game_character(game_character_id, db)
-    print(result)
     return result
 
 
 @router.get(
     "/detail/stat/{game_character_id}",
-    response_model=schemas.GameCharacterStatRetrivalResponseSchema,
+    response_model=schemas.GameCharacterStatRetrievalResponseSchema,
 )
 def get_stat_detail_by_id(game_character_id: int, db: Session = Depends(get_db)):
     """get stats detail by id"""

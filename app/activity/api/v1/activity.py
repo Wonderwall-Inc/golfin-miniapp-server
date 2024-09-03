@@ -11,7 +11,5 @@ from app.activity.api.v1 import service
 
 
 router = APIRouter(prefix="/api/v1/activity", tags=["activity"])
+get_db = database.get_db()
 
-@router.get('/')
-def hello():
-    return "activity"
