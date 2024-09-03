@@ -1,6 +1,6 @@
 """User App API Routes"""
 
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, BackgroundTasks, Depends
 from sqlalchemy.orm import Session
 
@@ -22,14 +22,14 @@ def create_game_character(
     return service.create_game_character(request, db)
 
 
-@router.get(
-    "/detail/{game_character_id}",
-    # response_model=schemas.GameCharacterRetrievalResponseSchema,
-)
-def get_detail_by_character_id(game_character_id: int, db: Session = Depends(get_db)):
+@router.get("/detail", response_model=schemas.GameCharacterRetrievalResponseSchema)
+def get_detail_by_character_id(
+    game_character_id: Optional[int] = None,
+    user_id: Optional[int] = None,
+    db: Session = Depends(get_db),
+):
     """get detail by id"""
-    result = service.retrieve_game_character(game_character_id, db)
-    return result
+    return service.retrieve_game_character(game_character_id, user_id, db)
 
 
 @router.get(

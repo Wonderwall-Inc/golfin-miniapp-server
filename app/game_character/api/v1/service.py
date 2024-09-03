@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 from app.game_character.models import GameCharacterModel, GameCharacterStatsModel
@@ -95,60 +95,59 @@ def create_game_character(
 
 
 # FIXME: allow the user id for filtering
-def retrieve_game_character(game_character_id: int, db: Session):
+def retrieve_game_character(game_character_id: Optional[int], user_id: Optional[int], db: Session):
     # -> GameCharacterCreateResponseSchema:
     """Retrieve game character by id"""
-    if not game_character_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Game Character id is requestesd",
-        )
-    existing_character = (
-        db.query(GameCharacterModel)
-        .filter(GameCharacterModel.id == game_character_id)
-        .first()
-    )
-    if not existing_character:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Game Character with id {game_character_id} not found",
-        )
-    stats_payload = [
-        GameCharacterStatDetailsSchema(
-            game_character_id=stat.game_character_id,
-            game_character_stat_base=GameCharacterStatsSchema(
-                id=stat.id,
-                level=stat.level,
-                exp_points=stat.exp_points,
-                stamina=stat.stamina,
-                recovery=stat.recovery,
-                condition=stat.condition,
-                created_at=stat.created_at,
-                updated_at=stat.updated_at,
-                custom_logs=stat.custom_logs,
-            ),
-        )
-        for stat in existing_character.stats
-    ]
+    if not game_character_id or not user_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Missing id or game character id")
+    base_query = db.query(GameCharacterModel)
+    filters = []
+    
+    if game_character_id is not None:
+        filters.append(GameCharacterModel.id == game_character_id)
+    if user_id is not None:
+        filters.append(GameCharacterModel.user_id == user_id)
+    if filters:
+        existing_character = base_query.filter(*filters).first()
+        if not existing_character:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Game Character with id {game_character_id} not found")
+        
+        stats_payload = [
+            GameCharacterStatDetailsSchema(
+                game_character_id=stat.game_character_id,
+                game_character_stat_base=GameCharacterStatsSchema(
+                    id=stat.id,
+                    level=stat.level,
+                    exp_points=stat.exp_points,
+                    stamina=stat.stamina,
+                    recovery=stat.recovery,
+                    condition=stat.condition,
+                    created_at=stat.created_at,
+                    updated_at=stat.updated_at,
+                    custom_logs=stat.custom_logs,
+                ),
+            )
+            for stat in existing_character.stats
+        ]
 
-    try:
-        return GameCharacterRetrievalResponseSchema(
-            character_details=GameCharacterDetailsSchema(
-                game_character_base=GameCharacterSchema(
-                    id=existing_character.id,
-                    first_name=existing_character.first_name,
-                    last_name=existing_character.last_name,
-                    gender=existing_character.gender,
-                    title=existing_character.title,
-                    created_at=existing_character.created_at,
-                    updated_at=existing_character.updated_at,
-                    custom_logs=existing_character.custom_logs,
-                )
-            ),
-            character_stats=stats_payload,
-        )
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
+        try:
+            return GameCharacterRetrievalResponseSchema(
+                character_details=GameCharacterDetailsSchema(
+                    game_character_base=GameCharacterSchema(
+                        id=existing_character.id,
+                        first_name=existing_character.first_name,
+                        last_name=existing_character.last_name,
+                        gender=existing_character.gender,
+                        title=existing_character.title,
+                        created_at=existing_character.created_at,
+                        updated_at=existing_character.updated_at,
+                        custom_logs=existing_character.custom_logs,
+                    )
+                ),
+                character_stats=stats_payload,
+            )
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
 
 
 # FIXME: allow character_id for filtering

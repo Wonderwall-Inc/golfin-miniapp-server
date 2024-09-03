@@ -1,6 +1,6 @@
 """User App API Routes"""
 
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy.orm import Session
 
@@ -22,16 +22,20 @@ def create_point(
     return service.create_point(request, db)
 
 
-@router.get("/detail/id/{id}", response_model=schemas.PointRetrievalResponseSchema)
-def get_detail_by_point_id(id: int, db: Session = Depends(get_db)):
-    """Get the point detail based on point id"""
-    return service.retrieve_point_by_point_id(id, db)
+@router.get("/detail", response_model=schemas.PointRetrievalResponseSchema)
+def get_point_detail(
+    id: Optional[int]=None, 
+    user_id: Optional[int]=None,
+    db: Session = Depends(get_db)
+):
+    """Get the point detail based on point id or user_id"""
+    return service.retrieve_point(id, user_id, db)
 
 
-@router.get("/detail/{user_id}", response_model=schemas.PointRetrievalResponseSchema)
-def get_detail_by_user_id(user_id: int, db: Session = Depends(get_db)):
-    """Get the point detail based on user id"""
-    return service.retrieve_point_by_user_id(user_id, db)
+# @router.get("/detail/user_id/{user_id}", response_model=schemas.PointRetrievalResponseSchema)
+# def get_detail_by_user_id(user_id: int, db: Session = Depends(get_db)):
+#     """Get the point detail based on user id"""
+#     return service.retrieve_point_by_user_id(user_id, db)
 
 
 @router.get("/details", response_model=List[schemas.PointRetrievalResponseSchema])

@@ -23,6 +23,7 @@ from app.friend.schemas import FriendBaseSchema, FriendIds
 from app.game_character.schemas import GameCharacterBaseSchema
 from app.point.schemas import PointScehma
 from app.social_media.schemas import SocialMediaBaseSchema
+from app.activity.schemas import ActivityBaseSchema
 
 # from core.utils import UserSchemaFactory
 
@@ -263,11 +264,26 @@ def retrieve_user_by_id(id: int, db: Session):
         )
         for so in existing_user.social_media
     ]
+
+    activity_payload = [
+        ActivityBaseSchema(
+            id=a.id,
+            is_logged_in=a.is_logged_in,
+            login_streak=a.login_streak,
+            total_logins=a.total_logins,
+            last_action_time=a.last_action_time,
+            last_login_time=a.last_login_time,
+            created_at=a.created_at,
+            updated_at=a.updated_at,
+            custom_logs=a.custom_logs,
+        )
+        for a in existing_user.activity
+    ]
     user_details = UserDetailsSchema(
         user_base=user_base,
         game_characters=game_character_payload,
         point=point_payload,
-        activity=existing_user.activity,
+        activity=activity_payload,
         social_media=social_media_payload,
         receiver=receiver_payload,
         sender=sender_payload,
@@ -275,13 +291,7 @@ def retrieve_user_by_id(id: int, db: Session):
     return UserRetrievalResponseSchema(user_details=user_details)
 
 
-def retrieve_user(
-    id: int | None,
-    username: str | None,
-    telegram_id: str | None,
-    wallet_address: str | None,
-    db: Session,
-):
+def retrieve_user(id: Optional[int],username: Optional[str],telegram_id: Optional[str],wallet_address: Optional[str],db: Session):
     base_query = db.query(UserModel)
     filters = []  # inclusive AND case
     if id is not None:
@@ -295,25 +305,27 @@ def retrieve_user(
 
     if filters:
         base_query = base_query.filter(*filters)
-    existing_user = base_query.options(
-        joinedload(UserModel.point),  # Load point with the user
-        joinedload(UserModel.game_characters),  # Load game character with the user
-        joinedload(UserModel.activity),  # Load activity with the user
-        joinedload(UserModel.social_media),  # Load social media with the user
-        joinedload(UserModel.sender),  # Load sender with the user
-        joinedload(UserModel.receiver),  # Load receiver with the user
-    ).first()
+        existing_user = base_query.options(
+            joinedload(UserModel.point),  # Load point with the user
+            joinedload(UserModel.game_characters),  # Load game character with the user
+            joinedload(UserModel.activity),  # Load activity with the user
+            joinedload(UserModel.social_media),  # Load social media with the user
+            joinedload(UserModel.sender),  # Load sender with the user
+            joinedload(UserModel.receiver),  # Load receiver with the user
+        ).first()
     if not existing_user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with {id} not found",
         )
+    
     user_app_info = UserAppInfoSchema(
         is_active=existing_user.is_active,
         in_game_items=existing_user.in_game_items,
         is_admin=existing_user.is_admin,
         skin=existing_user.skin,
     )
+    
     user_personal_info = UserPersonalInfoSchema(
         location=existing_user.location,
         nationality=existing_user.nationality,
@@ -321,6 +333,7 @@ def retrieve_user(
         gender=existing_user.gender,
         email=existing_user.email,
     )
+    
     user_telegram_info = UserTelegramInfoSchema(
         username=existing_user.username,
         telegram_id=existing_user.telegram_id,
@@ -400,6 +413,21 @@ def retrieve_user(
         for so in existing_user.social_media
     ]
 
+    activity_payload = [
+        ActivityBaseSchema(
+            id=a.id,
+            is_logged_in=a.is_logged_in,
+            login_streak=a.login_streak,
+            total_logins=a.total_logins,
+            last_action_time=a.last_action_time,
+            last_login_time=a.last_login_time,
+            created_at=a.created_at,
+            updated_at=a.updated_at,
+            custom_logs=a.custom_logs,
+        )
+        for a in existing_user.activity
+    ]
+
     return UserDetailsResponseSchema(
         user_details=UserDetailsSchema(
             user_base=UserSchema(
@@ -425,7 +453,7 @@ def retrieve_user(
                 for single_game_character in existing_user.game_characters
             ],
             point=point_payload,
-            activity=existing_user.activity,
+            activity=activity_payload,
             social_media=social_media_payload,
             sender=sender_payload,
             receiver=receiver_payload,
@@ -504,7 +532,20 @@ def retrieve_users(
                     )
                     for p in existing_user.point
                 ],
-                activity=existing_user.activity,
+                activity=[
+                    ActivityBaseSchema(
+                        id=a.id,
+                        is_logged_in=a.is_logged_in,
+                        login_streak=a.login_streak,
+                        total_logins=a.total_logins,
+                        last_action_time=a.last_action_time,
+                        last_login_time=a.last_login_time,
+                        created_at=a.created_at,
+                        updated_at=a.updated_at,
+                        custom_logs=a.custom_logs,
+                    )
+                    for a in existing_user.activity
+                ],
                 social_media=[
                     SocialMediaBaseSchema(
                         id=so.id,
@@ -714,6 +755,21 @@ def update_user(
                 for so in existing_user.social_media
             ]
 
+            activity_payload = [
+                ActivityBaseSchema(
+                    id=a.id,
+                    is_logged_in=a.is_logged_in,
+                    login_streak=a.login_streak,
+                    total_logins=a.total_logins,
+                    last_action_time=a.last_action_time,
+                    last_login_time=a.last_login_time,
+                    created_at=a.created_at,
+                    updated_at=a.updated_at,
+                    custom_logs=a.custom_logs,
+                )
+                for a in existing_user.activity
+            ]
+
         return UserUpdateResponseSchema(
             user_details=UserDetailsSchema(
                 user_base=UserSchema(
@@ -727,7 +783,7 @@ def update_user(
                 ),
                 game_characters=game_character_payload,
                 point=point_payload,
-                activity=existing_user.activity,
+                activity=activity_payload,
                 social_media=social_media_payload,
                 sender=sender_payload,
                 receiver=receiver_payload,

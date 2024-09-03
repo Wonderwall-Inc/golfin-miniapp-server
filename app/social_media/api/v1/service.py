@@ -215,56 +215,61 @@ def create_social_media(
         )
 
 
-def retrieve_social_media(
-    id: Optional[int], user_id: Optional[int], db: Session
-) -> SocialMediaRetrievalResponseSchema:
+
+def retrieve_social_media(id: Optional[int], user_id: Optional[int], db: Session) -> SocialMediaRetrievalResponseSchema:
     if not id and not user_id:
-        raise HTTPException(status_code=400, detail="Missing id or user_id")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or user_id")
+    
     base_query = db.query(SocialMediaModel)
-    if id:
-        base_query.filter(SocialMediaModel.id == id)
-
-    if user_id:
-        base_query.filter(SocialMediaModel.user_id == user_id)
-
-    existing_social_media = base_query.first()
-    if not existing_social_media:
-        raise HTTPException(status_code=404, detail="Social media not found")
-
-    return SocialMediaRetrievalResponseSchema(
-        user_id=existing_social_media.user_id,
-        social_media=SocialMediaBaseSchema(
-            id=existing_social_media.id,
-            youtube_id=existing_social_media.youtube_id,
-            youtube_is_following=existing_social_media.youtube_is_following,
-            youtube_is_viewed=existing_social_media.youtube_is_viewed,
-            youtube_view_date=existing_social_media.youtube_view_date,
-            facebook_id=existing_social_media.facebook_id,
-            facebook_is_following=existing_social_media.facebook_is_following,
-            facebook_followed_date=existing_social_media.facebook_followed_date,
-            instagram_id=existing_social_media.instagram_id,
-            instagram_is_following=existing_social_media.instagram_is_following,
-            instagram_follow_trigger_verify_date=existing_social_media.instagram_follow_trigger_verify_date,
-            instagram_followed_date=existing_social_media.instagram_followed_date,
-            instagram_tagged=existing_social_media.instagram_tagged,
-            instagram_tagged_date=existing_social_media.instagram_tagged_date,
-            instagram_reposted=existing_social_media.instagram_reposted,
-            instagram_reposted_date=existing_social_media.instagram_reposted_date,
-            telegram_id=existing_social_media.telegram_id,
-            telegram_is_following=existing_social_media.telegram_is_following,
-            telegram_followed_date=existing_social_media.telegram_followed_date,
-            x_id=existing_social_media.x_id,
-            x_is_following=existing_social_media.x_is_following,
-            x_followed_date=existing_social_media.x_followed_date,
-            discord_id=existing_social_media.discord_id,
-            discord_is_following=existing_social_media.discord_is_following,
-            discord_followed_date=existing_social_media.discord_followed_date,
-            custom_logs=existing_social_media.custom_logs,
-            updated_at=existing_social_media.updated_at,
-            created_at=existing_social_media.created_at,
-        ),
-    )
-
+    filters = []
+    
+    if id is not None:
+        filters.append(SocialMediaModel.id == id)
+    
+    if user_id is not None:
+        filters.append(SocialMediaModel.user_id == user_id)
+    
+    if filters:
+        existing_social_media = base_query.filter(*filters).first()
+        
+        if not existing_social_media:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Social media not found")
+        try:
+            return SocialMediaRetrievalResponseSchema(
+                user_id=existing_social_media.user_id,
+                social_media=SocialMediaBaseSchema(
+                    id=existing_social_media.id,
+                    youtube_id=existing_social_media.youtube_id,
+                    youtube_is_following=existing_social_media.youtube_is_following,
+                    youtube_is_viewed=existing_social_media.youtube_is_viewed,
+                    youtube_view_date=existing_social_media.youtube_view_date,
+                    facebook_id=existing_social_media.facebook_id,
+                    facebook_is_following=existing_social_media.facebook_is_following,
+                    facebook_followed_date=existing_social_media.facebook_followed_date,
+                    instagram_id=existing_social_media.instagram_id,
+                    instagram_is_following=existing_social_media.instagram_is_following,
+                    instagram_follow_trigger_verify_date=existing_social_media.instagram_follow_trigger_verify_date,
+                    instagram_followed_date=existing_social_media.instagram_followed_date,
+                    instagram_tagged=existing_social_media.instagram_tagged,
+                    instagram_tagged_date=existing_social_media.instagram_tagged_date,
+                    instagram_reposted=existing_social_media.instagram_reposted,
+                    instagram_reposted_date=existing_social_media.instagram_reposted_date,
+                    telegram_id=existing_social_media.telegram_id,
+                    telegram_is_following=existing_social_media.telegram_is_following,
+                    telegram_followed_date=existing_social_media.telegram_followed_date,
+                    x_id=existing_social_media.x_id,
+                    x_is_following=existing_social_media.x_is_following,
+                    x_followed_date=existing_social_media.x_followed_date,
+                    discord_id=existing_social_media.discord_id,
+                    discord_is_following=existing_social_media.discord_is_following,
+                    discord_followed_date=existing_social_media.discord_followed_date,
+                    custom_logs=existing_social_media.custom_logs,
+                    updated_at=existing_social_media.updated_at,
+                    created_at=existing_social_media.created_at,
+                ),
+            )
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
 
 def retrieve_social_media_list(
     user_ids: List[int], db: Session

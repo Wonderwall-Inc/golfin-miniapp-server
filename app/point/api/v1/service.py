@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 from fastapi import HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session, joinedload
 from app.point.models import PointModel
@@ -54,37 +54,39 @@ def create_point(
     )
 
 
-def retrieve_point_by_point_id(
-    id: int, db: Session
-) -> schemas.PointRetrievalResponseSchema:
-    if not id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Point id is required",
-        )
-    existing_point = db.query(PointModel).filter(PointModel.id == id).first()
-    if not existing_point:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Point with id {id} not found",
-        )
-    try:
-        return schemas.PointRetrievalResponseSchema(
-            point_base=schemas.PointDetailsSchema(
-                user_id=existing_point.user_id,
-                point=schemas.PointScehma(
-                    id=existing_point.id,
-                    amount=existing_point.amount,
-                    extra_profit_per_hour=existing_point.extra_profit_per_hour,
-                    created_at=existing_point.created_at,
-                    updated_at=existing_point.updated_at,
-                    custom_logs=existing_point.custom_logs,
-                ),
+def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> schemas.PointRetrievalResponseSchema:
+    if not id and not user_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Missing id or user_id")
+    
+    base_query = db.query(PointModel)
+    filters = []
+    
+    if id is not None: 
+        filters.append(PointModel.id == id)
+    
+    if user_id is not None:
+        filters.append(PointModel.user_id == user_id)
+    
+    if filters: 
+        existing_point = base_query.filter(*filters).first()
+        if not existing_point:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Point not found")
+        try:
+            return schemas.PointRetrievalResponseSchema(
+                point_base=schemas.PointDetailsSchema(
+                    user_id=existing_point.user_id,
+                    point=schemas.PointScehma(
+                        id=existing_point.id,
+                        amount=existing_point.amount,
+                        extra_profit_per_hour=existing_point.extra_profit_per_hour,
+                        created_at=existing_point.created_at,
+                        updated_at=existing_point.updated_at,
+                        custom_logs=existing_point.custom_logs,
+                    ),
+                )
             )
-        )
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
-
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")  
 
 def retrieve_point_by_user_id(
     user_id: int, db: Session
@@ -190,4 +192,4 @@ def update_point_by_id(request: schemas.PointUpdateByIdRequestSchema, db: Sessio
         )
     )
 
-# REVIEW: def delete_point(), batch update
+# REVIEW: delete_point, batch update

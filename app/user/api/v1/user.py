@@ -47,10 +47,10 @@ def get_detail_by_user_id(
 
 @router.get("/detail/")
 def get_detail_user(
-    id: int | None = None,
-    username: str | None = None,
-    telegram_id: str | None = None,
-    wallet_address: str | None = None,
+    id: Optional[int] = None,
+    username: Optional[str] = None,
+    telegram_id: Optional[str] = None,
+    wallet_address: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
     """Get User details of single user"""
