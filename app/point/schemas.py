@@ -1,9 +1,8 @@
 """Point Pydantic Schemas"""
 
-from datetime import datetime
 from typing import Optional
+from datetime import datetime
 from pydantic import BaseModel
-
 
 class PointScehma(BaseModel):  # defaulf = false
     """Point Schema"""
@@ -22,8 +21,8 @@ class PointDetailsSchema(BaseModel):
 
 
 class PointCreateDetailsSchema(BaseModel):
-    amount: int
-    extra_profit_per_hour: int
+    amount: Optional[int] = None
+    extra_profit_per_hour: Optional[int] = None
     custom_logs: Optional[dict] = None
 
 
@@ -48,9 +47,9 @@ class PointRetrievalResponseSchema(BaseModel):
 
 
 class PointUpdateByIdRequestSchema(BaseModel):
+    id: int
     type: str
     access_token: str
-    id: int
     point_payload: Optional[PointCreateDetailsSchema] = None
 
 

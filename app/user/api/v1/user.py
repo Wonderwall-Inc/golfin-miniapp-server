@@ -36,17 +36,17 @@ def create_user(
     return service.create_user(request, db, background_tasks)
 
 
-@router.get("/detail/{id}")
-def get_detail_by_user_id(
-    id: int,
-    db: Session = Depends(get_db),
-):
-    """Get User details of single user by id"""
-    return service.retrieve_user_by_id(id, db)
+# @router.get("/detail/{id}")
+# def get_detail_by_user_id(
+#     id: int,
+#     db: Session = Depends(get_db),
+# ):
+#     """Get User details of single user by id"""
+#     return service.retrieve_user_by_id(id, db)
 
 
 @router.get("/detail/")
-def get_detail_user(
+def get_user(
     id: Optional[int] = None,
     username: Optional[str] = None,
     telegram_id: Optional[str] = None,
@@ -62,7 +62,7 @@ def get_detail_user(
     response_model=List[schemas.UserDetailsResponseSchema],
     # dependencies=[Depends(auth)],
 )
-def get_detail_users(
+def get_user_list(
     # user: schemas.UserSchema,
     skip: int = 0,
     limit: int = 15,

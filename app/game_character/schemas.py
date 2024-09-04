@@ -90,10 +90,10 @@ class GameCharacterUpdateDetailsSchema(
 ):  # except the id, what else need to be used during update
     """Game Character Update Details Schema"""
 
-    first_name: str
-    last_name: str
-    gender: int
-    title: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    gender: Optional[int] = None
+    title: Optional[str] = None
     custom_logs: Optional[dict] = None
 
 
@@ -102,11 +102,11 @@ class GameCharacterStatsUpdateDetailsSchema(
 ):  # except the id, what need to be used for update?
     """Game Character Stat Update Details Schema"""
 
-    level: int
-    exp_points: int
-    stamina: int
-    recovery: int
-    condition: int
+    level: Optional[int] = None
+    exp_points: Optional[int] = None
+    stamina: Optional[int] = None
+    recovery: Optional[int] = None
+    condition: Optional[int] = None
     custom_logs: Optional[dict] = None
 
 
@@ -152,7 +152,7 @@ class GameCharacterStatRetrievalResponseSchema(BaseModel):
     """Game Character Stats Retrieval Response Schema"""
 
     game_character_id: int
-    character_stats: List[GameCharacterStatsSchema]
+    character_stats: GameCharacterStatsSchema
 
 
 # FIXME:

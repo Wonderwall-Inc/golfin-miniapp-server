@@ -149,3 +149,11 @@ class SocialMediaUpdateRequestSchema(BaseModel):
 class SocialMediaUpdateResponseSchema(BaseModel):
     user_id: int
     social_media: SocialMediaCategrizedBaseScehma
+
+# TikTokSocialMediaSchema,
+# PinterestSocialMediaSchema,
+# RedditSocialMediaSchema,
+# DiscordSocialMediaSchema,
+# TwitchSocialMediaSchema,
+# PatreonSocialMediaSchema,
+

@@ -72,7 +72,7 @@ class ActivityUpdateRequestSchema(BaseModel):
     id: int
     access_token: str
     user_id: Optional[int] = None
-    activity: ActivityCreateDetailSchema
+    activity: ActivityUpdateDetailSchema
 
 
 class ActivityUpdateResponseSchema(BaseModel):
