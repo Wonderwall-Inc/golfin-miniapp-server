@@ -1,3 +1,4 @@
+"""Game Character App Business Logics"""
 import logging
 from typing import List, Optional
 from sqlalchemy.orm import Session
