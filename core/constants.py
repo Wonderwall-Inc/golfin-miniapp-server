@@ -18,9 +18,18 @@ class Constants:
     dbName = os.environ.get("DB_NAME")
     dbHost = os.environ.get("DB_HOST")
     dburl = os.environ.get("MYSQL_CONNECTION_URL")
+    
+    tidb_db_host= os.environ.get("TIDB_HOST")
+    tidb_port= os.environ.get("TIDB_PORT")
+    tidb_username= os.environ.get("TIDB_USER")
+    tidb_password= os.environ.get("TIDB_PASSWORD")
+    tidb_database= os.environ.get("TIDB_DATABASE")
 
-    # TODO: Remote
-    SQLALCHAMY_DATABASE_URL = f"mysql+pymysql://{username}:{password}@{dbHost}:{port}/{dbName}"
+    # LOCAL
+    # SQLALCHAMY_DATABASE_URL = f"mysql+pymysql://{username}:{password}@{dbHost}:{port}/{dbName}"
+    
+    # REMOTE
+    SQLALCHAMY_DATABASE_URL = f"mysql+pymysql://{tidb_username}:{tidb_password}@{tidb_db_host}:{tidb_port}/{tidb_database}"
     
     # SECRET_KEY = ""
     # ALGORITHM = "HS256"
