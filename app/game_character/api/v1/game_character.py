@@ -26,7 +26,7 @@ def get_game_character(game_character_id: Optional[int] = None, user_id: Optiona
     return service.retrieve_game_character(game_character_id, user_id, db)
 
 
-@router.get("/detail/stat",response_model=schemas.GameCharacterStatRetrievalResponseSchema | None)
+@router.get("/detail/stat",response_model=schemas.GameCharacterStatRetrievalResponseSchema)
 def get_game_character_stat(id: Optional[int] = None, game_character_id: Optional[int] = None, db: Session = Depends(get_db)):
     """Retrieve Game Character Stats from Single Character"""
     return service.retrieve_game_character_stat(id, game_character_id, db)
