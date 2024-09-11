@@ -11,17 +11,18 @@ from core.constants import Constants
 # engine = create_engine(Constants.SQLALCHAMY_DATABASE_URL)
 
 # REMOTE 
-engine = create_engine(
-     URL.create(
-            drivername="mysql+pymysql",
-            username=Constants.tidb_username,
-            password=Constants.tidb_password,
-            host=Constants.tidb_db_host,
-            port=Constants.tidb_port,
-            database=Constants.tidb_database
-        ),
-        connect_args={},
-)
+# engine = create_engine(
+#      URL.create(
+#             drivername="mysql+pymysql",
+#             username=Constants.tidb_username,
+#             password=Constants.tidb_password,
+#             host=Constants.tidb_db_host,
+#             port=Constants.tidb_port,
+#             database=Constants.tidb_database
+#         ),
+#         connect_args={},
+# )
+engine = create_engine(Constants.TIDB_SQLALCHAMY_DATABASE_URL)
 
 
 SessionLocal = sessionmaker(
