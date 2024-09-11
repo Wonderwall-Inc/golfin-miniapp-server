@@ -15,7 +15,15 @@ from app.game_character.api.v1 import game_character
 from core import config, database
 
 
-app = FastAPI()
+app = FastAPI(
+    root_path="/dev",
+    title="Telegram Minapp server",
+    description="Description of my app.",
+    version="1.0",
+    docs_url="/docs",
+    openapi_url="/openapi.json",
+    redoc_url=None,
+)
 
 # * CORS
 if not config.cfg.prod:
