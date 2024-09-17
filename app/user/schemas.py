@@ -16,8 +16,8 @@ class UserBaseSchema(BaseModel):  # default = False
     username: str
     telegram_id: str
     token_balance: int
-    is_active: bool
-    is_premium: bool
+    active: bool
+    premium: bool
 
 
 class UserPersonalInfoSchema(BaseModel):
@@ -34,16 +34,16 @@ class UserTelegramInfoSchema(BaseModel):
     username: str
     telegram_id: str
     token_balance: int
-    is_premium: bool
+    premium: bool
     wallet_address: Optional[str] = None
     chat_id: str
     start_param:  Optional[str] = None
 
 
 class UserAppInfoSchema(BaseModel):
-    is_active: bool
+    active: bool
     in_game_items: Optional[dict] = None
-    is_admin: Optional[bool] = None
+    admin: Optional[bool] = None
     skin: List[str]
     custom_logs: Optional[dict] = None
 
@@ -52,8 +52,8 @@ class UserUpdateDetailsSchema(BaseModel):
     """User Update Detail Schema"""
 
     token_balance: Optional[int] = None
-    is_active: Optional[bool] = None
-    is_premium: Optional[bool] = None
+    active: Optional[bool] = None
+    premium: Optional[bool] = None
     in_game_items: Optional[dict] = None
     skin: Optional[List[str]] = []
     location: Optional[str] = None

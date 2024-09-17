@@ -22,7 +22,7 @@ def create_activity(request: schemas.ActivityCreateRequestSchema, db:Session) ->
 
         new_activity=ActivityModel(
             user_id=request.user_id,
-            is_logged_in=True,
+            logged_in=True,
             login_streak=0,
             total_logins=0,
             last_action_time=datetime.now(),
@@ -38,7 +38,7 @@ def create_activity(request: schemas.ActivityCreateRequestSchema, db:Session) ->
             user_id=new_activity.user_id,
             activity=schemas.ActivityBaseSchema(
                 id=new_activity.id,
-                is_logged_in=new_activity.is_logged_in,
+                logged_in=new_activity.logged_in,
                 login_streak=new_activity.login_streak,
                 total_logins=new_activity.total_logins,
                 last_action_time=new_activity.last_action_time,
@@ -78,7 +78,7 @@ def retrieve_activity(id:Optional[int], user_id:Optional[int], db: Session) -> s
                 user_id=existing_activity.user_id,
                 activity=schemas.ActivityBaseSchema(
                     id=existing_activity.id,
-                    is_logged_in=existing_activity.is_logged_in,
+                    logged_in=existing_activity.logged_in,
                     login_streak=existing_activity.login_streak,
                     total_logins=existing_activity.total_logins,
                     last_action_time=existing_activity.last_action_time,
@@ -105,7 +105,7 @@ def retrieve_activity_list(db: Session, user_ids: List[int], skip: int = 0, limi
                 user_id=existing_activity.user_id,
                 activity=schemas.ActivityBaseSchema(
                     id=existing_activity.id,
-                    is_logged_in=existing_activity.is_logged_in,
+                    logged_in=existing_activity.logged_in,
                     login_streak=existing_activity.login_streak,
                     total_logins=existing_activity.total_logins,
                     last_action_time=existing_activity.last_action_time,
@@ -144,7 +144,7 @@ def update_activity(request: schemas.ActivityUpdateRequestSchema, db: Session) -
             user_id=existing_activity.user_id,
             activity=schemas.ActivityBaseSchema(
                 id=existing_activity.id,
-                is_logged_in=existing_activity.is_logged_in,
+                logged_in=existing_activity.logged_in,
                 login_streak=existing_activity.login_streak,
                 total_logins=existing_activity.total_logins,
                 last_action_time=existing_activity.last_action_time,

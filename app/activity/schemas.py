@@ -9,7 +9,7 @@ class ActivityBaseSchema(BaseModel):
     """
 
     id: int
-    is_logged_in: bool
+    logged_in: bool
     login_streak: int
     total_logins: int
     last_action_time: datetime
@@ -20,7 +20,7 @@ class ActivityBaseSchema(BaseModel):
 
 
 class ActivitySchema(BaseModel):
-    is_logged_in: bool
+    logged_in: bool
     login_streak: int
     total_logins: int
     last_action_time: datetime
@@ -35,7 +35,7 @@ class ActivityCreateDetailSchema(BaseModel):
 
 
 class ActivityUpdateDetailSchema(ActivityCreateDetailSchema):
-    is_logged_in: Optional[bool] = None
+    logged_in: Optional[bool] = None
     login_streak: Optional[int] = None
     total_logins: Optional[int] = None
     last_action_time: Optional[datetime] = None

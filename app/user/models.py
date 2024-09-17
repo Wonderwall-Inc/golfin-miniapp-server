@@ -26,18 +26,15 @@ class UserModel(Base):
     username: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     telegram_id: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     token_balance: Mapped[int] = mapped_column(Integer, default=0)
-    is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
-    is_premium: Mapped[bool] = mapped_column(default=False, nullable=False)
+    active: Mapped[bool] = mapped_column(default=True, nullable=False)
+    premium: Mapped[bool] = mapped_column(default=False, nullable=False)
     
-    # is_archived: Mapped[bool] = mapped_column(unique=False, default=False)
-    # is_superuser: Mapped[bool] = mapped_column(default=False)
-   
     wallet_address: Mapped[Optional[str]] = mapped_column(
         String(100), nullable=True
     )  # REVIEW: allow mutliple?
     in_game_items: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     access_token: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
-    is_admin: Mapped[bool] = mapped_column(default=False, nullable=True)
+    admin: Mapped[bool] = mapped_column(default=False, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(

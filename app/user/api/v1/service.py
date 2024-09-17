@@ -42,7 +42,7 @@ def create_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Telegram Id is required",
         )
-    if not request.telegram_info.is_premium:
+    if not request.telegram_info.premium:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Is premium is required",
@@ -66,9 +66,9 @@ def create_user(
         # )
     # new_user_schema_factory = UserSchemaFactory(request)
     user_app_info = UserAppInfoSchema(
-        is_active=request.app_info.is_active,
+        active=request.app_info.active,
         in_game_items=request.app_info.in_game_items,
-        is_admin=request.app_info.is_admin,
+        admin=request.app_info.admin,
         skin=request.app_info.skin,
         custom_logs=request.app_info.custom_logs,
     )
@@ -83,16 +83,16 @@ def create_user(
         username=request.telegram_info.username,
         telegram_id=request.telegram_info.telegram_id,
         token_balance=request.telegram_info.token_balance,
-        is_premium=request.telegram_info.is_premium,
+        premium=request.telegram_info.premium,
         wallet_address=request.telegram_info.wallet_address,
         chat_id=request.telegram_info.chat_id,
         start_param=request.telegram_info.start_param,
     )
     new_user = UserModel(
         access_token=request.access_token,
-        is_active=request.app_info.is_active,
+        active=request.app_info.active,
         in_game_items=request.app_info.in_game_items,
-        is_admin=request.app_info.is_admin,
+        admin=request.app_info.admin,
         skin=request.app_info.skin,
         custom_logs=request.app_info.custom_logs,
         location=request.personal_info.location,
@@ -103,7 +103,7 @@ def create_user(
         username=request.telegram_info.username,
         telegram_id=request.telegram_info.telegram_id,
         token_balance=request.telegram_info.token_balance,
-        is_premium=request.telegram_info.is_premium,
+        premium=request.telegram_info.premium,
         wallet_address=request.telegram_info.wallet_address,
         chat_id=request.telegram_info.chat_id,
         start_param=request.telegram_info.start_param,
@@ -160,9 +160,9 @@ def create_user(
 #             detail=f"User with {id} not found",
 #         )
 #     user_app_info = UserAppInfoSchema(
-#         is_active=existing_user.is_active,
+#         active=existing_user.active,
 #         in_game_items=existing_user.in_game_items,
-#         is_admin=existing_user.is_admin,
+#         admin=existing_user.admin,
 #         skin=existing_user.skin,
 #     )
 #     user_personal_info = UserPersonalInfoSchema(
@@ -176,7 +176,7 @@ def create_user(
 #         username=existing_user.username,
 #         telegram_id=existing_user.telegram_id,
 #         token_balance=existing_user.token_balance,
-#         is_premium=existing_user.is_premium,
+#         premium=existing_user.premium,
 #         wallet_address=existing_user.wallet_address,
 #         chat_id=existing_user.chat_id,
 #     )
@@ -341,9 +341,9 @@ def retrieve_user(
         )
 
     user_app_info = UserAppInfoSchema(
-        is_active=existing_user.is_active,
+        active=existing_user.active,
         in_game_items=existing_user.in_game_items,
-        is_admin=existing_user.is_admin,
+        admin=existing_user.admin,
         skin=existing_user.skin,
     )
 
@@ -359,7 +359,7 @@ def retrieve_user(
         username=existing_user.username,
         telegram_id=existing_user.telegram_id,
         token_balance=existing_user.token_balance,
-        is_premium=existing_user.is_premium,
+        premium=existing_user.premium,
         wallet_address=existing_user.wallet_address,
         chat_id=existing_user.chat_id,
     )
@@ -437,7 +437,7 @@ def retrieve_user(
     activity_payload = [
         ActivityBaseSchema(
             id=a.id,
-            is_logged_in=a.is_logged_in,
+            logged_in=a.logged_in,
             login_streak=a.login_streak,
             total_logins=a.total_logins,
             last_action_time=a.last_action_time,
@@ -505,9 +505,9 @@ def retrieve_users(
                 user_base=UserSchema(
                     id=existing_user.id,
                     app_info=UserAppInfoSchema(
-                        is_active=existing_user.is_active,
+                        active=existing_user.active,
                         in_game_items=existing_user.in_game_items,
-                        is_admin=existing_user.is_admin,
+                        admin=existing_user.admin,
                         skin=existing_user.skin,
                     ),
                     personal_info=UserPersonalInfoSchema(
@@ -521,7 +521,7 @@ def retrieve_users(
                         username=existing_user.username,
                         telegram_id=existing_user.telegram_id,
                         token_balance=existing_user.token_balance,
-                        is_premium=existing_user.is_premium,
+                        premium=existing_user.premium,
                         wallet_address=existing_user.wallet_address,
                         chat_id=existing_user.chat_id,
                     ),
@@ -556,7 +556,7 @@ def retrieve_users(
                 activity=[
                     ActivityBaseSchema(
                         id=a.id,
-                        is_logged_in=a.is_logged_in,
+                        logged_in=a.logged_in,
                         login_streak=a.login_streak,
                         total_logins=a.total_logins,
                         last_action_time=a.last_action_time,
@@ -645,11 +645,11 @@ def update_user(
             if request.user_payload.token_balance:
                 existing_user.token_balance = request.user_payload.token_balance
 
-            if request.user_payload.is_active:
-                existing_user.is_active = request.user_payload.is_active
+            if request.user_payload.active:
+                existing_user.active = request.user_payload.active
 
-            if request.user_payload.is_premium:
-                existing_user.is_premium = request.user_payload.is_premium
+            if request.user_payload.premium:
+                existing_user.premium = request.user_payload.premium
 
             if request.user_payload.in_game_items:
                 existing_user.in_game_items = request.user_payload.in_game_items
@@ -669,9 +669,9 @@ def update_user(
             db.refresh(existing_user)
 
             user_app_info = UserAppInfoSchema(
-                is_active=existing_user.is_active,
+                active=existing_user.active,
                 in_game_items=existing_user.in_game_items,
-                is_admin=existing_user.is_admin,
+                admin=existing_user.admin,
                 skin=existing_user.skin,
             )
 
@@ -687,7 +687,7 @@ def update_user(
                 username=existing_user.username,
                 telegram_id=existing_user.telegram_id,
                 token_balance=existing_user.token_balance,
-                is_premium=existing_user.is_premium,
+                premium=existing_user.premium,
                 wallet_address=existing_user.wallet_address,
                 chat_id=existing_user.chat_id,
             )
@@ -779,7 +779,7 @@ def update_user(
             activity_payload = [
                 ActivityBaseSchema(
                     id=a.id,
-                    is_logged_in=a.is_logged_in,
+                    logged_in=a.logged_in,
                     login_streak=a.login_streak,
                     total_logins=a.total_logins,
                     last_action_time=a.last_action_time,

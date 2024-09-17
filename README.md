@@ -174,8 +174,8 @@ venv.bak/
     - username: A string column representing the username on the telegram.
     - telegram_id: A string column representing the telegram_id on the telegram.
     - token_balance: A integer column representing the total token amount as ton / eth from user coins.
-    - is_active: A boolean column representing if the user is inactive or active per every 3 months.
-    - is_premium: A boolean column showing if the user is premium telegram user.
+    - active: A boolean column representing if the user is inactive or active per every 3 months.
+    - premium: A boolean column showing if the user is premium telegram user.
     - in_game_items: A dictionary column showing the items which belong to the user.
     - wallet_address: A string column showing the user ton wallet address on telegram.
     - created_at: A datetime column showing the time when the user was created.
