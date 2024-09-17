@@ -95,7 +95,7 @@ def create_user(
         #         custom_logs=user.custom_logs,
         #     ),
         # ),
-    )
+    # )
         # raise HTTPException(
         #     status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already exists"
         # )
