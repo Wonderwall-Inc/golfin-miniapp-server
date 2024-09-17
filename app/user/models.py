@@ -26,9 +26,10 @@ class UserModel(Base):
     username: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     telegram_id: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     token_balance: Mapped[int] = mapped_column(Integer, default=0)
-    is_active: Mapped[bool] = mapped_column(default=True)
-    is_premium: Mapped[bool] = mapped_column(default=False)
+    is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+    is_premium: Mapped[bool] = mapped_column(default=False, nullable=False)
     
+    # is_archived: Mapped[bool] = mapped_column(unique=False, default=False)
     # is_superuser: Mapped[bool] = mapped_column(default=False)
    
     wallet_address: Mapped[Optional[str]] = mapped_column(
