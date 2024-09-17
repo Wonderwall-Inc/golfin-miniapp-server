@@ -20,12 +20,12 @@ class UserBaseSchema(BaseModel):  # default = False
     active: bool
     premium: bool
     
-    @field_validator("premium")
-    def check_if_val(cls,premium):
-        if premium == None:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail='premium cannot be none')
+    # @field_validator("premium")
+    # def check_if_val(cls,premium):
+    #     if premium == None:
+    #         raise HTTPException(
+    #             status_code=status.HTTP_400_BAD_REQUEST, 
+    #             detail='premium cannot be none')
 
 
 class UserPersonalInfoSchema(BaseModel):
