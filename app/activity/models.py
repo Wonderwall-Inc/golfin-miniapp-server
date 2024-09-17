@@ -18,7 +18,7 @@ class ActivityModel(Base):
         autoincrement=True
     )
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False, unique=True)
-    is_logged_in: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_logged_in: Mapped[bool] = mapped_column(default=False)
     login_streak: Mapped[int] = mapped_column(Integer, default=0)
     total_logins: Mapped[int] = mapped_column(Integer, default=0)
     last_action_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
