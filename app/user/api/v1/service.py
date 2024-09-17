@@ -44,18 +44,14 @@ def create_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Telegram Id is required",
         )
-    if not request.telegram_info.premium:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Is premium is required",
-        )
-
     if not request.personal_info.location or not request.personal_info.nationality:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Location and Nationality are required",
         )
+        
 
+  
     user = (
         db.query(UserModel)
         .filter(UserModel.telegram_id == request.telegram_info.telegram_id)
