@@ -32,6 +32,8 @@ def create_user(
     request: UserCreateRequestSchema, db: Session, background_tasks: BackgroundTasks
 ):
     """Create new user account"""
+    print('hk is the best')
+    print(request)
     if not request.telegram_info.username:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
