@@ -57,7 +57,8 @@ def create_user(
         .filter(UserModel.telegram_id == request.telegram_info.telegram_id)
         .first()
     )
-    if user:
+    if user is not None:
+        print(user)
         return UserCreateResponseSchema(
         user_details=UserDetailsSchema(
             user_base=UserSchema(
