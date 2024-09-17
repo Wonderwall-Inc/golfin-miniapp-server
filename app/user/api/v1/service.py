@@ -79,6 +79,7 @@ def create_user(
         is_premium=request.telegram_info.is_premium,
         wallet_address=request.telegram_info.wallet_address,
         chat_id=request.telegram_info.chat_id,
+        start_param=request.telegram_info.start_param
     )
     new_user = UserModel(
         access_token=request.access_token,
@@ -98,6 +99,7 @@ def create_user(
         is_premium=request.telegram_info.is_premium,
         wallet_address=request.telegram_info.wallet_address,
         chat_id=request.telegram_info.chat_id,
+        start_param=request.telegram_info.start_param
     )
     db.add(new_user)
     db.commit()

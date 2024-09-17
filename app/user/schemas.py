@@ -37,6 +37,7 @@ class UserTelegramInfoSchema(BaseModel):
     is_premium: bool
     wallet_address: Optional[str] = None
     chat_id: str
+    start_param:  Optional[str] = None
 
 
 class UserAppInfoSchema(BaseModel):

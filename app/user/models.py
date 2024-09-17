@@ -44,6 +44,8 @@ class UserModel(Base):
     skin: Mapped[List[str]] = mapped_column(JSON, default=lambda: ["Default"])
 
     chat_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    
+    start_param: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 
     location: Mapped[str] = mapped_column(String(100), nullable=False)
     nationality: Mapped[str] = mapped_column(String(100), nullable=False)
