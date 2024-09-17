@@ -29,19 +29,19 @@ app = FastAPI(
 )
 
 
-async def request_validation_exception_handler(
-    request: Request, exc: RequestValidationError
-) -> JSONResponse:
-    return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content={"detail": jsonable_encoder(exc.errors())},
-    )
+# async def request_validation_exception_handler(
+#     request: Request, exc: RequestValidationError
+# ) -> JSONResponse:
+#     return JSONResponse(
+#         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+#         content={"detail": jsonable_encoder(exc.errors())},
+#     )
 
 
-app.add_exception_handler(
-    RequestValidationError,
-    request_validation_exception_handler
-)
+# app.add_exception_handler(
+#     RequestValidationError,
+#     request_validation_exception_handler
+# )
 
 # * CORS
 if not config.cfg.prod:
