@@ -160,19 +160,18 @@ def update_point(request: schemas.PointUpdateByIdRequestSchema, db: Session) -> 
         if request.type == "add":
             if request.point_payload.amount:
                 existing_point.amount += request.point_payload.amount
-            else:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing amount")
+            if request.point_payload.extra_profit_per_hour: # can be add or minus for that
+                existing_point.extra_profit_per_hour += request.point_payload.extra_profit_per_hour
+
         elif request.type == "minus":
             if request.point_payload.amount:
                 existing_point.amount -= request.point_payload.amount
-            else:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing amount")
+            if request.point_payload.extra_profit_per_hour: # can be add or minus for that
+                existing_point.extra_profit_per_hour -= request.point_payload.extra_profit_per_hour
         else:
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail=f"Method not allowed")    
 
-        if request.point_payload.extra_profit_per_hour:
-            existing_point.extra_profit_per_hour = request.point_payload.extra_profit_per_hour
-
+    
         db.commit()
         db.refresh(existing_point)
         
