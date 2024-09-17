@@ -1,7 +1,8 @@
 """Users Pydantic Schemas"""
 
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+from fastapi import HTTPException, status
 from datetime import datetime
 from app.game_character.schemas import GameCharacterBaseSchema
 from app.point.schemas import PointScehma
@@ -18,6 +19,13 @@ class UserBaseSchema(BaseModel):  # default = False
     token_balance: int
     active: bool
     premium: bool
+    
+    @field_validator("premium")
+    def check_if_val(cls,premium):
+        if premium == None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail='premium cannot be none')
 
 
 class UserPersonalInfoSchema(BaseModel):

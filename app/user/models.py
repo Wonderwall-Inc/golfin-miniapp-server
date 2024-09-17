@@ -12,7 +12,6 @@ from app.social_media.models import SocialMediaModel
 from app.friend.models import FriendModel
 from app.point.models import PointModel
 
-
 class UserModel(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(
