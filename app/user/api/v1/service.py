@@ -32,14 +32,20 @@ def create_user(
     request: UserCreateRequestSchema, db: Session, background_tasks: BackgroundTasks
 ):
     """Create new user account"""
-    if (
-        not request.telegram_info.username
-        or not request.telegram_info.telegram_id
-        or not request.telegram_info.is_premium
-    ):
+    if not request.telegram_info.username:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username and Telegram id and is_premium are required",
+            detail="Username is required",
+        )
+    if not request.telegram_info.telegram_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Telegram Id is required",
+        )
+    if not request.telegram_info.is_premium:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Is premium is required",
         )
 
     if not request.personal_info.location or not request.personal_info.nationality:
@@ -80,7 +86,7 @@ def create_user(
         is_premium=request.telegram_info.is_premium,
         wallet_address=request.telegram_info.wallet_address,
         chat_id=request.telegram_info.chat_id,
-        start_param=request.telegram_info.start_param
+        start_param=request.telegram_info.start_param,
     )
     new_user = UserModel(
         access_token=request.access_token,
@@ -100,7 +106,7 @@ def create_user(
         is_premium=request.telegram_info.is_premium,
         wallet_address=request.telegram_info.wallet_address,
         chat_id=request.telegram_info.chat_id,
-        start_param=request.telegram_info.start_param
+        start_param=request.telegram_info.start_param,
     )
     db.add(new_user)
     db.commit()
@@ -294,13 +300,19 @@ def create_user(
 #     return UserRetrievalResponseSchema(user_details=user_details)
 
 
-def retrieve_user(id: Optional[int],username: Optional[str],telegram_id: Optional[str],wallet_address: Optional[str],db: Session):
+def retrieve_user(
+    id: Optional[int],
+    username: Optional[str],
+    telegram_id: Optional[str],
+    wallet_address: Optional[str],
+    db: Session,
+):
     if not id and not username and not telegram_id and not wallet_address:
-            raise HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Missing required parameter",
         )
-    
+
     base_query = db.query(UserModel)
     filters = []  # inclusive AND case
     if id is not None:
@@ -327,14 +339,14 @@ def retrieve_user(id: Optional[int],username: Optional[str],telegram_id: Optiona
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with {id} not found",
         )
-    
+
     user_app_info = UserAppInfoSchema(
         is_active=existing_user.is_active,
         in_game_items=existing_user.in_game_items,
         is_admin=existing_user.is_admin,
         skin=existing_user.skin,
     )
-    
+
     user_personal_info = UserPersonalInfoSchema(
         location=existing_user.location,
         nationality=existing_user.nationality,
@@ -342,7 +354,7 @@ def retrieve_user(id: Optional[int],username: Optional[str],telegram_id: Optiona
         gender=existing_user.gender,
         email=existing_user.email,
     )
-    
+
     user_telegram_info = UserTelegramInfoSchema(
         username=existing_user.username,
         telegram_id=existing_user.telegram_id,
