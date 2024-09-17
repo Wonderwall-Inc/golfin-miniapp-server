@@ -19,10 +19,10 @@ class Constants:
     dbHost = os.environ.get("DB_HOST")
     dburl = os.environ.get("MYSQL_CONNECTION_URL")
     
-    tidb_db_host= os.environ.get("TIDB_HOST")
-    tidb_port= os.environ.get("TIDB_PORT")
     tidb_username= os.environ.get("TIDB_USER")
     tidb_password= os.environ.get("TIDB_PASSWORD")
+    tidb_port= os.environ.get("TIDB_PORT")
+    tidb_db_host= os.environ.get("TIDB_HOST")
     tidb_database= os.environ.get("TIDB_DATABASE")
     tidb_sqlalchamy_database_url = os.environ.get("TIDB_SQLALCHAMY_DATABASE_URL")
 
