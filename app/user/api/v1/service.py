@@ -54,9 +54,10 @@ def create_user(
         .first()
     )
     if user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already exists"
-        )
+        return user
+        # raise HTTPException(
+        #     status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already exists"
+        # )
     # new_user_schema_factory = UserSchemaFactory(request)
     user_app_info = UserAppInfoSchema(
         is_active=request.app_info.is_active,
