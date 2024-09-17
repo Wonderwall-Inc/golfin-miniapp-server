@@ -32,7 +32,6 @@ def create_user(
     request: UserCreateRequestSchema, db: Session, background_tasks: BackgroundTasks
 ):
     """Create new user account"""
-    print('hk is the best')
     print(request)
     if not request.telegram_info.username:
         raise HTTPException(
@@ -50,8 +49,6 @@ def create_user(
             detail="Location and Nationality are required",
         )
         
-
-  
     user = (
         db.query(UserModel)
         .filter(UserModel.telegram_id == request.telegram_info.telegram_id)
