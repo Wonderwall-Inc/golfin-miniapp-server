@@ -24,15 +24,25 @@ app = FastAPI(
     redoc_url=None,
 )
 
-# * CORS
-if not config.cfg.prod:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# * CORS // FIXME: handle the cors on prod
+# if not config.cfg.prod:
+#     app.add_middleware(
+#         CORSMiddleware,
+#         allow_origins=["*"],
+#         allow_credentials=True,
+#         allow_methods=["*"],
+#         allow_headers=["*"],
+#     )
+
 
 
 # * Root for status check
