@@ -13,8 +13,8 @@ def create_point(request: schemas.PointCreateRequestSchema, db: Session) -> sche
     if not request.user_id or not request.point_details:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User id, point details per hour are required")
     
-    if not request.point_details.amount or not request.point_details.extra_profit_per_hour:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount and extra profit per hour are required")
+    # if not request.point_details.amount or not request.point_details.extra_profit_per_hour:
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount and extra profit per hour are required")
     
     try:
         point = db.query(PointModel).filter(PointModel.user_id == request.user_id).first()
