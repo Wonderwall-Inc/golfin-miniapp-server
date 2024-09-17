@@ -58,7 +58,39 @@ def create_user(
         .first()
     )
     if user:
-        return user
+        return UserCreateResponseSchema(
+        user_details=UserDetailsSchema(
+            user_base=UserSchema(
+                id=user.id,
+                app_info= UserAppInfoSchema(
+                    active=user.active,
+                    in_game_items=user.in_game_items,
+                    admin=user.admin,
+                    skin=user.skin,
+                    custom_logs=user.custom_logs,
+                ),
+                personal_info=UserPersonalInfoSchema(
+                    location=user.location,
+                    nationality=user.nationality,
+                    age=user.age,
+                    gender=user.gender,
+                    email=user.email,
+                ),
+                telegram_info=UserTelegramInfoSchema(
+                    username=user.username,
+                    telegram_id=user.telegram_id,
+                    token_balance=user.token_balance,
+                    premium=user.premium,
+                    wallet_address=user.wallet_address,
+                    chat_id=user.chat_id,
+                    start_param=user.start_param,
+                ),
+                created_at=user.created_at,
+                updated_at=user.updated_at,
+                custom_logs=user.custom_logs,
+            ),
+        ),
+    )
         # raise HTTPException(
         #     status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already exists"
         # )
