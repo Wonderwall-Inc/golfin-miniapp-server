@@ -70,7 +70,7 @@ def get_user_list(
     db: Session = Depends(get_db),
 ):
     """Get Users if it is admin"""
-    # if not user.app_info.is_admin:
+    # if not user.app_info.admin:
     #     raise HTTPException(
     #         status_code=status.HTTP_400_BAD_REQUEST, detail="Not an admin"
     #     )

@@ -5,20 +5,20 @@ from pydantic import BaseModel
 
 class YoutubeSocialMediaSchema(BaseModel):
     youtube_id: Optional[str] = None
-    youtube_is_following: Optional[bool] = None
-    youtube_is_viewed: Optional[bool] = None
+    youtube_following: Optional[bool] = None
+    youtube_viewed: Optional[bool] = None
     youtube_view_date: Optional[datetime] = None
 
 
 class FacebookSocialMediaSchema(BaseModel):
     facebook_id: Optional[str] = None
-    facebook_is_following: Optional[bool] = None
+    facebook_following: Optional[bool] = None
     facebook_followed_date: Optional[datetime] = None
 
 
 class InstagramSocialMediaSchema(BaseModel):
     instagram_id: Optional[str] = None
-    instagram_is_following: Optional[bool] = None
+    instagram_following: Optional[bool] = None
     instagram_follow_trigger_verify_date: Optional[datetime] = None
     instagram_followed_date: Optional[datetime] = None
     instagram_tagged: Optional[bool] = None
@@ -29,19 +29,19 @@ class InstagramSocialMediaSchema(BaseModel):
 
 class TelegramSocialMediaSchema(BaseModel):
     telegram_id: Optional[str] = None
-    telegram_is_following: Optional[bool] = None
+    telegram_following: Optional[bool] = None
     telegram_followed_date: Optional[datetime] = None
 
 
 class XSocialMediaSchema(BaseModel):
     x_id: Optional[str] = None
-    x_is_following: Optional[bool] = None
+    x_following: Optional[bool] = None
     x_followed_date: Optional[datetime] = None
 
 
 class DiscordSocialMedia(BaseModel):
     discord_id: Optional[str] = None
-    discord_is_following: Optional[bool] = None
+    discord_following: Optional[bool] = None
     discord_followed_date: Optional[datetime] = None
 
 
@@ -67,16 +67,16 @@ class SocialMediaBaseSchema(BaseModel):
 
     id: int
     youtube_id: Optional[str] = None
-    youtube_is_following: Optional[bool] = None
-    youtube_is_viewed: Optional[bool] = None
+    youtube_following: Optional[bool] = None
+    youtube_viewed: Optional[bool] = None
     youtube_view_date: Optional[datetime] = None
 
     facebook_id: Optional[str] = None
-    facebook_is_following: Optional[bool] = None
+    facebook_following: Optional[bool] = None
     facebook_followed_date: Optional[datetime] = None
 
     instagram_id: Optional[str] = None
-    instagram_is_following: Optional[bool] = None
+    instagram_following: Optional[bool] = None
     instagram_follow_trigger_verify_date: Optional[datetime] = None
     instagram_followed_date: Optional[datetime] = None
     instagram_tagged: Optional[bool] = None
@@ -85,15 +85,15 @@ class SocialMediaBaseSchema(BaseModel):
     instagram_reposted_date: Optional[datetime] = None
 
     telegram_id: Optional[str] = None
-    telegram_is_following: Optional[bool] = None
+    telegram_following: Optional[bool] = None
     telegram_followed_date: Optional[datetime] = None
 
     x_id: Optional[str] = None
-    x_is_following: Optional[bool] = None
+    x_following: Optional[bool] = None
     x_followed_date: Optional[datetime] = None
 
     discord_id: Optional[str] = None
-    discord_is_following: Optional[bool] = None
+    discord_following: Optional[bool] = None
     discord_followed_date: Optional[datetime] = None
 
     created_at: datetime

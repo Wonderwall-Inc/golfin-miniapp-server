@@ -19,16 +19,16 @@ class SocialMediaModel(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False, unique=True)
     
     youtube_id: Mapped[Optional[str]] = mapped_column(String(100), nullable = True)
-    youtube_is_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
-    youtube_is_viewed: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
+    youtube_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
+    youtube_viewed: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
     youtube_view_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable = True)
     
     facebook_id: Mapped[Optional[str]] = mapped_column(String(100), nullable = True)
-    facebook_is_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
+    facebook_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
     facebook_followed_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable = True)
 
     instagram_id: Mapped[Optional[str]] = mapped_column(String(100), nullable = True)
-    instagram_is_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
+    instagram_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
     instagram_follow_trigger_verify_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable = True)
     instagram_followed_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable = True)
     
@@ -38,15 +38,15 @@ class SocialMediaModel(Base):
     instagram_reposted_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable = True)
     
     telegram_id: Mapped[Optional[str]] = mapped_column(String(100), nullable = True)
-    telegram_is_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
+    telegram_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
     telegram_followed_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable = True)
     
     x_id: Mapped[Optional[str]] = mapped_column(String(100), nullable = True)
-    x_is_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
+    x_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
     x_followed_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable = True)
     
     discord_id: Mapped[Optional[str]] = mapped_column(String(100), nullable = True)
-    discord_is_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
+    discord_following: Mapped[Optional[bool]] = mapped_column(default=False, nullable = True)
     discord_followed_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable = True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime, default = datetime.now)
