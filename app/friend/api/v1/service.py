@@ -114,7 +114,7 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
     try:
         base_query = db.query(FriendModel)
         filters = []
-
+        
         if id is not None:
             filters.append(FriendModel.id == id)
 
@@ -124,11 +124,11 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
             filters.append(FriendModel.receiver_id == user_id)
             
 
-        print('filter')
-        print(filters)
-
-        if filters:
-            existing_friend = base_query.filter(*filters).all()
+        if True:
+            print('filter')
+            
+            existing_friend = base_query.all()
+            
             return [
                 schemas.FriendWithIdsRetrievalResponseSchema(
                     sender=[
