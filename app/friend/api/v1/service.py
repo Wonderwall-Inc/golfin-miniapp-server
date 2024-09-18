@@ -107,7 +107,7 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
     print('id:', id )
     print('user_id:', user_id)
     
-    if id is None and user_id is None: # avoid both none on optional case
+    if not id and not user_id: # avoid both none on optional case
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or user_id")
     
     try:
