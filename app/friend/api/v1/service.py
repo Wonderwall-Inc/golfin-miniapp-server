@@ -130,8 +130,7 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
             print('existing_friend')
             for friend in existing_friend: 
                 print(friend)
-            
-            return [
+            temp = [
                 schemas.FriendRetrievalResponseSchema(
                     friend_details=schemas.FriendDetailsSchema(
                         friend_base=schemas.FriendSchema(
@@ -147,6 +146,9 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
                 )
                 for friend in existing_friend
             ]
+            print('temp')
+            print(temp)
+            return temp
             
     except Exception as e:
         logging.error(f"An error occured: {e}")
