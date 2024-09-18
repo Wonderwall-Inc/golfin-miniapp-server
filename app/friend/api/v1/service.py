@@ -100,7 +100,7 @@ def get_friends_as_receiver(user_id: int, db: Session) -> List[schemas.FriendRet
         for friend in friends
     ]
 
-
+# FIXME
 def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> List[schemas.FriendRetrievalResponseSchema]:
     """Retrieve Friend Details from Single User"""
     print('retrieve friends request')
@@ -121,10 +121,16 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
             filters.append(FriendModel.sender_id == user_id)
             filters.append(FriendModel.receiver_id == user_id)
             
-
+        print('filter')
+        print(filters)
+        
         if filters:
             existing_friend = base_query.filter(*filters).all()
 
+            print('existing_friend')
+            for friend in existing_friend: 
+                print(friend)
+            
             return [
                 schemas.FriendRetrievalResponseSchema(
                     friend_details=schemas.FriendDetailsSchema(
