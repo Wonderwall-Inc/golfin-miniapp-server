@@ -102,7 +102,7 @@ def get_friends_as_receiver(user_id: int, db: Session) -> List[schemas.FriendRet
     ]
 
 # FIXME
-def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> List[schemas.FriendRetrievalResponseSchema]:
+def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> List[schemas.FriendWithIdsRetrievalResponseSchema]:
     """Retrieve Friend Details from Single User"""
     print('retrieve friends request')
     print('id:', id )
@@ -131,18 +131,20 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
             for friend in existing_friend: 
                 print(friend)
             temp = [
-                schemas.FriendRetrievalResponseSchema(
-                    friend_details=schemas.FriendDetailsSchema(
-                        friend_base=schemas.FriendSchema(
-                            id=friend.id,
-                            status=friend.status,
-                            created_at=friend.created_at,
-                            updated_at=friend.updated_at,
-                            custom_logs=friend.custom_logs,
-                        ),
-                        sender_id=friend.sender_id,
-                        receiver_id=friend.receiver_id,
-                    )
+                schemas.FriendWithIdsRetrievalResponseSchema(
+                    sender=friend.sender,
+                    receiver=friend.receiver
+                    # friend_details=schemas.FriendDetailsSchema(
+                    #     friend_base=schemas.FriendSchema(
+                    #         id=friend.id,
+                    #         status=friend.status,
+                    #         created_at=friend.created_at,
+                    #         updated_at=friend.updated_at,
+                    #         custom_logs=friend.custom_logs,
+                    #     ),
+                    #     sender_id=friend.sender_id,
+                    #     receiver_id=friend.receiver_id,
+                    # )
                 )
                 for friend in existing_friend
             ]
