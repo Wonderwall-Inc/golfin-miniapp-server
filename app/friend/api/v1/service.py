@@ -23,7 +23,7 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
     # Check if receiver id as sender or receiver on the friend table
     receiver_id_as_sender = db.query(FriendModel).filter(FriendModel.sender_id == request.receiver_id).first()
     receiver_id_as_receiver = db.query(FriendModel).filter(FriendModel.receiver_id == request.receiver_id).first
-    
+
     # if not (sender_id_as_sender is None and receiver_id_as_receiver is None) or not (sender_id_as_receiver is None and receiver_id_as_sender is None):
     if (sender_id_as_sender and receiver_id_as_receiver) or (sender_id_as_receiver and receiver_id_as_sender):
         return None
@@ -56,7 +56,7 @@ def get_friends_as_sender(user_id: int, db: Session) -> List[schemas.FriendRetri
     """Retrieve friend by sender id"""
     if not user_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Missing User id")
-    
+
     friends = db.query(UserModel).join(FriendModel, (UserModel.id == FriendModel.sender_id) and (FriendModel.sender_id == user_id)).all()
     return [
         schemas.FriendRetrievalResponseSchema(
@@ -81,9 +81,9 @@ def get_friends_as_receiver(user_id: int, db: Session) -> List[schemas.FriendRet
     """Retrieve friend by sender id"""
     if not user_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Missing User id")
-    
+
     friends = db.query(UserModel).join(FriendModel, (UserModel.id == FriendModel.sender_id) and (FriendModel.sender_id == user_id)).all()
-    
+
     return [
         schemas.FriendRetrievalResponseSchema(
             friend_details=schemas.FriendDetailsSchema(
@@ -108,51 +108,51 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session):
     print('retrieve friends request')
     print('id:', id )
     print('user_id:', user_id)
-    
+
     if not id and not user_id: # avoid both none on optional case
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or user_id")
-    
+
     try:
         base_query = db.query(FriendModel)
         filters = []
-        
+
         if id is not None:
             filters.append(FriendModel.id == id)
-        
+
         if user_id is not None:
             filters.append((FriendModel.sender_id == user_id)|(FriendModel.receiver_id == user_id))
-            
+
         print('filter')
         print(filters)
-        
+
         if filters:
             existing_friend = base_query.filter(*filters).all()
 
             print('existing_friend')
-            for friend in existing_friend: 
+            for friend in existing_friend:
                 print(friend)
-            # temp = [
-            #     schemas.FriendWithIdsRetrievalResponseSchema(
-            #         sender=friend.sender,
-            #         receiver=friend.receiver
-            #         # friend_details=schemas.FriendDetailsSchema(
-            #         #     friend_base=schemas.FriendSchema(
-            #         #         id=friend.id,
-            #         #         status=friend.status,
-            #         #         created_at=friend.created_at,
-            #         #         updated_at=friend.updated_at,
-            #         #         custom_logs=friend.custom_logs,
-            #         #     ),
-            #         #     sender_id=friend.sender_id,
-            #         #     receiver_id=friend.receiver_id,
-            #         # )
-            #     )
-            #     for friend in existing_friend
-            # ]
-            # print('temp')
-            # print(temp)
+            temp = [
+                schemas.FriendWithIdsRetrievalResponseSchema(
+                    sender=[friend.sender],
+                    receiver=[friend.receiver]
+                    # friend_details=schemas.FriendDetailsSchema(
+                    #     friend_base=schemas.FriendSchema(
+                    #         id=friend.id,
+                    #         status=friend.status,
+                    #         created_at=friend.created_at,
+                    #         updated_at=friend.updated_at,
+                    #         custom_logs=friend.custom_logs,
+                    #     ),
+                    #     sender_id=friend.sender_id,
+                    #     receiver_id=friend.receiver_id,
+                    # )
+                )
+                for friend in existing_friend
+            ]
+            print('temp')
+            print(temp)
             return existing_friend
-            
+
     except Exception as e:
         logging.error(f"An error occured: {e}")
 
@@ -174,7 +174,7 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
             )
             for friend_from_as_sender in existing_friends_as_sender
             ]
-            
+
             as_receiver_list = [
             schemas.FriendBaseSchema(
                 id=friend_from_as_receiver.id,
@@ -186,17 +186,17 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
             )
             for friend_from_as_receiver in existing_friends_as_receiver
             ]
-            
+
             return schemas.FriendWithIdsRetrievalResponseSchema(
                 sender=as_sender_list, receiver=as_receiver_list
             )
-            
+
         else:
             existing_friends =  db.query(FriendModel).offset(skip).limit(limit).all()
-                        
+
             as_sender = []
             as_receiver = []
-            
+
             for friend in existing_friends:
                 if friend.sender and len(friend.sender):
                     as_sender.append(
@@ -220,13 +220,13 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
                             status=friend.status
                         )
                     )
-                
+
             return schemas.FriendWithIdsRetrievalResponseSchema(
                 sender=as_sender, receiver=as_receiver
             )
 
         # return as_sender_list, as_receiver_list
-       
+
     except Exception as e:
         logging.error(f"An error occured: {e}")
 
@@ -234,9 +234,9 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
 def get_Friend_by_sender_id_receiver_id(sender_id: int, db: Session, receiver_id: int) -> schemas.FriendRetrievalResponseSchema:
     if not sender_id or not receiver_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Missing sender id or receiver id")
-    
+
     existing_friend = db.query(FriendModel).filter(FriendModel.sender_id == sender_id, FriendModel.receiver_id == receiver_id).first()
-    
+
     return schemas.FriendRetrievalResponseSchema(
         friend_details=schemas.FriendDetailsSchema(
             friend_base=schemas.FriendSchema(
@@ -260,32 +260,32 @@ def update_friend(id: Optional[int], sender_id: Optional[int], receiver_id: Opti
 
     if not friend_status:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing status")
-    
+
     try:
         base_query = db.query(FriendModel)
         filters = []
-        
-        if id: 
-            filters.append(FriendModel.id==id)     
-            
+
+        if id:
+            filters.append(FriendModel.id==id)
+
         if sender_id:
             filters.append(FriendModel.sender_id==sender_id)
-            
+
         if receiver_id:
             filters.append(FriendModel.receiver_id==receiver_id)
-            
+
         if filters:
             existing_friends = base_query.filter(*filters).all()
-            
+
             if not existing_friends:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Friend not found")
-            
+
             for friend in existing_friends:
                 friend.status = friend_status
                 friend.custom_logs = custom_logs
                 db.commit()
                 db.refresh(friend)
-                
+
             return [
                 schemas.FriendDetailsResponseSchema(
                 friend_details=schemas.FriendDetailsSchema(
@@ -310,9 +310,9 @@ def update_friend_status_by_sender_id(request: schemas.FriendUpdateBySenderIdReq
     """Update single friend by sender id"""
     if not request.sender_id or not request.friend_payload.status:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Friend sender id and status are required")
-    
+
     db_friend = db.query(FriendModel).filter(FriendModel.sender_id == request.sender_id).first()
-    
+
     if db_friend:
         if request.friend_payload.status:
             db_friend.status = request.friend_payload.status
@@ -321,7 +321,7 @@ def update_friend_status_by_sender_id(request: schemas.FriendUpdateBySenderIdReq
 
         db.commit()
         db.refresh(db_friend)
-        
+
     return schemas.FriendDetailsResponseSchema(
         friend_details=schemas.FriendDetailsSchema(
             friend_base=schemas.FriendSchema(
@@ -342,21 +342,21 @@ def update_friend_status_by_receiver_id(request: schemas.FriendUpdateByReceiverI
     """Update single friend by receiver id"""
     if not request.receiver_id or not request.friend_payload.status:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Friend receiver id and status are required")
-    
+
     db_friend = db.query(FriendModel).filter(FriendModel.receiver_id == request.receiver_id).first()
-    
+
     if not db_friend:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Friend receiver_id {request.receiver_id} not found")
-    
+
     if db_friend:
         if request.friend_payload.status:
             db_friend.status = request.friend_payload.status
         if request.friend_payload.custom_logs:
             db_friend.custom_logs = request.friend_payload.custom_logs
-            
+
         db.commit()
         db.refresh(db_friend)
-        
+
     return schemas.FriendDetailsResponseSchema(
         friend_details=schemas.FriendDetailsSchema(
             friend_base=schemas.FriendSchema(
