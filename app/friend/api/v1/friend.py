@@ -2,8 +2,6 @@
 
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Query
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
@@ -11,6 +9,8 @@ from core import database
 from app.friend import schemas
 from app.friend.api.v1 import service
 
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 
 get_db = database.get_db
 
@@ -25,13 +25,14 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session = Depe
 
 
 # REVIEW:  get from user & get from users
-# @router.get("/detail", response_model=List[schemas.FriendWithIdsRetrievalResponseSchema])
-@router.get("/detail")
+@router.get("/detail", response_model=List[schemas.FriendWithIdsRetrievalResponseSchema])
 def get_friend_from_user(id: Optional[int] = None, user_id: Optional[int] = None, db: Session = Depends(get_db)):
     """Retrieve Friend Details from Single User"""
+    result = service.retrieve_friends(id, user_id, db)
+    print('result')
+    print(result)
     json_compatible_item_data = jsonable_encoder(service.retrieve_friends(id, user_id, db))
     return JSONResponse(content=json_compatible_item_data)
-
 
 # REVIEW:  get from user & get from users
 @router.get("/details", response_model=schemas.FriendWithIdsRetrievalResponseSchema)

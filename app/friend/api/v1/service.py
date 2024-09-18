@@ -119,36 +119,43 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
             filters.append(FriendModel.id == id)
 
         if user_id is not None:
-            filters.append((FriendModel.sender_id == user_id)|(FriendModel.receiver_id == user_id))
+            # filters.append((FriendModel.sender_id == user_id)|(FriendModel.receiver_id == user_id))
+            filters.append(FriendModel.sender_id == user_id)
+            filters.append(FriendModel.receiver_id == user_id)
+            
 
         print('filter')
         print(filters)
 
         if filters:
             existing_friend = base_query.filter(*filters).all()
-
-            # print('existing_friend')
-            # for friend in existing_friend:
-            #     print(friend)
             return [
                 schemas.FriendWithIdsRetrievalResponseSchema(
-                    friend_details=schemas.FriendDetailsSchema(
-                        friend_base=schemas.FriendSchema(
-                            id=friend.id,
-                            status=friend.status,
-                            created_at=friend.created_at,
-                            updated_at=friend.updated_at,
-                            custom_logs=friend.custom_logs,
-                        ),
-                        sender_id=friend.sender_id,
-                        receiver_id=friend.receiver_id,
-                    )
+                    sender=[
+                         schemas.FriendBaseSchema(
+                            id=sender_friend.id,
+                            sender_id=sender_friend.sender_id,
+                            receiver_id=sender_friend.receiver_id,
+                            created_at=sender_friend.created_at,
+                            updated_at=sender_friend.updated_at,
+                            status=sender_friend.status,
+                        )
+                        for sender_friend in friend.sender
+                    ],
+                    receiver=[
+                         schemas.FriendBaseSchema(
+                            id=sender_receiver.id,
+                            sender_id=sender_receiver.sender_id,
+                            receiver_id=sender_receiver.receiver_id,
+                            created_at=sender_receiver.created_at,
+                            updated_at=sender_receiver.updated_at,
+                            status=sender_receiver.status,
+                        )
+                        for sender_receiver in friend.sender
+                    ]
                 )
                 for friend in existing_friend
             ]
-            # print('temp')
-            # print(temp)
-            # return existing_friend
 
     except Exception as e:
         logging.error(f"An error occured: {e}")
