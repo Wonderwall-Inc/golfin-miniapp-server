@@ -22,7 +22,7 @@ def create_activity(request: schemas.ActivityCreateRequestSchema, db:Session) ->
 
         new_activity=ActivityModel(
             user_id=request.user_id,
-            logged_in=True,
+            logged_in=True, # FIXME: change to not_yet_claim_daily = True
             login_streak=0,
             total_logins=0,
             last_action_time=datetime.now(),

@@ -24,13 +24,13 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session = Depe
 
 # REVIEW:  get from user & get from users
 @router.get("/detail", response_model=List[schemas.FriendWithIdsRetrievalResponseSchema])
-def get_friend(id: Optional[int] = None, user_id: Optional[int] = None, db: Session = Depends(get_db)):
+def get_friend_from_user(id: Optional[int] = None, user_id: Optional[int] = None, db: Session = Depends(get_db)):
     """Retrieve Friend Details from Single User"""
     return service.retrieve_friends(id, user_id, db)
 
 # REVIEW:  get from user & get from users
 @router.get("/details", response_model=schemas.FriendWithIdsRetrievalResponseSchema)
-def get_friend(user_ids: List[int] = Query(default=None), skip: int = 0, limit: int = 15, db: Session = Depends(get_db)):
+def get_friend_from_users(user_ids: List[int] = Query(default=None), skip: int = 0, limit: int = 15, db: Session = Depends(get_db)):
     """Retrieve Friend by List from Multiple Users"""
     return service.retrieve_friend_list(db, user_ids, skip, limit)
 
