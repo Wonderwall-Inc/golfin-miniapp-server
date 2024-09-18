@@ -9,7 +9,7 @@ from app.friend import schemas
 from app.user.models import UserModel
 from app.friend.models import FriendModel
 
-def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> schemas.FriendCreateResponseSchema | None:
+def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> schemas.FriendCreateResponseSchema :
     """Create Friend"""
     print('create friend request')
     print(request)
@@ -25,30 +25,32 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
     receiver_id_as_receiver = db.query(FriendModel).filter(FriendModel.receiver_id == request.receiver_id).first
 
     # if not (sender_id_as_sender is None and receiver_id_as_receiver is None) or not (sender_id_as_receiver is None and receiver_id_as_sender is None):
-    if (sender_id_as_sender and receiver_id_as_receiver) or (sender_id_as_receiver and receiver_id_as_sender):
-        return None
-    else:
-        new_friend = FriendModel(
-            sender_id=request.sender_id,
-            receiver_id=request.receiver_id,
-            status=request.status,
+    if sender_id_as_sender and receiver_id_as_receiver:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
+    if receiver_id_as_sender and receiver_id_as_receiver:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
+    
+    new_friend = FriendModel(
+        sender_id=request.sender_id,
+        receiver_id=request.receiver_id,
+        status=request.status,
+    )
+    db.add(new_friend)
+    db.commit()
+    db.refresh(new_friend)
+    return schemas.FriendCreateResponseSchema(
+        friend_details=schemas.FriendDetailsSchema(
+            friend_base=schemas.FriendSchema(
+                id=new_friend.id,
+                status=new_friend.status,
+                created_at=new_friend.created_at,
+                updated_at=new_friend.updated_at,
+                custom_logs=new_friend.custom_logs,
+            ),
+            sender_id=new_friend.sender_id,
+            receiver_id=new_friend.receiver_id,
         )
-        db.add(new_friend)
-        db.commit()
-        db.refresh(new_friend)
-        return schemas.FriendCreateResponseSchema(
-            friend_details=schemas.FriendDetailsSchema(
-                friend_base=schemas.FriendSchema(
-                    id=new_friend.id,
-                    status=new_friend.status,
-                    created_at=new_friend.created_at,
-                    updated_at=new_friend.updated_at,
-                    custom_logs=new_friend.custom_logs,
-                ),
-                sender_id=new_friend.sender_id,
-                receiver_id=new_friend.receiver_id,
-            )
-        )
+    )
 
 
 # This method combines with get_friends_as_receiver ->> total friend from the given user_id
