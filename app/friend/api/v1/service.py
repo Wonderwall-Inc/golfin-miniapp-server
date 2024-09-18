@@ -9,7 +9,7 @@ from app.friend import schemas
 from app.user.models import UserModel
 from app.friend.models import FriendModel
 
-def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> schemas.FriendCreateResponseSchema:
+def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> schemas.FriendCreateResponseSchema | None:
     """Create Friend"""
     print('create friend request')
     print(request)
