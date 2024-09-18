@@ -158,7 +158,7 @@ def update_activity(request: schemas.ActivityUpdateRequestSchema, db: Session) -
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
-def update_activity_logged_in(request: schemas.ActivityUpdateRequestSchema, db: Session):
+def update_activity_logged_in(db: Session):
     """Update Activity Logged In"""
     try:
         existing_activity = db.query(ActivityModel).all()
@@ -171,6 +171,8 @@ def update_activity_logged_in(request: schemas.ActivityUpdateRequestSchema, db: 
         
         db.commit()
         db.refresh(existing_activity)
+        
+        return "Update to logged_in as True"
         
     except Exception as e:
         logging.error(f"An error occurred: {e}")

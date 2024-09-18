@@ -32,3 +32,8 @@ def get_activity_details(user_ids: List[int] = Query(default=None), skip: int = 
 def update_activity(request: schemas.ActivityUpdateRequestSchema, db: Session=Depends(get_db)):
     """Update Activity"""
     return service.update_activity(request, db) 
+
+@router.put('/update/logged-in')
+def update_activity(db: Session=Depends(get_db)):
+    """Update Activity"""
+    return service.update_activity_logged_in(db) 
