@@ -11,7 +11,8 @@ from app.friend.models import FriendModel
 
 def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> schemas.FriendCreateResponseSchema:
     """Create Friend"""
-
+    print('create friend request')
+    print(request)
     if not request.sender_id or not request.receiver_id or not request.status:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Sender id, receiver id and status are required")
 
