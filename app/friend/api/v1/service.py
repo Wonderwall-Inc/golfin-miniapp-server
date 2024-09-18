@@ -103,7 +103,11 @@ def get_friends_as_receiver(user_id: int, db: Session) -> List[schemas.FriendRet
 
 def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> List[schemas.FriendRetrievalResponseSchema]:
     """Retrieve Friend Details from Single User"""
-    if not id and not user_id:
+    print('retrieve friends request')
+    print('id:', id )
+    print('user_id:', user_id)
+    
+    if not id or not user_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or user_id")
     
     try:
