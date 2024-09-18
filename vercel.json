@@ -13,5 +13,11 @@
       "src": "/(.*)",
       "dest": "main.py"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/v1/activity/update/logged-in",
+      "schedule": "5 * * * *"
+    }
   ]
 }
