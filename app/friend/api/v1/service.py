@@ -102,7 +102,8 @@ def get_friends_as_receiver(user_id: int, db: Session) -> List[schemas.FriendRet
     ]
 
 # FIXME
-def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> List[schemas.FriendWithIdsRetrievalResponseSchema]:
+# def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> List[schemas.FriendWithIdsRetrievalResponseSchema]:
+def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session):
     """Retrieve Friend Details from Single User"""
     print('retrieve friends request')
     print('id:', id )
