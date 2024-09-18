@@ -29,8 +29,10 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
     
     for friend in all_friends:
         if friend.sender_id is request.sender_id and friend.receiver_id is request.receiver_id:
+            print('case 1')
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
         if friend.sender_id is request.receiver_id and friend.receiver_id is request.sender_id:
+            print('case 2')
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
     
     new_friend = FriendModel(
