@@ -9,32 +9,24 @@ from app.friend import schemas
 from app.user.models import UserModel
 from app.friend.models import FriendModel
 
-def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> schemas.FriendCreateResponseSchema :
+def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> schemas.FriendCreateResponseSchema:
     """Create Friend"""
     print('create friend request')
     print(request)
+
     if not request.sender_id or not request.receiver_id or not request.status:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Sender id, receiver id and status are required")
 
-    # Check if the sender id as sender or receiver on the friend table
-    # sender_id_as_sender = db.query(FriendModel).filter(FriendModel.sender_id == request.sender_id).first()
-    # sender_id_as_receiver = db.query(FriendModel).filter(FriendModel.receiver_id == request.sender_id).first()
+    # Check for existing friendship (more efficient approach)
+    existing_friend = db.query(FriendModel).filter(
+        ((FriendModel.sender_id == request.sender_id) & (FriendModel.receiver_id == request.receiver_id)) |
+        ((FriendModel.sender_id == request.receiver_id) & (FriendModel.receiver_id == request.sender_id))
+    ).first()
 
-    # # Check if receiver id as sender or receiver on the friend table
-    # receiver_id_as_sender = db.query(FriendModel).filter(FriendModel.sender_id == request.receiver_id).first()
-    # receiver_id_as_receiver = db.query(FriendModel).filter(FriendModel.receiver_id == request.receiver_id).first
+    if existing_friend:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Friend relationship already exists")
 
-
-    all_friends = db.query(FriendModel).all()
-    
-    for friend in all_friends:
-        if friend.sender_id is request.sender_id and friend.receiver_id is request.receiver_id:
-            print('case 1')
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
-        if friend.sender_id is request.receiver_id and friend.receiver_id is request.sender_id:
-            print('case 2')
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
-    
+    # Create new friend if no existing relationship
     new_friend = FriendModel(
         sender_id=request.sender_id,
         receiver_id=request.receiver_id,
@@ -43,6 +35,7 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
     db.add(new_friend)
     db.commit()
     db.refresh(new_friend)
+
     return schemas.FriendCreateResponseSchema(
         friend_details=schemas.FriendDetailsSchema(
             friend_base=schemas.FriendSchema(
@@ -56,14 +49,6 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
             receiver_id=new_friend.receiver_id,
         )
     )
-    # if not (sender_id_as_sender is None and receiver_id_as_receiver is None) or not (sender_id_as_receiver is None and receiver_id_as_sender is None):
-    if sender_id_as_sender and sender_id_as_receiver:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
-    
-    if receiver_id_as_sender and receiver_id_as_receiver:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
-    
-   
 
 
 # This method combines with get_friends_as_receiver ->> total friend from the given user_id
