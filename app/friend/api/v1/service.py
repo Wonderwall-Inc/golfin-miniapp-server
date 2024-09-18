@@ -25,8 +25,9 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
     receiver_id_as_receiver = db.query(FriendModel).filter(FriendModel.receiver_id == request.receiver_id).first
 
     # if not (sender_id_as_sender is None and receiver_id_as_receiver is None) or not (sender_id_as_receiver is None and receiver_id_as_sender is None):
-    if sender_id_as_sender and receiver_id_as_receiver:
+    if sender_id_as_sender and sender_id_as_receiver:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
+    
     if receiver_id_as_sender and receiver_id_as_receiver:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="sender and receiver existed") 
     
