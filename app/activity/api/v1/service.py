@@ -158,6 +158,23 @@ def update_activity(request: schemas.ActivityUpdateRequestSchema, db: Session) -
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
+def update_activity_logged_in(request: schemas.ActivityUpdateRequestSchema, db: Session):
+    """Update Activity Logged In"""
+    try:
+        existing_activity = db.query(ActivityModel).all()
+        
+        if not existing_activity:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Activity not found")
+        
+        for activity in existing_activity:
+            activity.logged_in = True
+        
+        db.commit()
+        db.refresh(existing_activity)
+        
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+
 def delete_activity(id: int, db: Session):
     """Delete Activity"""
     try:
