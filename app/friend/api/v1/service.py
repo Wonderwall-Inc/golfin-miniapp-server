@@ -24,7 +24,10 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
     receiver_id_as_sender = db.query(FriendModel).filter(FriendModel.sender_id == request.receiver_id).first()
     receiver_id_as_receiver = db.query(FriendModel).filter(FriendModel.receiver_id == request.receiver_id).first
     
-    if not (sender_id_as_sender is None and receiver_id_as_receiver is None) or not (sender_id_as_receiver is None and receiver_id_as_sender is None):
+    # if not (sender_id_as_sender is None and receiver_id_as_receiver is None) or not (sender_id_as_receiver is None and receiver_id_as_sender is None):
+    if (sender_id_as_sender and receiver_id_as_receiver) or (sender_id_as_receiver and receiver_id_as_sender):
+        return None
+    else:
         new_friend = FriendModel(
             sender_id=request.sender_id,
             receiver_id=request.receiver_id,
@@ -46,8 +49,6 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
                 receiver_id=new_friend.receiver_id,
             )
         )
-    else:
-        return None
 
 
 # This method combines with get_friends_as_receiver ->> total friend from the given user_id
