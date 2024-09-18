@@ -26,7 +26,6 @@ app = FastAPI(
 
 origins = [
     "https://telegram.golfin.dev",
-    "https://telegram.golfin.dev/",
     "https://golfin-miniapp-server-next-innovation.vercel.app"
 ]
 app.add_middleware(
