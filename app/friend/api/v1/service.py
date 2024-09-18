@@ -102,7 +102,7 @@ def get_friends_as_receiver(user_id: int, db: Session) -> List[schemas.FriendRet
     ]
 
 # FIXME
-def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> List[schemas.FriendWithIdsRetrievalResponseSchema]:
+def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> schemas.FriendWithIdsRetrievalResponseSchema:
     """Retrieve Friend Details from Single User"""
     print('retrieve friends request')
     print('id:', id )
@@ -112,51 +112,51 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or user_id")
 
     try:
-        base_query = db.query(FriendModel)
-        filters = []
+        sender_query = db.query(FriendModel)
+        receiver_query = db.query(FriendModel)
+        
+        sender_filters = []
+        receiver_filters = []
         
         if id is not None:
-            filters.append(FriendModel.id == id)
+            sender_filters.append(FriendModel.id == id)
+            receiver_filters.append(FriendModel.id == id)
 
         if user_id is not None:
             # filters.append((FriendModel.sender_id == user_id)|(FriendModel.receiver_id == user_id))
-            filters.append(FriendModel.sender_id == user_id)
-            filters.append(FriendModel.receiver_id == user_id)
+            sender_filters.append(FriendModel.sender_id == user_id)
+            receiver_filters.append(FriendModel.receiver_id == user_id)
             
-
-        if True:
-            print('filter')
             
-            existing_friend = base_query.all()
+        if sender_filters and receiver_filters:
+            existing_sender = sender_query.filter(*sender_filters).all()
+            existing_receiver = receiver_query.filter(*receiver_filters).all()
             
-            return [
-                schemas.FriendWithIdsRetrievalResponseSchema(
-                    sender=[
-                         schemas.FriendBaseSchema(
-                            id=sender_friend.id,
-                            sender_id=sender_friend.sender_id,
-                            receiver_id=sender_friend.receiver_id,
-                            created_at=sender_friend.created_at,
-                            updated_at=sender_friend.updated_at,
-                            status=sender_friend.status,
-                        )
-                        for sender_friend in friend.sender
-                    ],
-                    receiver=[
-                         schemas.FriendBaseSchema(
-                            id=sender_receiver.id,
-                            sender_id=sender_receiver.sender_id,
-                            receiver_id=sender_receiver.receiver_id,
-                            created_at=sender_receiver.created_at,
-                            updated_at=sender_receiver.updated_at,
-                            status=sender_receiver.status,
-                        )
-                        for sender_receiver in friend.sender
-                    ]
+            sender = [
+                schemas.FriendBaseSchema(
+                    id=fs.id,
+                    sender_id=fs.sender_id,
+                    receiver_id=fs.receiver_id,
+                    created_at=fs.created_at,
+                    updated_at=fs.updated_at,
+                    status=fs.status,
                 )
-                for friend in existing_friend
+                for fs in existing_sender
             ]
-
+            
+            receiver = [
+                schemas.FriendBaseSchema(
+                    id=fr.id,
+                    sender_id=fr.sender_id,
+                    receiver_id=fr.receiver_id,
+                    created_at=fr.created_at,
+                    updated_at=fr.updated_at,
+                    status=fr.status,
+                )
+                for fr in existing_receiver
+            ]
+            return schemas.FriendWithIdsRetrievalResponseSchema(sender=sender,receiver=receiver)
+               
     except Exception as e:
         logging.error(f"An error occured: {e}")
 
