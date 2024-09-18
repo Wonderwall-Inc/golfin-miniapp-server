@@ -119,8 +119,7 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
             filters.append(FriendModel.id == id)
         
         if user_id is not None:
-            filters.append(FriendModel.sender_id == user_id)
-            filters.append(FriendModel.receiver_id == user_id)
+            filters.append(FriendModel.sender_id == user_id|FriendModel.receiver_id == user_id)
             
         print('filter')
         print(filters)
