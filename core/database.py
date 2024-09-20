@@ -1,7 +1,7 @@
 """
 Database Connection & Engine Creation
 """
-
+import os
 from sqlalchemy import create_engine, URL
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import sessionmaker
@@ -22,7 +22,9 @@ from core.constants import Constants
 #         ),
 #         connect_args={},
 # )
-engine = create_engine(Constants.TIDB_SQLALCHAMY_DATABASE_URL)
+
+engine_sql = Constants.SQLALCHAMY_DATABASE_URL if os.environ.get("PROJECT_ENV") else Constants.TIDB_SQLALCHAMY_DATABASE_URL
+engine = create_engine(engine_sql)
 
 
 SessionLocal = sessionmaker(

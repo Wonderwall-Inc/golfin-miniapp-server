@@ -25,18 +25,20 @@ config = context.config
 
 section = config.config_ini_section
 # LOCAL
-# config.set_section_option(section, "DB_USER", os.environ.get("DB_USER") or "")
-# config.set_section_option(section, "DB_PASS", os.environ.get("DB_PASS") or "")
-# config.set_section_option(section, "DB_PORT", os.environ.get("DB_PORT") or "")
-# config.set_section_option(section, "DB_NAME", os.environ.get("DB_NAME") or "")
-# config.set_section_option(section, "DB_HOST", os.environ.get("DB_HOST") or "")
+if os.environ.get("PROJECT_ENV") is 'dev':
+    config.set_section_option(section, "DB_USER", os.environ.get("DB_USER") or "")
+    config.set_section_option(section, "DB_PASS", os.environ.get("DB_PASS") or "")
+    config.set_section_option(section, "DB_PORT", os.environ.get("DB_PORT") or "")
+    config.set_section_option(section, "DB_NAME", os.environ.get("DB_NAME") or "")
+    config.set_section_option(section, "DB_HOST", os.environ.get("DB_HOST") or "")
 
 # REMOTE
-config.set_section_option(section, "TIDB_USER", os.environ.get("TIDB_USER") or "")
-config.set_section_option(section, "TIDB_PASSWORD", os.environ.get("TIDB_PASS") or "")
-config.set_section_option(section, "TIDB_PORT", os.environ.get("TIDB_PORT") or "")
-config.set_section_option(section, "TIDB_HOST", os.environ.get("TIDB_HOST") or "")
-config.set_section_option(section, "TIDB_DATABASE", os.environ.get("TIDB_NAME") or "")
+if os.environ.get("PROJECT_ENV") is 'prod':
+    config.set_section_option(section, "TIDB_USER", os.environ.get("TIDB_USER") or "")
+    config.set_section_option(section, "TIDB_PASSWORD", os.environ.get("TIDB_PASS") or "")
+    config.set_section_option(section, "TIDB_PORT", os.environ.get("TIDB_PORT") or "")
+    config.set_section_option(section, "TIDB_HOST", os.environ.get("TIDB_HOST") or "")
+    config.set_section_option(section, "TIDB_DATABASE", os.environ.get("TIDB_NAME") or "")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

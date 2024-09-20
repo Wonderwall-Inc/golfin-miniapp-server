@@ -27,7 +27,7 @@ class Constants:
     tidb_sqlalchamy_database_url = os.environ.get("TIDB_SQLALCHAMY_DATABASE_URL")
 
     # LOCAL
-    # SQLALCHAMY_DATABASE_URL = f"mysql+pymysql://{username}:{password}@{dbHost}:{port}/{dbName}"
+    SQLALCHAMY_DATABASE_URL = f"mysql+pymysql://{username}:{password}@{dbHost}:{port}/{dbName}"
     
     # REMOTE
     # SQLALCHAMY_DATABASE_URL = f"mysql+pymysql://{tidb_username}:{tidb_password}@{tidb_db_host}:{tidb_port}/{tidb_database}"
