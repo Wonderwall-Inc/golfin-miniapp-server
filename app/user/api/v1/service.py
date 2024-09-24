@@ -59,44 +59,6 @@ def create_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User existed"
         )
-        # print(user)
-        # return UserCreateResponseSchema(
-        # user_details=UserDetailsSchema(
-        #     user_base=UserSchema(
-        #         id=user.id,
-        #         app_info= UserAppInfoSchema(
-        #             active=user.active,
-        #             in_game_items=user.in_game_items,
-        #             admin=user.admin,
-        #             skin=user.skin,
-        #             custom_logs=user.custom_logs,
-        #         ),
-        #         personal_info=UserPersonalInfoSchema(
-        #             location=user.location,
-        #             nationality=user.nationality,
-        #             age=user.age,
-        #             gender=user.gender,
-        #             email=user.email,
-        #         ),
-        #         telegram_info=UserTelegramInfoSchema(
-        #             username=user.username,
-        #             telegram_id=user.telegram_id,
-        #             token_balance=user.token_balance,
-        #             premium=user.premium,
-        #             wallet_address=user.wallet_address,
-        #             chat_id=user.chat_id,
-        #             start_param=user.start_param,
-        #         ),
-        #         created_at=user.created_at,
-        #         updated_at=user.updated_at,
-        #         custom_logs=user.custom_logs,
-        #     ),
-        # ),
-    # )
-        # raise HTTPException(
-        #     status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already exists"
-        # )
-    # new_user_schema_factory = UserSchemaFactory(request)
     user_app_info = UserAppInfoSchema(
         active=request.app_info.active,
         in_game_items=request.app_info.in_game_items,
@@ -143,21 +105,12 @@ def create_user(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    background_tasks.add_task(create_record_for_new_user, new_user.id, db)
     # FIXME: Create Game Character for the new user with bg task
     # Create Point for the new user with bg task
 
     # new_user_schema_factory = UserSchemaFactory(new_user)
-    
-    
-    new_record = RecordModel(
-        action="CREATE", 
-        table="USER",
-        table_id=new_user.id,
-    )
-    db.add(new_record)
-    db.commit()
-    db.refresh(new_record)
-    
+       
     return UserCreateResponseSchema(
         access_token=new_user.access_token,
         user_details=UserDetailsSchema(
@@ -174,6 +127,16 @@ def create_user(
     )
 
 
+def create_record_for_new_user(user_id: int, db: Session):
+    new_record = RecordModel(
+        user_id=user_id,
+        action="CREATE",
+        table="USER",
+    )
+    db.add(new_record)
+    db.commit()
+    db.refresh(new_record)  
+    
 # def retrieve_user_by_id(id: int, db: Session):
 #     if not id:
 #         raise HTTPException(
