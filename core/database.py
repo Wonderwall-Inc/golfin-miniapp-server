@@ -28,7 +28,7 @@ from core.constants import Constants
 print(Constants.dburl)
 engine = create_engine(
     Constants.dburl, 
-    connect_args={"init_command": "SET SESSION time_zone='-01:00'"} # set UTC+8 timezone with Asia/Singapore
+    connect_args={"init_command": "SET SESSION time_zone='+08:00'"} # set UTC+8 timezone with Asia/Singapore
 )
 
 print(os.environ.get("PROJECT_ENV"))
