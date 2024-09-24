@@ -31,7 +31,8 @@ from app.activity.schemas import ActivityBaseSchema
 # from app.record import schemas
 
 def create_user(
-    request: UserCreateRequestSchema, db: Session, background_tasks: BackgroundTasks
+    request: UserCreateRequestSchema, db: Session, 
+    # background_tasks: BackgroundTasks
 ):
     """Create new user account"""
     print(request)
