@@ -338,6 +338,7 @@ def retrieve_user(
             joinedload(UserModel.social_media),  # Load social media with the user
             joinedload(UserModel.sender),  # Load sender with the user
             joinedload(UserModel.receiver),  # Load receiver with the user
+            joinedload(UserModel.record)
         ).first()
     if not existing_user:
         raise HTTPException(

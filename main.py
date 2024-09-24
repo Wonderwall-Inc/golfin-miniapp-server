@@ -74,7 +74,7 @@ app.include_router(friend.router)
 app.include_router(activity.router)
 app.include_router(social_media.router)
 app.include_router(game_character.router)
-app.include_router(record.router)
+# app.include_router(record.router)
 
 
 if __name__ == "__main__":
