@@ -312,7 +312,7 @@ def retrieve_user(
     telegram_id: Optional[str],
     wallet_address: Optional[str],
     db: Session,
-    background_tasks: BackgroundTasks
+    # background_tasks: BackgroundTasks
 ):
     if not id and not username and not telegram_id and not wallet_address:
         raise HTTPException(

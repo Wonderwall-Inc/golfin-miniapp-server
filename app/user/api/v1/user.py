@@ -42,8 +42,8 @@ def create_user(request: schemas.UserCreateRequestSchema, background_tasks: Back
 
 
 @router.get("/detail")
-def get_user(
-    background_tasks: BackgroundTasks,
+def get_user( 
+    # background_tasks: BackgroundTasks, # FIXME
     id: Optional[int] = None,
     username: Optional[str] = None,
     telegram_id: Optional[str] = None,
@@ -51,7 +51,7 @@ def get_user(
     db: Session = Depends(get_db),
 ):
     """Get User details of single user"""
-    return service.retrieve_user(id, username, telegram_id, wallet_address, db, background_tasks)
+    return service.retrieve_user(id, username, telegram_id, wallet_address, db)
 
 
 @router.get(
