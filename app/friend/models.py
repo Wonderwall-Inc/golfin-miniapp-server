@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, relationship, mapped_column, backref
 from datetime import datetime
 from core.database import Base
 
-FriendStatusTpye = Literal["pending", "active", "rejected"]
+FriendStatusType = Literal["pending", "active", "rejected"]
 
 
 class FriendModel(Base):
@@ -19,18 +19,19 @@ class FriendModel(Base):
         nullable=False,
         autoincrement=True,
     )
-    status: Mapped[FriendStatusTpye] = mapped_column(
+    status: Mapped[FriendStatusType] = mapped_column(
         Enum(
-            *get_args(FriendStatusTpye),
-            name="friendStatusTpye",
+            *get_args(FriendStatusType),
+            name="friendStatusType",
             create_constraints=True,
             validate_strins=True,
             default="pending",
         )
     )
+    has_claimed: Mapped[bool] = mapped_column(default=False, nullable=False)
 
-    sender_id: Mapped[int] = mapped_column(ForeignKey("user.id"),nullable=False)
-    receiver_id: Mapped[int] = mapped_column(ForeignKey("user.id"),nullable=False)
+    sender_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    receiver_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.now, onupdate=datetime.now

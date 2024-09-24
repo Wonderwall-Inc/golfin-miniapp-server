@@ -11,6 +11,7 @@ from app.point.api.v1 import point
 from app.activity.api.v1 import activity
 from app.social_media.api.v1 import social_media
 from app.game_character.api.v1 import game_character
+from app.record.api.v1 import record
 
 from core import config, database
 
@@ -26,7 +27,9 @@ app = FastAPI(
 
 origins = [
     "https://telegram.golfin.dev",
-    "https://golfin-miniapp-server-next-innovation.vercel.app"
+    "https://golfin-miniapp-dev-xi.vercel.app"
+    # "https://golfin-miniapp-server-next-innovation.vercel.app",
+    # "https://golfin-miniapp-server-dev-inky.vercel.app"
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -71,6 +74,7 @@ app.include_router(friend.router)
 app.include_router(activity.router)
 app.include_router(social_media.router)
 app.include_router(game_character.router)
+app.include_router(record.router)
 
 
 if __name__ == "__main__":

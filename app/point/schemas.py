@@ -8,7 +8,8 @@ class PointScehma(BaseModel):  # defaulf = false
     """Point Schema"""
 
     id: int
-    amount: int  # Assuming gender is an integer
+    login_amount: int  
+    referral_amount: int  
     extra_profit_per_hour: int
     created_at: datetime
     updated_at: datetime
@@ -21,7 +22,8 @@ class PointDetailsSchema(BaseModel):
 
 
 class PointCreateDetailsSchema(BaseModel):
-    amount: Optional[int] = None
+    login_amount: Optional[int] = None  
+    referral_amount: Optional[int] = None  
     extra_profit_per_hour: Optional[int] = None
     custom_logs: Optional[dict] = None
 

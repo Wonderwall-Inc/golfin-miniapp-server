@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List, Literal
 from pydantic import BaseModel
 
-FriendStatusTpye = Literal["pending", "active", "rejected"]
+FriendStatusType = Literal["pending", "active", "rejected"]
 
 
 class FriendIds(BaseModel):
@@ -15,7 +15,8 @@ class FriendBaseSchema(BaseModel):
     """Base schema for Friend"""
 
     sender_id: int
-    status: FriendStatusTpye
+    status: FriendStatusType
+    has_claimed: bool
     id: int
     updated_at: datetime
     receiver_id: int
@@ -29,7 +30,8 @@ class FriendBaseSchema(BaseModel):
 class FriendUpdateDetailsSchema(BaseModel):  # what else can be updated
     """Friend Update Details Schema"""
 
-    status: FriendStatusTpye
+    status: FriendStatusType
+    has_claimed: bool
     custom_logs: Optional[dict] = None
 
     class Config:
@@ -40,7 +42,8 @@ class FriendSchema(BaseModel):  # all except the relationship
     """Friend Schema"""
 
     id: int
-    status: FriendStatusTpye
+    status: FriendStatusType
+    has_claimed: bool
     created_at: datetime
     updated_at: datetime
     custom_logs: Optional[dict] = None
@@ -65,7 +68,8 @@ class FriendCreateRequestSchema(BaseModel):
     access_token: str
     sender_id: int
     receiver_id: int
-    status: FriendStatusTpye
+    status: FriendStatusType
+    has_claimed: bool
 
     class Config:
         use_enum_values = True

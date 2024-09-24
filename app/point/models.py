@@ -18,7 +18,10 @@ class PointModel(Base):
     )
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     
-    amount: Mapped[int] = mapped_column(Integer, default=0)
+    # amount: Mapped[int] = mapped_column(Integer, default=0)
+    login_amout: Mapped[int] = mapped_column(Integer, default=0)
+    referral_amount: Mapped[int] = mapped_column(Integer, default=0)
+    
     extra_profit_per_hour: Mapped[int] = mapped_column(Integer, default=0)
     
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)

@@ -17,7 +17,7 @@ class Constants:
     port = os.environ.get("DB_PORT") if os.environ.get("PROJECT_ENV") == 'dev' else os.environ.get("TIDB_PORT")
     dbName = os.environ.get("DB_NAME") if os.environ.get("PROJECT_ENV") == 'dev' else os.environ.get("TIDB_HOST")
     dbHost = os.environ.get("DB_HOST") if os.environ.get("PROJECT_ENV") == 'dev' else os.environ.get("TIDB_DATABASE")
-    dburl = os.environ.get("MYSQL_CONNECTION_URL") if os.environ.get("PROJECT_ENV") == 'dev' else os.environ.get("TIDB_SQLALCHAMY_DEV_DATABASE_URL")
+    dburl = f"mysql+pymysql://{username}:{password}@{dbHost}:{port}/{dbName}" if os.environ.get("PROJECT_ENV") == 'dev' else os.environ.get("TIDB_SQLALCHAMY_DEV_DATABASE_URL")
     
     # tidb_username= os.environ.get("TIDB_USER")
     # tidb_password= os.environ.get("TIDB_PASSWORD")

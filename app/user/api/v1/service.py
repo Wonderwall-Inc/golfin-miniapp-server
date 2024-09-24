@@ -24,9 +24,9 @@ from app.game_character.schemas import GameCharacterBaseSchema
 from app.point.schemas import PointScehma
 from app.social_media.schemas import SocialMediaBaseSchema
 from app.activity.schemas import ActivityBaseSchema
-
 # from core.utils import UserSchemaFactory
-
+from app.record.models import RecordModel
+from app.record.schemas import RecordScehma 
 
 def create_user(
     request: UserCreateRequestSchema, db: Session, background_tasks: BackgroundTasks
@@ -145,11 +145,19 @@ def create_user(
     db.refresh(new_user)
     # FIXME: Create Game Character for the new user with bg task
     # Create Point for the new user with bg task
-    # Create Point for the new user with bg task
-    # Create Point for the new user with bg task
-    # Create Point for the new user with bg task
 
     # new_user_schema_factory = UserSchemaFactory(new_user)
+    
+    
+    new_record = RecordModel(
+        action="CREATE", 
+        table="USER",
+        table_id=new_user.id,
+    )
+    db.add(new_record)
+    db.commit()
+    db.refresh(new_record)
+    
     return UserCreateResponseSchema(
         access_token=new_user.access_token,
         user_details=UserDetailsSchema(
@@ -424,7 +432,8 @@ def retrieve_user(
     point_payload = [
         PointScehma(
             id=p.id,
-            amount=p.amount,
+            login_amount=p.login_amount,
+            referral_amount=p.referral_amount,
             extra_profit_per_hour=p.extra_profit_per_hour,
             created_at=p.created_at,
             updated_at=p.updated_at,
@@ -481,6 +490,29 @@ def retrieve_user(
         )
         for a in existing_user.activity
     ]
+    
+    new_record = RecordModel(
+        action="GET", 
+        table="USER",
+        table_id=existing_user.id,
+    )
+    
+    db.add(new_record)
+    db.commit()
+    db.refresh(new_record)
+    
+    record_payload = [
+        RecordScehma(
+            id=r.id,
+            action=r.action,
+            table=r.table,
+            table_id=r.table_id,
+            created_at=r.created_at,
+            updated_at=r.updated_at,
+            custom_logs=r.custom_logs,
+        )
+        for r in existing_user.record
+    ]
 
     return UserDetailsResponseSchema(
         user_details=UserDetailsSchema(
@@ -509,6 +541,7 @@ def retrieve_user(
             point=point_payload,
             activity=activity_payload,
             social_media=social_media_payload,
+            record=record_payload,
             sender=sender_payload,
             receiver=receiver_payload,
         )
@@ -527,11 +560,19 @@ def retrieve_users(
             joinedload(UserModel.social_media),  # Load social media with the user
             joinedload(UserModel.sender),  # Load sender with the user
             joinedload(UserModel.receiver),  # Load receiver with the user
+            joinedload(UserModel.record)
         )
         .offset(skip)
         .limit(limit)
         .all()
     )
+    
+    for existing_user in existing_users:
+        new_record = RecordModel(action="LIST", table="USER",table_id=existing_user.id)
+        db.add(new_record)
+        db.commit()
+        db.refresh(new_record)
+    
     return [
         UserDetailsResponseSchema(
             user_details=UserDetailsSchema(
@@ -579,7 +620,8 @@ def retrieve_users(
                 point=[
                     PointScehma(
                         id=p.id,
-                        amount=p.amount,
+                        login_amount=p.login_amount,
+                        referral_amount=p.referral_amount,
                         extra_profit_per_hour=p.extra_profit_per_hour,
                         created_at=p.created_at,
                         updated_at=p.updated_at,
@@ -656,6 +698,19 @@ def retrieve_users(
                     )
                     for single_receiver in existing_user.receiver
                 ],
+                record_payload = [
+                    RecordScehma(
+                        id=r.id,
+                        action=r.action,
+                        table=r.table,
+                        table_id=r.table_id,
+                        created_at=r.created_at,
+                        updated_at=r.updated_at,
+                        custom_logs=r.custom_logs,
+                    )
+                    for r in existing_user.record
+                ]
+
             )
         )
         for existing_user in existing_users
@@ -768,7 +823,8 @@ def update_user(
             point_payload = [
                 PointScehma(
                     id=p.id,
-                    amount=p.amount,
+                    login_amount=p.login_amount,
+                    referral_amount=p.referral_amount,
                     extra_profit_per_hour=p.extra_profit_per_hour,
                     created_at=p.created_at,
                     updated_at=p.updated_at,

@@ -11,7 +11,7 @@ from app.activity.models import ActivityModel
 from app.social_media.models import SocialMediaModel
 from app.friend.models import FriendModel
 from app.point.models import PointModel
-
+from app.record.models import RecordModel
 
 class UserModel(Base):
     __tablename__ = "user"
@@ -68,6 +68,8 @@ class UserModel(Base):
     receiver = relationship(
         "FriendModel", foreign_keys="FriendModel.receiver_id", back_populates="receiver"
     )
+    
+    record = relationship("RecordModel",  back_populates="user")
 
     def __repr__(self) -> str:
         return f"<UserModel telegram id={self.telegram_id} username={self.username}>"

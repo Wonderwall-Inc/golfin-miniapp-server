@@ -45,3 +45,9 @@ def get_friend_from_users(user_ids: List[int] = Query(default=None), skip: int =
 def update_friend(friend_status: str, id: Optional[int] = None, sender_id: Optional[int] = None, receiver_id: Optional[int] = None, custom_logs: Optional[dict] = None, db: Session = Depends(get_db)):
     """Update Status"""
     return service.update_friend(id, sender_id, receiver_id, friend_status, custom_logs, db)
+
+
+@router.put("/reward-update", response_model=List[schemas.FriendDetailsResponseSchema])
+def update_friend(sender_ids: List[int] = Query(default=None), db: Session = Depends(get_db)):
+    """Update multiple friend has_claimed by list of sender id"""
+    return service.update_friend(db, sender_ids)
