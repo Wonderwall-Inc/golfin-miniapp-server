@@ -163,7 +163,7 @@ def retrieve_record_list(db: Session, user_ids: List[int], skip: int = 0, limit:
 
 #         if request.type == "add":
 #             if request.record_payload.login_amount:
-#                 existing_record.login_amout += request.record_payload.login_amount
+#                 existing_record.login_amount += request.record_payload.login_amount
 #             if request.record_payload.referral_amount:
 #                 existing_record.referral_amount += request.record_payload.referral_amount
 #             if request.record_payload.extra_profit_per_hour: # can be add or minus for that
@@ -171,7 +171,7 @@ def retrieve_record_list(db: Session, user_ids: List[int], skip: int = 0, limit:
 
 #         elif request.type == "minus":
 #             if request.record_payload.login_amount:
-#                 existing_record.login_amout -= request.record_payload.login_amount
+#                 existing_record.login_amount -= request.record_payload.login_amount
 #             if request.record_payload.login_amount:
 #                 existing_record.referral_amount -= request.record_payload.referral_amount
 #             if request.record_payload.extra_profit_per_hour: # can be add or minus for that
@@ -187,7 +187,7 @@ def retrieve_record_list(db: Session, user_ids: List[int], skip: int = 0, limit:
 #             record_base=schemas.RecordDetailsSchema(
 #                 record=schemas.RecordScehma(
 #                     id=existing_record.id,
-#                     login_amount=existing_record.login_amout,
+#                     login_amount=existing_record.login_amount,
 #                     referral_amount=existing_record.referral_amount,
 #                     extra_profit_per_hour=existing_record.extra_profit_per_hour,
 #                     created_at=existing_record.created_at,

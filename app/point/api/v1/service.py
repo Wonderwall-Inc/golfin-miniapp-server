@@ -38,7 +38,7 @@ def create_point(request: schemas.PointCreateRequestSchema, db: Session) -> sche
             point_base=schemas.PointDetailsSchema(
                 point=schemas.PointScehma(
                     id=new_point.id,
-                    login_amount=new_point.login_amout,
+                    login_amount=new_point.login_amount,
                     referral_amount=new_point.referral_amount,
                     extra_profit_per_hour=new_point.extra_profit_per_hour,
                     created_at=new_point.created_at,
@@ -78,7 +78,7 @@ def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> sc
                     user_id=existing_point.user_id,
                     point=schemas.PointScehma(
                         id=existing_point.id,
-                        login_amount=existing_point.login_amout,
+                        login_amount=existing_point.login_amount,
                         referral_amount=existing_point.referral_amount,
                         extra_profit_per_hour=existing_point.extra_profit_per_hour,
                         created_at=existing_point.created_at,
@@ -107,7 +107,7 @@ def retrieve_point_by_user_id(user_id: int, db: Session) -> schemas.PointRetriev
                 user_id=existing_point.user_id,
                 point=schemas.PointScehma(
                     id=existing_point.id,
-                    login_amount=existing_point.login_amout,
+                    login_amount=existing_point.login_amount,
                     referral_amount=existing_point.referral_amount,
                     extra_profit_per_hour=existing_point.extra_profit_per_hour,
                     created_at=existing_point.created_at,
@@ -135,7 +135,7 @@ def retrieve_point_list(db: Session, user_ids: List[int], skip: int = 0, limit: 
                     user_id=ex.user_id,
                     point=schemas.PointScehma(
                         id=ex.id,
-                        login_amount=ex.login_amout,
+                        login_amount=ex.login_amount,
                         referral_amount=ex.referral_amount,
                         extra_profit_per_hour=ex.extra_profit_per_hour,
                         created_at=ex.created_at,
@@ -164,7 +164,7 @@ def update_point(request: schemas.PointUpdateByIdRequestSchema, db: Session) -> 
 
         if request.type == "add":
             if request.point_payload.login_amount:
-                existing_point.login_amout += request.point_payload.login_amount
+                existing_point.login_amount += request.point_payload.login_amount
             if request.point_payload.referral_amount:
                 existing_point.referral_amount += request.point_payload.referral_amount
             if request.point_payload.extra_profit_per_hour: # can be add or minus for that
@@ -172,7 +172,7 @@ def update_point(request: schemas.PointUpdateByIdRequestSchema, db: Session) -> 
 
         elif request.type == "minus":
             if request.point_payload.login_amount:
-                existing_point.login_amout -= request.point_payload.login_amount
+                existing_point.login_amount -= request.point_payload.login_amount
             if request.point_payload.login_amount:
                 existing_point.referral_amount -= request.point_payload.referral_amount
             if request.point_payload.extra_profit_per_hour: # can be add or minus for that
@@ -188,7 +188,7 @@ def update_point(request: schemas.PointUpdateByIdRequestSchema, db: Session) -> 
             point_base=schemas.PointDetailsSchema(
                 point=schemas.PointScehma(
                     id=existing_point.id,
-                    login_amount=existing_point.login_amout,
+                    login_amount=existing_point.login_amount,
                     referral_amount=existing_point.referral_amount,
                     extra_profit_per_hour=existing_point.extra_profit_per_hour,
                     created_at=existing_point.created_at,
