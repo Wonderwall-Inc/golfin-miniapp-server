@@ -25,10 +25,11 @@ from app.point.schemas import PointScehma
 from app.social_media.schemas import SocialMediaBaseSchema
 from app.activity.schemas import ActivityBaseSchema
 # from core.utils import UserSchemaFactory
-from app.record.models import RecordModel
-from app.record.schemas import RecordScehma 
-from app.record.api.v1.service import create_record, retrieve_record_by_user_id
-from app.record import schemas
+# from app.record.models import RecordModel
+# from app.record.schemas import RecordScehma 
+# from app.record.api.v1.service import create_record, retrieve_record_by_user_id
+# from app.record import schemas
+
 def create_user(
     request: UserCreateRequestSchema, db: Session, background_tasks: BackgroundTasks
 ):
@@ -107,16 +108,17 @@ def create_user(
     db.commit()
     db.refresh(new_user)
     
-    record_req = schemas.RecordCreateRequestSchema(
-        user_id = new_user.id,
-        access_token='',
-        record_details=schemas.RecordCreateDetailsSchema(
-            action='CREATE',
-            table='USER',
-            table_id=new_user.id,
-        )
-    )
-    background_tasks.add_task(create_record, record_req, db)
+    # FIXME
+    # record_req = schemas.RecordCreateRequestSchema(
+    #     user_id = new_user.id,
+    #     access_token='',
+    #     record_details=schemas.RecordCreateDetailsSchema(
+    #         action='CREATE',
+    #         table='USER',
+    #         table_id=new_user.id,
+    #     )
+    # )
+    # background_tasks.add_task(create_record, record_req, db)
     # FIXME: Create Game Character for the new user with bg task
     # Create Point for the new user with bg task
 
@@ -457,9 +459,10 @@ def retrieve_user(
         for a in existing_user.activity
     ]
     
-    new_record = background_tasks.add_task(retrieve_record_by_user_id, existing_user.id, db)
-    print('new_record')
-    print(new_record)
+    # FIXME
+    # new_record = background_tasks.add_task(retrieve_record_by_user_id, existing_user.id, db)
+    # print('new_record')
+    # print(new_record)
     # existing_user.record.append(new_record)
     
     # record_payload = [
@@ -502,7 +505,7 @@ def retrieve_user(
             point=point_payload,
             activity=activity_payload,
             social_media=social_media_payload,
-            record=new_record,
+            # record=new_record, # FIXME
             sender=sender_payload,
             receiver=receiver_payload,
         )
@@ -521,18 +524,19 @@ def retrieve_users(
             joinedload(UserModel.social_media),  # Load social media with the user
             joinedload(UserModel.sender),  # Load sender with the user
             joinedload(UserModel.receiver),  # Load receiver with the user
-            joinedload(UserModel.record)
+            # joinedload(UserModel.record) # FIXME
         )
         .offset(skip)
         .limit(limit)
         .all()
     )
     
-    for existing_user in existing_users:
-        new_record = RecordModel(action="LIST", table="USER",table_id=existing_user.id)
-        db.add(new_record)
-        db.commit()
-        db.refresh(new_record)
+    # FIXME
+    # for existing_user in existing_users:
+    #     new_record = RecordModel(action="LIST", table="USER",table_id=existing_user.id)
+    #     db.add(new_record)
+    #     db.commit()
+    #     db.refresh(new_record)
     
     return [
         UserDetailsResponseSchema(
@@ -659,18 +663,19 @@ def retrieve_users(
                     )
                     for single_receiver in existing_user.receiver
                 ],
-                record_payload = [
-                    RecordScehma(
-                        id=r.id,
-                        action=r.action,
-                        table=r.table,
-                        table_id=r.table_id,
-                        created_at=r.created_at,
-                        updated_at=r.updated_at,
-                        custom_logs=r.custom_logs,
-                    )
-                    for r in existing_user.record
-                ]
+                # FIXME
+                # record_payload = [
+                #     RecordScehma(
+                #         id=r.id,
+                #         action=r.action,
+                #         table=r.table,
+                #         table_id=r.table_id,
+                #         created_at=r.created_at,
+                #         updated_at=r.updated_at,
+                #         custom_logs=r.custom_logs,
+                #     )
+                #     for r in existing_user.record
+                # ]
 
             )
         )
