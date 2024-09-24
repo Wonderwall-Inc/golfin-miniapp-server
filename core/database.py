@@ -24,8 +24,9 @@ from core.constants import Constants
 # )
 
 print(os.environ.get("PROJECT_ENV"))
-engine_sql = Constants.SQLALCHAMY_DATABASE_URL if os.environ.get("PROJECT_ENV") else Constants.TIDB_SQLALCHAMY_DATABASE_URL
-engine = create_engine(engine_sql)
+# engine_sql = Constants.SQLALCHAMY_DATABASE_URL if os.environ.get("PROJECT_ENV") else Constants.TIDB_SQLALCHAMY_DATABASE_URL
+# print(engine_sql)
+engine = create_engine(Constants.dburl)
 
 SessionLocal = sessionmaker(
     bind=engine,
