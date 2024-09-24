@@ -27,11 +27,7 @@ get_db = database.get_db
     response_model=schemas.UserCreateResponseSchema,
     # dependencies=[Depends(auth)],
 )
-def create_user(
-    request: schemas.UserCreateRequestSchema,
-    background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db),
-):
+def create_user(request: schemas.UserCreateRequestSchema, background_tasks: BackgroundTasks, db: Session = Depends(get_db),):
     """Login with existing account"""
     return service.create_user(request, db, background_tasks)
 
@@ -45,8 +41,9 @@ def create_user(
 #     return service.retrieve_user_by_id(id, db)
 
 
-@router.get("/detail/")
+@router.get("/detail")
 def get_user(
+    background_tasks: BackgroundTasks,
     id: Optional[int] = None,
     username: Optional[str] = None,
     telegram_id: Optional[str] = None,
@@ -54,7 +51,7 @@ def get_user(
     db: Session = Depends(get_db),
 ):
     """Get User details of single user"""
-    return service.retrieve_user(id, username, telegram_id, wallet_address, db)
+    return service.retrieve_user(id, username, telegram_id, wallet_address, db, background_tasks)
 
 
 @router.get(

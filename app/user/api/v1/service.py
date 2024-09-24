@@ -105,7 +105,7 @@ def create_user(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    background_tasks.add_task(create_record_for_new_user, new_user.id, db)
+    background_tasks.add_task(create_user_record, new_user.id, "CREATE", "USER", False, db)
     # FIXME: Create Game Character for the new user with bg task
     # Create Point for the new user with bg task
 
@@ -127,15 +127,17 @@ def create_user(
     )
 
 
-def create_record_for_new_user(user_id: int, db: Session):
+def create_user_record(user_id: int, action: str, table: str, return_result: bool, db: Session):
     new_record = RecordModel(
         user_id=user_id,
-        action="CREATE",
-        table="USER",
+        action=action,
+        table=table,
     )
     db.add(new_record)
     db.commit()
     db.refresh(new_record)  
+    if return_result is True:
+        return new_record
     
 # def retrieve_user_by_id(id: int, db: Session):
 #     if not id:
@@ -309,6 +311,7 @@ def retrieve_user(
     telegram_id: Optional[str],
     wallet_address: Optional[str],
     db: Session,
+    background_tasks: BackgroundTasks
 ):
     if not id and not username and not telegram_id and not wallet_address:
         raise HTTPException(
@@ -454,15 +457,9 @@ def retrieve_user(
         for a in existing_user.activity
     ]
     
-    new_record = RecordModel(
-        action="GET", 
-        table="USER",
-        table_id=existing_user.id,
-    )
+    new_record = background_tasks.add_task(create_user_record, existing_user.id, "GET", "USER", True, db)
     
-    db.add(new_record)
-    db.commit()
-    db.refresh(new_record)
+    existing_user.record.append(new_record)
     
     record_payload = [
         RecordScehma(
