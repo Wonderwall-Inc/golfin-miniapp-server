@@ -23,10 +23,11 @@ from core.constants import Constants
 #         connect_args={},
 # )
 
-print(os.environ.get("PROJECT_ENV"))
 # engine_sql = Constants.SQLALCHAMY_DATABASE_URL if os.environ.get("PROJECT_ENV") else Constants.TIDB_SQLALCHAMY_DATABASE_URL
 # print(engine_sql)
+print(Constants.dburl)
 engine = create_engine(Constants.dburl)
+print(os.environ.get("PROJECT_ENV"))
 
 SessionLocal = sessionmaker(
     bind=engine,
