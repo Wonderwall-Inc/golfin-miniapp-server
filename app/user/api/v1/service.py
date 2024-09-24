@@ -27,7 +27,8 @@ from app.activity.schemas import ActivityBaseSchema
 # from core.utils import UserSchemaFactory
 from app.record.models import RecordModel
 from app.record.schemas import RecordScehma 
-
+from app.record.api.v1.service import create_record, retrieve_record_by_user_id
+from app.record import schemas
 def create_user(
     request: UserCreateRequestSchema, db: Session, background_tasks: BackgroundTasks
 ):
@@ -105,7 +106,17 @@ def create_user(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    background_tasks.add_task(create_user_record, new_user.id, "CREATE", "USER", False, db)
+    
+    record_req = schemas.RecordCreateRequestSchema(
+        user_id = new_user.id,
+        access_token='',
+        record_details=schemas.RecordCreateDetailsSchema(
+            action='CREATE',
+            table='USER',
+            table_id=new_user.id,
+        )
+    )
+    background_tasks.add_task(create_record, record_req, db)
     # FIXME: Create Game Character for the new user with bg task
     # Create Point for the new user with bg task
 
@@ -126,19 +137,7 @@ def create_user(
         ),
     )
 
-
-def create_user_record(user_id: int, action: str, table: str, return_result: bool, db: Session):
-    new_record = RecordModel(
-        user_id=user_id,
-        action=action,
-        table=table,
-    )
-    db.add(new_record)
-    db.commit()
-    db.refresh(new_record)  
-    if return_result is True:
-        return new_record
-    
+   
 # def retrieve_user_by_id(id: int, db: Session):
 #     if not id:
 #         raise HTTPException(
@@ -457,7 +456,7 @@ def retrieve_user(
         for a in existing_user.activity
     ]
     
-    new_record = background_tasks.add_task(create_user_record, existing_user.id, "GET", "USER", True, db)
+    new_record = background_tasks.add_task(retrieve_record_by_user_id, existing_user.id, db)
     
     existing_user.record.append(new_record)
     
