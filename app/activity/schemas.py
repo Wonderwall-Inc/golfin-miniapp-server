@@ -12,8 +12,8 @@ class ActivityBaseSchema(BaseModel):
     logged_in: bool
     login_streak: int
     total_logins: int
-    last_action_time: datetime
-    last_login_time: datetime
+    last_action_time: Optional[datetime] = None
+    last_login_time: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
     custom_logs: Optional[dict] = None
@@ -23,8 +23,8 @@ class ActivitySchema(BaseModel):
     logged_in: bool
     login_streak: int
     total_logins: int
-    last_action_time: datetime
-    last_login_time: datetime
+    last_action_time: Optional[datetime] = None
+    last_login_time: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
     custom_logs: Optional[dict] = None

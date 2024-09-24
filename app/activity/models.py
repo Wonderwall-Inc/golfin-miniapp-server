@@ -21,8 +21,8 @@ class ActivityModel(Base):
     logged_in: Mapped[bool] = mapped_column(default=False, nullable=False)
     login_streak: Mapped[int] = mapped_column(Integer, default=0)
     total_logins: Mapped[int] = mapped_column(Integer, default=0)
-    last_action_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    last_login_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    last_action_time: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    last_login_time: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)

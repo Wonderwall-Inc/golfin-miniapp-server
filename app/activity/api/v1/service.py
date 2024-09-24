@@ -25,8 +25,8 @@ def create_activity(request: schemas.ActivityCreateRequestSchema, db:Session) ->
             logged_in=True, # FIXME: change to not_yet_claim_daily = True
             login_streak=0,
             total_logins=0,
-            last_action_time=datetime.now(),
-            last_login_time=datetime.now(),
+            # last_action_time=datetime.now(),
+            # last_login_time=datetime.now(),
             custom_logs=request.activity.custom_logs
         )
 
