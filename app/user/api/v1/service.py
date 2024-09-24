@@ -457,21 +457,22 @@ def retrieve_user(
     ]
     
     new_record = background_tasks.add_task(retrieve_record_by_user_id, existing_user.id, db)
+    print('new_record')
+    print(new_record)
+    # existing_user.record.append(new_record)
     
-    existing_user.record.append(new_record)
-    
-    record_payload = [
-        RecordScehma(
-            id=r.id,
-            action=r.action,
-            table=r.table,
-            table_id=r.table_id,
-            created_at=r.created_at,
-            updated_at=r.updated_at,
-            custom_logs=r.custom_logs,
-        )
-        for r in existing_user.record
-    ]
+    # record_payload = [
+    #     RecordScehma(
+    #         id=r.id,
+    #         action=r.action,
+    #         table=r.table,
+    #         table_id=r.table_id,
+    #         created_at=r.created_at,
+    #         updated_at=r.updated_at,
+    #         custom_logs=r.custom_logs,
+    #     )
+    #     for r in new_record
+    # ]
 
     return UserDetailsResponseSchema(
         user_details=UserDetailsSchema(
@@ -500,7 +501,7 @@ def retrieve_user(
             point=point_payload,
             activity=activity_payload,
             social_media=social_media_payload,
-            record=record_payload,
+            record=new_record,
             sender=sender_payload,
             receiver=receiver_payload,
         )
