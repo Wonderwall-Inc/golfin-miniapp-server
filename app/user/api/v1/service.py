@@ -382,6 +382,7 @@ def retrieve_user(
             created_at=single_sender.created_at,
             updated_at=single_sender.updated_at,
             status=single_sender.status,
+            has_claimed=single_sender.has_claimed
         )
         for single_sender in existing_user.sender
     ]
@@ -394,6 +395,7 @@ def retrieve_user(
             created_at=single_receiver.created_at,
             updated_at=single_receiver.updated_at,
             status=single_receiver.status,
+            has_claimed=single_receiver.has_claimed
         )
         for single_receiver in existing_user.receiver
     ]
@@ -650,6 +652,7 @@ def retrieve_users(
                         created_at=single_sender.created_at,
                         updated_at=single_sender.updated_at,
                         status=single_sender.status,
+                        has_claimed=single_sender.has_claimed
                     )
                     for single_sender in existing_user.sender
                 ],
@@ -661,6 +664,7 @@ def retrieve_users(
                         created_at=single_receiver.created_at,
                         updated_at=single_receiver.updated_at,
                         status=single_receiver.status,
+                        has_claimed=single_receiver.has_claimed
                     )
                     for single_receiver in existing_user.receiver
                 ],
@@ -757,6 +761,7 @@ def update_user(
                     created_at=single_sender.created_at,
                     updated_at=single_sender.updated_at,
                     status=single_sender.status,
+                    has_claimed=single_sender.has_claimed
                 )
                 for single_sender in existing_user.sender
             ]
@@ -769,6 +774,7 @@ def update_user(
                     created_at=single_receiver.created_at,
                     updated_at=single_receiver.updated_at,
                     status=single_receiver.status,
+                    has_claimed=single_receiver.has_claimed
                 )
                 for single_receiver in existing_user.receiver
             ]
