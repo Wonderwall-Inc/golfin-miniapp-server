@@ -396,7 +396,7 @@ def batch_update_by_user_id_to_receiver():
 def batch_update_reward_claimed_by_sender_id(sender_id: int ,db: Session) -> List[schemas.FriendDetailsResponseSchema]:
     """Update multiple friend has_claimed by list of sender id"""
     if not sender_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing sender_ids")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing sender_id")
     try:
         existing_friends = db.query(FriendModel).filter(FriendModel.sender_id==sender_id).all()
 
