@@ -31,6 +31,7 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
         sender_id=request.sender_id,
         receiver_id=request.receiver_id,
         status=request.status,
+        has_claimed=request.has_claimed,
     )
     db.add(new_friend)
     db.commit()
@@ -65,7 +66,7 @@ def get_friends_as_sender(user_id: int, db: Session) -> List[schemas.FriendRetri
                 friend_base=schemas.FriendSchema(
                     id=friend.sender.id,
                     status=friend.sender.status,
-                    has_claimed=new_friend.has_claimed,
+                    has_claimed=friend.has_claimed,
                     created_at=friend.sender.created_at,
                     updated_at=friend.sender.updated_at,
                     custom_logs=friend.sender.custom_logs,
@@ -92,7 +93,7 @@ def get_friends_as_receiver(user_id: int, db: Session) -> List[schemas.FriendRet
                 friend_base=schemas.FriendSchema(
                     id=friend.receiver.id,
                     status=friend.receiver.status,
-                    has_claimed=new_friend.has_claimed,
+                    has_claimed=friend.has_claimed,
                     created_at=friend.receiver.created_at,
                     updated_at=friend.receiver.updated_at,
                     custom_logs=friend.receiver.custom_logs,
