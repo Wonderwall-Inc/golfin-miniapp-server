@@ -47,7 +47,7 @@ def update_friend(friend_status: str, id: Optional[int] = None, sender_id: Optio
     return service.update_friend(id, sender_id, receiver_id, friend_status, custom_logs, db)
 
 
-@router.put("/reward-update", response_model=List[schemas.FriendDetailsResponseSchema])
+@router.patch("/reward-update", response_model=List[schemas.FriendDetailsResponseSchema])
 def batch_update_reward_claimed_by_sender_id(sender_ids: List[int] = Query(default=None), db: Session = Depends(get_db)):
     """Update multiple friend has_claimed by list of sender id"""
     return service.batch_update_reward_claimed_by_sender_id(db, sender_ids)

@@ -393,19 +393,21 @@ def update_friend_status_by_receiver_id(request: schemas.FriendUpdateByReceiverI
 def batch_update_by_user_id_to_receiver():
     pass
 
-def batch_update_reward_claimed_by_sender_id(sender_ids: Optional[int] ,db: Session) -> List[schemas.FriendDetailsResponseSchema]:
+def batch_update_reward_claimed_by_sender_id(sender_ids: List[int] ,db: Session) -> List[schemas.FriendDetailsResponseSchema]:
     """Update multiple friend has_claimed by list of sender id"""
     if not sender_ids:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or sender id or receiver id")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing sender_ids")
     try:
         existing_friends = db.query(FriendModel).filter(FriendModel.sender_id.in_(sender_ids)).all()
 
         if not existing_friends:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Friend not found")
+        
         for friend in existing_friends:
             friend.has_claimed = True
-            db.commit()
-            db.refresh(friend)
+            
+        db.commit()
+        
         return [
             schemas.FriendDetailsResponseSchema(
             friend_details=schemas.FriendDetailsSchema(
