@@ -414,8 +414,7 @@ def batch_update_reward_claimed_by_sender_id(sender_ids: Optional[int] ,db: Sess
                     has_claimed=f.has_claimed,
                     created_at=f.created_at,
                     updated_at=f.updated_at,
-                    custom_logs=f.custom_logs,
-                    has_claimed=f.has_claimed
+                    custom_logs=f.custom_logs
                 ),
                 sender_id=f.sender_id,
                 receiver_id=f.receiver_id,
