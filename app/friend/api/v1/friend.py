@@ -53,6 +53,6 @@ def batch_update_reward_claimed_by_sender_id(sender_id: int= Query(...), db: Ses
     return service.batch_update_reward_claimed_by_sender_id(db, sender_id)
 
 @router.get('/ranking')
-def get_referral_ranking(id: Optional[int] = None, user_id: Optional[int] = None, db: Session = Depends(get_db)):
+def get_referral_ranking(user_id: Optional[int] = None, db: Session = Depends(get_db)):
     """Get referral ranking"""
-    return service.get_referral_ranking(id, user_id, db)
+    return service.get_referral_ranking(user_id, db)

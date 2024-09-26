@@ -167,23 +167,20 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
     except Exception as e:
         logging.error(f"An error occured: {e}")
 
-def get_referral_ranking(id: Optional[int], user_id: Optional[int], db: Session) -> schemas.FriendWithIdsRetrievalResponseSchema:
-    """Retrieve referral ranking"""
-    if not id and not user_id: # avoid both none on optional case
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or user_id")
+from sqlalchemy import func, desc, distinct, literal, union
+from sqlalchemy.exc import SQLAlchemyError
+
+def get_referral_ranking(user_id: int, db: Session):
+    """Retrieve referral ranking for a user"""
+    logging.info(f"get_referral_ranking called with user_id={user_id}")
+    
+    if not user_id:
+        logging.error("Missing user_id")
+        all_users = db.query(FriendModel).filter(FriendModel.sender_id == user_id).order_by(desc(func.coalesce(referral_count.c.referral_count, 0))).limit(10).all()
+        logging.info(all_users)
+        return all_users
 
     try:
-        user_query = db.query(FriendModel)
-        if id is not None:
-            user_query.filter(FriendModel.id == id)
-        elif user_id is not None:
-            user_query.filter(FriendModel.sender_id == user_id)
-
-        user = user_query.first()
-        
-        if not user: 
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Friend not found")
-
         # Subquery to count referrals for each user
         referral_count = db.query(
             FriendModel.sender_id,
@@ -192,8 +189,8 @@ def get_referral_ranking(id: Optional[int], user_id: Optional[int], db: Session)
         
         all_users = union(
             db.query(distinct(FriendModel.sender_id)),
-            db.query(literal(id if id is not None else user_id))
-        ).alias()
+            db.query(literal(user_id).label('sender_id'))
+        ).alias('all_users')
         
         # Subquery to rank users based on referral count
         ranking = db.query(
@@ -209,17 +206,13 @@ def get_referral_ranking(id: Optional[int], user_id: Optional[int], db: Session)
         
         # Query to get the rank for the specific user
         query = db.query(ranking.c.rank, ranking.c.referral_count, ranking.c.user_id)
-    
-        if id is not None:
-            query = query.filter(ranking.c.user_id == id)
-        elif user_id is not None:
-            query = query.filter(ranking.c.user_id == user_id)
+        query = query.filter(ranking.c.user_id == user_id)
         
         logging.info(f"Executing query: {query}")
         result = query.first()
         
         if result is None:
-            logging.error(f"Ranking not found for user with id={id}, user_id={user_id}")
+            logging.error(f"Ranking not found for user_id={user_id}")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
         
         logging.info(f"Query result: {result}")
@@ -227,16 +220,19 @@ def get_referral_ranking(id: Optional[int], user_id: Optional[int], db: Session)
         response = {
             "rank": result.rank,
             "referral_count": result.referral_count,
-            "user_id": result.user_id,
-            "id": id
+            "user_id": result.user_id
         }
         
         logging.info(f"Returning response: {response}")
         
         return response
     
+    except SQLAlchemyError as e:
+        logging.error(f"Database error occurred: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error occurred: {str(e)}")
     except Exception as e:
-        logging.error(f"An error occured: {e}")
+        logging.error(f"An unexpected error occurred: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An unexpected error occurred: {str(e)}")
 
 
 def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit: int = 15) -> schemas.FriendWithIdsRetrievalResponseSchema:
