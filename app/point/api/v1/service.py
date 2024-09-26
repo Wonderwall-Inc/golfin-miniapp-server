@@ -98,17 +98,30 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
     
     try:
         # base_query = db.query(PointModel)
-        filters = []
-    
+        #filters = []
+        subquery = db.query(
+            PointModel.id,
+            PointModel.user_id,
+            (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
+            func.rank().over(order_by=desc('total_points')).label('rank')
+        ).subquery()
+        
+        query = db.query(subquery.c.rank)
+        
         if id is not None: 
-            filters.append(PointModel.id == id)
+            query.filter(subquery.c.id == id)
 
         if user_id is not None:
-            filters.append(PointModel.user_id == user_id)
+            query.filter(subquery.c.user_id == user_id)
 
-        if filters: 
-            rank = db.query(func.rank().over(order_by=desc(PointModel.referral_amount+PointModel.login_amount))).filter(*filters).scalar()
-            return rank
+        rank = query.scalar()
+        
+        if rank is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
+        return rank
+        #if filters: 
+        #    rank = query.scalar()
+        #    return rank
             # if not existing_point:
             #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Point not found")
             
