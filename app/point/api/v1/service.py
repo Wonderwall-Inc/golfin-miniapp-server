@@ -108,6 +108,7 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
         if not user: 
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
         
+        logging.info(f"User found: {user}")
         # base_query = db.query(PointModel)
         #filters = []
         subquery = db.query(
@@ -124,23 +125,28 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
         elif user_id is not None:
             query.filter(subquery.c.user_id == user_id)
 
+        logging.info(f"Executing query: {query}")
         result = query.first()
         
         if result is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
 
-        return {
+        logging.info(f"Result: {result}")
+        
+        response = {
             "rank": result.rank,
             "total_points": result.total_points,
             "user_id": user_id or user.user_id,
             "id": id or user.id
         }
-        rank = query.scalar()
-        print('rank', rank)
+        logging.info(f"Returning response: {response}")
+        return response
+        #rank = query.scalar()
+        #print('rank', rank)
         
-        if rank is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
-        return rank
+        #if rank is None:
+        #    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
+        #return rank
         #if filters: 
         #    rank = query.scalar()
         #    return rank
