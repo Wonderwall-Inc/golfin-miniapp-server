@@ -2,6 +2,7 @@
 
 import logging
 from typing import List, Optional
+from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, BackgroundTasks
 
@@ -163,6 +164,60 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
             ]
             return schemas.FriendWithIdsRetrievalResponseSchema(sender=sender,receiver=receiver)
                
+    except Exception as e:
+        logging.error(f"An error occured: {e}")
+
+def get_referral_ranking(id: Optional[int], user_id: Optional[int], db: Session) -> schemas.FriendWithIdsRetrievalResponseSchema:
+    """Retrieve referral ranking"""
+    if not id and not user_id: # avoid both none on optional case
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or user_id")
+
+    try:
+        # Subquery to count referrals for each user
+        referral_count = db.query(
+            FriendModel.sender_id,
+            func.count(FriendModel.id).label('referral_count')
+        ).group_by(FriendModel.sender_id).subquery()
+        
+        # Subquery to rank users based on referral count
+        ranking = db.query(
+            referral_count.c.sender_id,
+            referral_count.c.referral_count,
+            func.rank().over(order_by=desc(referral_count.c.referral_count)).label('rank')
+        ).subquery()
+        
+        # Query to get the rank for the specific user
+        query = db.query(ranking.c.rank, ranking.c.referral_count)
+    
+        if id is not None:
+            user = db.query(UserModel).filter(UserModel.id == id).first()
+            if not user:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            query = query.filter(ranking.c.sender_id == user.id)
+        elif user_id is not None:
+            query = query.filter(ranking.c.sender_id == user_id)
+        
+        logging.info(f"Executing query: {query}")
+        
+        result = query.first()
+        
+        if result is None:
+            logging.error(f"Ranking not found for user with id={id}, user_id={user_id}")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
+        
+        logging.info(f"Query result: {result}")
+        
+        response = {
+            "rank": result.rank,
+            "referral_count": result.referral_count,
+            "user_id": user_id or (user.id if id is not None else None),
+            "id": id
+        }
+        
+        logging.info(f"Returning response: {response}")
+        
+        return response
+    
     except Exception as e:
         logging.error(f"An error occured: {e}")
 

@@ -51,3 +51,8 @@ def update_friend(friend_status: str, id: Optional[int] = None, sender_id: Optio
 def batch_update_reward_claimed_by_sender_id(sender_id: int= Query(...), db: Session = Depends(get_db)):
     """Update multiple friend has_claimed by list of sender id"""
     return service.batch_update_reward_claimed_by_sender_id(db, sender_id)
+
+@router.get('/ranking')
+def get_referral_ranking(id: Optional[int] = None, user_id: Optional[int] = None, db: Session = Depends(get_db)):
+    """Get referral ranking"""
+    return service.get_referral_ranking(id, user_id, db)

@@ -95,7 +95,6 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
     """Retrieve Point Details from Single User"""
     if not id and not user_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Missing id or user_id")
-    
     try:
         user_query = db.query(PointModel)
         if id is not None:
@@ -108,9 +107,6 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
         if not user: 
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
         
-        logging.info(f"User found: {user}")
-        # base_query = db.query(PointModel)
-        #filters = []
         subquery = db.query(
             PointModel.id,
             PointModel.user_id,
@@ -125,13 +121,10 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
         elif user_id is not None:
             query = query.filter(subquery.c.user_id == user_id)
 
-        logging.info(f"Executing query: {query}")
         result = query.first()
         
         if result is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
-
-        logging.info(f"Result: {result}")
         
         response = {
             "rank": result.rank,
@@ -141,32 +134,6 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
         }
         logging.info(f"Returning response: {response}")
         return response
-        #rank = query.scalar()
-        #print('rank', rank)
-        
-        #if rank is None:
-        #    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
-        #return rank
-        #if filters: 
-        #    rank = query.scalar()
-        #    return rank
-            # if not existing_point:
-            #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Point not found")
-            
-            # return schemas.PointRetrievalResponseSchema(
-            #     point_base=schemas.PointDetailsSchema(
-            #         user_id=existing_point.user_id,
-            #         point=schemas.PointScehma(
-            #             id=existing_point.id,
-            #             login_amount=existing_point.login_amount,
-            #             referral_amount=existing_point.referral_amount,
-            #             extra_profit_per_hour=existing_point.extra_profit_per_hour,
-            #             created_at=existing_point.created_at,
-            #             updated_at=existing_point.updated_at,
-            #             custom_logs=existing_point.custom_logs,
-            #         ),
-            #     )
-            # )
     except Exception as e:
         logging.error(f"An error occurred: {e}")  
 
