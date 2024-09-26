@@ -2,7 +2,7 @@
 
 import logging
 from typing import List, Optional
-from sqlalchemy import desc, distinct, func
+from sqlalchemy import desc, distinct, func, literal, union
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, BackgroundTasks
 
@@ -190,7 +190,10 @@ def get_referral_ranking(id: Optional[int], user_id: Optional[int], db: Session)
             func.count(FriendModel.id).label('referral_count'),
         ).group_by(FriendModel.sender_id).subquery()
         
-        all_users = db.query(distinct(FriendModel.sender_id)).subquery()
+        all_users = union(
+            db.query(distinct(FriendModel.sender_id)),
+            db.query(literal(id if id is not None else user_id))
+        ).alias()
         
         # Subquery to rank users based on referral count
         ranking = db.query(
