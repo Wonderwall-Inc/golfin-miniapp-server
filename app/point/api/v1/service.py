@@ -2,6 +2,7 @@
 
 import logging
 from typing import List, Optional
+from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, BackgroundTasks
 
@@ -87,6 +88,44 @@ def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> sc
                     ),
                 )
             )
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")  
+
+def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) -> int:
+    """Retrieve Point Details from Single User"""
+    if not id and not user_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Missing id or user_id")
+    
+    try:
+        # base_query = db.query(PointModel)
+        filters = []
+    
+        if id is not None: 
+            filters.append(PointModel.id == id)
+
+        if user_id is not None:
+            filters.append(PointModel.user_id == user_id)
+
+        if filters: 
+            rank = db.query(func.rank().over(order_by=desc(PointModel.referral_amount+PointModel.login_amount))).filter(*filters).scalar()
+            return rank
+            # if not existing_point:
+            #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Point not found")
+            
+            # return schemas.PointRetrievalResponseSchema(
+            #     point_base=schemas.PointDetailsSchema(
+            #         user_id=existing_point.user_id,
+            #         point=schemas.PointScehma(
+            #             id=existing_point.id,
+            #             login_amount=existing_point.login_amount,
+            #             referral_amount=existing_point.referral_amount,
+            #             extra_profit_per_hour=existing_point.extra_profit_per_hour,
+            #             created_at=existing_point.created_at,
+            #             updated_at=existing_point.updated_at,
+            #             custom_logs=existing_point.custom_logs,
+            #         ),
+            #     )
+            # )
     except Exception as e:
         logging.error(f"An error occurred: {e}")  
 
