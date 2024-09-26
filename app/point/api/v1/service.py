@@ -93,47 +93,77 @@ def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> sc
 
 def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) -> int:
     """Retrieve Point Details from Single User"""
-    if not id and not user_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Missing id or user_id")
     try:
-        user_query = db.query(PointModel)
-        if id is not None:
-            user_query.filter(PointModel.id == id)
-        elif user_id is not None:
-            user_query.filter(PointModel.user_id == user_id)        
+        if not id and not user_id:
+            subquery = db.query(
+                PointModel.id,
+                PointModel.user_id,
+                (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
+                func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank')
+            ).subquery()
+            
+            query = db.query(
+                subquery.c.id,
+                subquery.c.user_id,
+                subquery.c.total_points,
+                subquery.c.rank
+            ).order_by(subquery.c.rank)
+            
+            results = query.limit(10).all()
+            
+            if not results:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rankings found")
+            
+            response = [
+                {
+                    "rank": result.rank,
+                    "total_points": result.total_points,
+                    "user_id": result.user_id,
+                    "id": result.id
+                } for result in results
+            ]
+            logging.info(f"Returning top {len(response)} rankings")
+            return response
         
-        user=user_query.first()
-        
-        if not user: 
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
-        
-        subquery = db.query(
-            PointModel.id,
-            PointModel.user_id,
-            (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
-            func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank')
-        ).subquery()
-        
-        query = db.query(subquery.c.rank, subquery.c.total_points)
-        
-        if id is not None: 
-            query = query.filter(subquery.c.id == id)
-        elif user_id is not None:
-            query = query.filter(subquery.c.user_id == user_id)
-
-        result = query.first()
-        
-        if result is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
-        
-        response = {
-            "rank": result.rank,
-            "total_points": result.total_points,
-            "user_id": user_id or user.user_id,
-            "id": id or user.id
-        }
-        logging.info(f"Returning response: {response}")
-        return response
+        else:
+            user_query = db.query(PointModel)
+            if id is not None:
+                user_query.filter(PointModel.id == id)
+            elif user_id is not None:
+                user_query.filter(PointModel.user_id == user_id)        
+            
+            user=user_query.first()
+            
+            if not user: 
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
+            
+            subquery = db.query(
+                PointModel.id,
+                PointModel.user_id,
+                (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
+                func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank')
+            ).subquery()
+            
+            query = db.query(subquery.c.rank, subquery.c.total_points)
+            
+            if id is not None: 
+                query = query.filter(subquery.c.id == id)
+            elif user_id is not None:
+                query = query.filter(subquery.c.user_id == user_id)
+    
+            result = query.first()
+            
+            if result is None:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
+            
+            response = {
+                "rank": result.rank,
+                "total_points": result.total_points,
+                "user_id": user_id or user.user_id,
+                "id": id or user.id
+            }
+            logging.info(f"Returning response: {response}")
+            return response
     except Exception as e:
         logging.error(f"An error occurred: {e}")  
 
