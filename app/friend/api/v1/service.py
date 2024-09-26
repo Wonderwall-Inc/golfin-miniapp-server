@@ -176,63 +176,68 @@ def get_referral_ranking(user_id: int, db: Session):
     
     if not user_id:
         logging.error("Missing user_id")
+        referral_count = db.query(
+                FriendModel.sender_id,
+                func.count(FriendModel.id).label('referral_count'),
+                ).group_by(FriendModel.sender_id).subquery()
         all_users = db.query(FriendModel).filter(FriendModel.sender_id == user_id).order_by(desc(func.coalesce(referral_count.c.referral_count, 0))).limit(10).all()
         logging.info(all_users)
         return all_users
-
-    try:
-        # Subquery to count referrals for each user
-        referral_count = db.query(
-            FriendModel.sender_id,
-            func.count(FriendModel.id).label('referral_count'),
-        ).group_by(FriendModel.sender_id).subquery()
-        
-        all_users = union(
-            db.query(distinct(FriendModel.sender_id)),
-            db.query(literal(user_id).label('sender_id'))
-        ).alias('all_users')
-        
-        # Subquery to rank users based on referral count
-        ranking = db.query(
-            all_users.c.sender_id.label('user_id'),
-            func.coalesce(referral_count.c.referral_count, 0).label('referral_count'),
-            func.rank().over(
-                order_by=[
-                    desc(func.coalesce(referral_count.c.referral_count, 0)),
-                    all_users.c.sender_id
-                ]
-            ).label('rank')
-        ).outerjoin(referral_count, all_users.c.sender_id == referral_count.c.sender_id).subquery()
-        
-        # Query to get the rank for the specific user
-        query = db.query(ranking.c.rank, ranking.c.referral_count, ranking.c.user_id)
-        query = query.filter(ranking.c.user_id == user_id)
-        
-        logging.info(f"Executing query: {query}")
-        result = query.first()
-        
-        if result is None:
-            logging.error(f"Ranking not found for user_id={user_id}")
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
-        
-        logging.info(f"Query result: {result}")
-        
-        response = {
-            "rank": result.rank,
-            "referral_count": result.referral_count,
-            "user_id": result.user_id
-        }
-        
-        logging.info(f"Returning response: {response}")
-        
-        return response
     
-    except SQLAlchemyError as e:
-        logging.error(f"Database error occurred: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error occurred: {str(e)}")
-    except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An unexpected error occurred: {str(e)}")
+    else:
+        try:
+            # Subquery to count referrals for each user
+            referral_count = db.query(
+                FriendModel.sender_id,
+                func.count(FriendModel.id).label('referral_count'),
+                ).group_by(FriendModel.sender_id).subquery()
+        
+            all_users = union(
+                db.query(distinct(FriendModel.sender_id)),
+                db.query(literal(user_id).label('sender_id'))
+            ).alias('all_users')
+
+            # Subquery to rank users based on referral count
+            ranking = db.query(
+                all_users.c.sender_id.label('user_id'),
+                func.coalesce(referral_count.c.referral_count, 0).label('referral_count'),
+                func.rank().over(
+                    order_by=[
+                        desc(func.coalesce(referral_count.c.referral_count, 0)),
+                        all_users.c.sender_id
+                    ]
+                ).label('rank')
+            ).outerjoin(referral_count, all_users.c.sender_id == referral_count.c.sender_id).subquery()
+
+            # Query to get the rank for the specific user
+            query = db.query(ranking.c.rank, ranking.c.referral_count, ranking.c.user_id)
+            query = query.filter(ranking.c.user_id == user_id)
+
+            logging.info(f"Executing query: {query}")
+            result = query.first()
+
+            if result is None:
+                logging.error(f"Ranking not found for user_id={user_id}")
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
+
+            logging.info(f"Query result: {result}")
+
+            response = {
+                "rank": result.rank,
+                "referral_count": result.referral_count,
+                "user_id": result.user_id
+            }
+
+            logging.info(f"Returning response: {response}")
+
+            return response
+    
+        except SQLAlchemyError as e:
+            logging.error(f"Database error occurred: {e}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error occurred: {str(e)}")
+        except Exception as e:
+            logging.error(f"An unexpected error occurred: {e}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An unexpected error occurred: {str(e)}")
 
 
 def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit: int = 15) -> schemas.FriendWithIdsRetrievalResponseSchema:
