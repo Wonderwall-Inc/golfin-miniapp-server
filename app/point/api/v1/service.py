@@ -97,6 +97,17 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Missing id or user_id")
     
     try:
+        user_query = db.query(PointModel)
+        if id is not None:
+            user_query.filter(PointModel.id == id)
+        elif user_id is not None:
+            user_query.filter(PointModel.user_id == user_id)        
+        
+        user=user_query.first()
+        
+        if not user: 
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
+        
         # base_query = db.query(PointModel)
         #filters = []
         subquery = db.query(
@@ -106,14 +117,24 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
             func.rank().over(order_by=desc('total_points')).label('rank')
         ).subquery()
         
-        query = db.query(subquery.c.rank)
+        query = db.query(subquery.c.rank, subquery.c.total_points)
         
         if id is not None: 
             query.filter(subquery.c.id == id)
-
-        if user_id is not None:
+        elif user_id is not None:
             query.filter(subquery.c.user_id == user_id)
 
+        result = query.first()
+        
+        if result is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
+
+        return {
+            "rank": result.rank,
+            "total_points": result.total_points,
+            "user_id": user_id or user.user_id,
+            "id": id or user.id
+        }
         rank = query.scalar()
         print('rank', rank)
         
