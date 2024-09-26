@@ -115,15 +115,15 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
             PointModel.id,
             PointModel.user_id,
             (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
-            func.rank().over(order_by=desc('total_points')).label('rank')
+            func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank')
         ).subquery()
         
         query = db.query(subquery.c.rank, subquery.c.total_points)
         
         if id is not None: 
-            query.filter(subquery.c.id == id)
+            query = query.filter(subquery.c.id == id)
         elif user_id is not None:
-            query.filter(subquery.c.user_id == user_id)
+            query = query.filter(subquery.c.user_id == user_id)
 
         logging.info(f"Executing query: {query}")
         result = query.first()
