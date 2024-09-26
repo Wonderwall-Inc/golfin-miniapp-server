@@ -115,6 +115,7 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
             query.filter(subquery.c.user_id == user_id)
 
         rank = query.scalar()
+        print('rank', rank)
         
         if rank is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
