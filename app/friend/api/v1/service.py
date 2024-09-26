@@ -2,7 +2,7 @@
 
 import logging
 from typing import List, Optional
-from sqlalchemy import desc, func
+from sqlalchemy import desc, distinct, func
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, BackgroundTasks
 
@@ -173,32 +173,46 @@ def get_referral_ranking(id: Optional[int], user_id: Optional[int], db: Session)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or user_id")
 
     try:
+        user_query = db.query(FriendModel)
+        if id is not None:
+            user_query.filter(FriendModel.id == id)
+        elif user_id is not None:
+            user_query.filter(FriendModel.sender_id == user_id)
+
+        user = user_query.first()
+        
+        if not user: 
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Friend not found")
+
         # Subquery to count referrals for each user
         referral_count = db.query(
             FriendModel.sender_id,
-            func.count(FriendModel.id).label('referral_count')
+            func.count(FriendModel.id).label('referral_count'),
         ).group_by(FriendModel.sender_id).subquery()
+        
+        all_users = db.query(distinct(FriendModel.sender_id)).subquery()
         
         # Subquery to rank users based on referral count
         ranking = db.query(
-            referral_count.c.sender_id,
-            referral_count.c.referral_count,
-            func.rank().over(order_by=desc(referral_count.c.referral_count)).label('rank')
-        ).subquery()
+            all_users.c.sender_id.label('user_id'),
+            func.coalesce(referral_count.c.referral_count, 0).label('referral_count'),
+            func.rank().over(
+                order_by=[
+                    desc(func.coalesce(referral_count.c.referral_count, 0)),
+                    all_users.c.sender_id
+                ]
+            ).label('rank')
+        ).outerjoin(referral_count, all_users.c.sender_id == referral_count.c.sender_id).subquery()
         
         # Query to get the rank for the specific user
-        query = db.query(ranking.c.rank, ranking.c.referral_count)
+        query = db.query(ranking.c.rank, ranking.c.referral_count, ranking.c.user_id)
     
         if id is not None:
-            user = db.query(UserModel).filter(UserModel.id == id).first()
-            if not user:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-            query = query.filter(ranking.c.sender_id == user.id)
+            query = query.filter(ranking.c.user_id == id)
         elif user_id is not None:
-            query = query.filter(ranking.c.sender_id == user_id)
+            query = query.filter(ranking.c.user_id == user_id)
         
         logging.info(f"Executing query: {query}")
-        
         result = query.first()
         
         if result is None:
@@ -210,7 +224,7 @@ def get_referral_ranking(id: Optional[int], user_id: Optional[int], db: Session)
         response = {
             "rank": result.rank,
             "referral_count": result.referral_count,
-            "user_id": user_id or (user.id if id is not None else None),
+            "user_id": result.user_id,
             "id": id
         }
         
