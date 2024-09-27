@@ -170,6 +170,8 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
 from sqlalchemy import func, desc, distinct, literal, union
 from sqlalchemy.exc import SQLAlchemyError
 
+
+# FIXME
 def get_referral_ranking(user_id: int, db: Session) -> dict:
     """Retrieve referral ranking for a user"""
     logging.info(f"get_referral_ranking called with user_id={user_id}")
