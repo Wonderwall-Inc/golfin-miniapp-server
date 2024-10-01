@@ -36,11 +36,11 @@ def create_user(
 ):
     """Create new user account"""
     print(request)
-    if not request.telegram_info.username:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username is required",
-        )
+    # if not request.telegram_info.username:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail="Username is required",
+    #     )
     if not request.telegram_info.telegram_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
