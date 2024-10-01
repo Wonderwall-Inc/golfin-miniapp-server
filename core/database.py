@@ -25,13 +25,11 @@ from core.constants import Constants
 
 # engine_sql = Constants.SQLALCHAMY_DATABASE_URL if os.environ.get("PROJECT_ENV") else Constants.TIDB_SQLALCHAMY_DATABASE_URL
 # print(engine_sql)
-print(Constants.dburl)
 engine = create_engine(
     Constants.dburl, 
     connect_args={"init_command": "SET SESSION time_zone='-01:00'"} # set UTC+8 timezone with Asia/Singapore
 )
 
-print(os.environ.get("PROJECT_ENV"))
 
 SessionLocal = sessionmaker(
     bind=engine,
