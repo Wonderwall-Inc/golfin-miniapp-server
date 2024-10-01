@@ -325,8 +325,8 @@ def retrieve_user(
     filters = []  # inclusive AND case
     if id is not None:
         filters.append(UserModel.id == id)
-    if username is not None:
-        filters.append(UserModel.username == username)
+    #if username is not None:
+    #    filters.append(UserModel.username == username)
     if telegram_id is not None:
         filters.append(UserModel.telegram_id == telegram_id)
     if wallet_address is not None:
