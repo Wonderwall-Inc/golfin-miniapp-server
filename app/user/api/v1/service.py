@@ -722,9 +722,13 @@ def update_user(
 
             if request.user_payload.age:
                 existing_user.age = request.user_payload.age
+           
+            if request.user_payload.username:
+                existing_user.username = request.user_payload.username
 
             if request.user_payload.custom_logs:
                 existing_user.custom_logs = request.user_payload.custom_logs
+            
             db.commit()
             db.refresh(existing_user)
 

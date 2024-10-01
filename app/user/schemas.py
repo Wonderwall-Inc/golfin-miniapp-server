@@ -58,6 +58,7 @@ class UserUpdateDetailsSchema(BaseModel):
     skin: Optional[List[str]] = []
     location: Optional[str] = None
     age: Optional[int] = None
+    username: Optional[str] = None
     custom_logs: Optional[dict] = None
 
 
