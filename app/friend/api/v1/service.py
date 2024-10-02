@@ -352,7 +352,7 @@ def get_Friend_by_sender_id_receiver_id(sender_id: int, db: Session, receiver_id
 
 
 # by friend id only
-def update_friend(id: Optional[int], sender_id: Optional[int], receiver_id: Optional[int], friend_status: str, custom_logs: Optional[dict], db: Session) -> List[schemas.FriendDetailsResponseSchema]:
+def update_friend(id: Optional[int], sender_id: Optional[int], receiver_id: Optional[int], friend_status: str, sender_count: Optional[int], receiver_count: Optional[int], custom_logs: Optional[dict], db: Session) -> List[schemas.FriendDetailsResponseSchema]:
     """Update single friend by friend id"""
     if not id and not sender_id and not receiver_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or sender id or receiver id")
@@ -381,6 +381,10 @@ def update_friend(id: Optional[int], sender_id: Optional[int], receiver_id: Opti
 
             for friend in existing_friends:
                 friend.status = friend_status
+                if sender_count:
+                    friend.sender_count = sender_count
+                if receiver_count:
+                    friend.receiver_count = receiver_count
                 friend.custom_logs = custom_logs
                 db.commit()
                 db.refresh(friend)
