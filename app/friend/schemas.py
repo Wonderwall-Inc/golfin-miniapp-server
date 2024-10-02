@@ -20,6 +20,8 @@ class FriendBaseSchema(BaseModel):
     id: int
     updated_at: datetime
     receiver_id: int
+    sender_count: int
+    receiver_count: int
     created_at: datetime
     custom_logs: Optional[dict] = None
 
@@ -32,6 +34,8 @@ class FriendUpdateDetailsSchema(BaseModel):  # what else can be updated
 
     status: FriendStatusType
     has_claimed: bool
+    sender_count: Optional[int] = None
+    receiver_count: Optional[int] = None
     custom_logs: Optional[dict] = None
 
     class Config:
@@ -47,6 +51,8 @@ class FriendSchema(BaseModel):  # all except the relationship
     created_at: datetime
     updated_at: datetime
     custom_logs: Optional[dict] = None
+    sender_count: int
+    receiver_count: int
 
     class Config:
         use_enum_values = True
@@ -58,6 +64,8 @@ class FriendDetailsSchema(BaseModel):  # all + relationship
     friend_base: FriendSchema
     sender_id: int
     receiver_id: int
+    sender_count: int
+    receiver_count: int
     # sender: UserSchema
     # receiver: UserSchema
 
@@ -68,6 +76,8 @@ class FriendCreateRequestSchema(BaseModel):
     access_token: str
     sender_id: int
     receiver_id: int
+    sender_count: int
+    receiver_count: int
     status: FriendStatusType
     has_claimed: bool
 
