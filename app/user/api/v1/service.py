@@ -945,6 +945,7 @@ def get_referral_ranking(sender_id: int, db: Session):  # no filter
             "rank": rank,
             "sender_count": sender_count,
             "user_id": user_id,
+            "telegram_id": user.telegram_id,
             "username": user.username
         })
     
@@ -959,6 +960,7 @@ def get_referral_ranking(sender_id: int, db: Session):  # no filter
             "rank": sender_rank,
             "sender_count": len(sender_record.sender),
             "user_id": sender_id,
+            "telegram_id": sender_record.telegram_id,
             "username": sender_record.username
         }
     
