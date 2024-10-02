@@ -43,13 +43,11 @@ class FriendModel(Base):
         backref=backref("user_send", uselist=False),
         foreign_keys=[sender_id],
     )
-    sender_count: Mapped[int]=mapped_column(Integer, default=0)
     receiver = relationship(
         "UserModel",
         backref=backref("user_receive", uselist=False),
         foreign_keys=[receiver_id],
     )
-    receiver_count: Mapped[int]=mapped_column(Integer, default=0)
 
     def __repr__(self) -> str:
         return f"<FriendModel id={self.id} sender_id={self.sender_id} receiver_id={self.receiver_id}>"

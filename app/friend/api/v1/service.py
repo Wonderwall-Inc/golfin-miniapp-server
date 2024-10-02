@@ -46,9 +46,7 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
                 has_claimed=new_friend.has_claimed,
                 created_at=new_friend.created_at,
                 updated_at=new_friend.updated_at,
-                custom_logs=new_friend.custom_logs,
-                sender_count=new_friend.sender_count,
-                receiver_count=new_friend.receiver_count,
+                custom_logs=new_friend.custom_logs
             ),
             sender_id=new_friend.sender_id,
             receiver_id=new_friend.receiver_id,
@@ -72,9 +70,7 @@ def get_friends_as_sender(user_id: int, db: Session) -> List[schemas.FriendRetri
                     has_claimed=friend.has_claimed,
                     created_at=friend.sender.created_at,
                     updated_at=friend.sender.updated_at,
-                    custom_logs=friend.sender.custom_logs,
-                    sender_count=friend.sender.sender_count,
-                    receiver_count=friend.sender.receiver_count,
+                    custom_logs=friend.sender.custom_logs
                 ),
                 sender_id=friend.sender.sender_id,
                 receiver_id=friend.sender.receiver_id,
@@ -101,9 +97,7 @@ def get_friends_as_receiver(user_id: int, db: Session) -> List[schemas.FriendRet
                     has_claimed=friend.has_claimed,
                     created_at=friend.receiver.created_at,
                     updated_at=friend.receiver.updated_at,
-                    custom_logs=friend.receiver.custom_logs,
-                    sender_count=friend.receiver.sender_count,
-                    receiver_count=friend.receiver.receiver_count,
+                    custom_logs=friend.receiver.custom_logs
                 ),
                 sender_id=friend.receiver.sender_id,
                 receiver_id=friend.receiver.receiver_id,
@@ -255,9 +249,7 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
                 created_at=friend_from_as_sender.created_at,
                 updated_at=friend_from_as_sender.updated_at,
                 status=friend_from_as_sender.status,
-                has_claimed=friend_from_as_sender.has_claimed,
-                sender_count=friend_from_as_sender.sender_count,
-                receiver_count=friend_from_as_sender.receiver_count,
+                has_claimed=friend_from_as_sender.has_claimed
             )
             for friend_from_as_sender in existing_friends_as_sender
             ]
@@ -270,9 +262,7 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
                 created_at=friend_from_as_receiver.created_at,
                 updated_at=friend_from_as_receiver.updated_at,
                 status=friend_from_as_receiver.status,
-                has_claimed=friend_from_as_receiver.has_claimed,
-                sender_count=friend_from_as_receiver.sender_count,
-                receiver_count=friend_from_as_receiver.receiver_count,
+                has_claimed=friend_from_as_receiver.has_claimed
             )
             for friend_from_as_receiver in existing_friends_as_receiver
             ]
@@ -297,9 +287,7 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
                             created_at=friend.created_at,
                             updated_at=friend.updated_at,
                             status=friend.status,
-                            has_claimed=friend.has_claimed,
-                            sender_count=friend.sender_count,
-                            receiver_count=friend.receiver_count,
+                            has_claimed=friend.has_claimed
                         )
                     )
                 if friend.receiver and len(friend.receiver):
@@ -311,9 +299,7 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
                             created_at=friend.created_at,
                             updated_at=friend.updated_at,
                             status=friend.status,
-                            has_claimed=friend.has_claimed,
-                            sender_count=friend.sender_count,
-                            receiver_count=friend.receiver_count,
+                            has_claimed=friend.has_claimed
                         )
                     )
 
@@ -341,9 +327,7 @@ def get_Friend_by_sender_id_receiver_id(sender_id: int, db: Session, receiver_id
                 created_at=existing_friend.created_at,
                 updated_at=existing_friend.updated_at,
                 custom_logs=existing_friend.custom_logs,
-                has_claimed=existing_friend.has_claimed,
-                sender_count=existing_friend.sender_count,
-                receiver_count=existing_friend.receiver_count,
+                has_claimed=existing_friend.has_claimed
             ),
             sender_id=existing_friend.sender_id,
             receiver_id=existing_friend.receiver_id,
@@ -352,7 +336,7 @@ def get_Friend_by_sender_id_receiver_id(sender_id: int, db: Session, receiver_id
 
 
 # by friend id only
-def update_friend(id: Optional[int], sender_id: Optional[int], receiver_id: Optional[int], friend_status: str, sender_count: Optional[int], receiver_count: Optional[int], custom_logs: Optional[dict], db: Session) -> List[schemas.FriendDetailsResponseSchema]:
+def update_friend(id: Optional[int], sender_id: Optional[int], receiver_id: Optional[int], friend_status: str, custom_logs: Optional[dict], db: Session) -> List[schemas.FriendDetailsResponseSchema]:
     """Update single friend by friend id"""
     if not id and not sender_id and not receiver_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing id or sender id or receiver id")
@@ -381,10 +365,6 @@ def update_friend(id: Optional[int], sender_id: Optional[int], receiver_id: Opti
 
             for friend in existing_friends:
                 friend.status = friend_status
-                if sender_count:
-                    friend.sender_count = sender_count
-                if receiver_count:
-                    friend.receiver_count = receiver_count
                 friend.custom_logs = custom_logs
                 db.commit()
                 db.refresh(friend)
@@ -398,9 +378,7 @@ def update_friend(id: Optional[int], sender_id: Optional[int], receiver_id: Opti
                         created_at=f.created_at,
                         updated_at=f.updated_at,
                         custom_logs=f.custom_logs,
-                        has_claimed=f.has_claimed,
-                        sender_count=f.sender_count,
-                        receiver_count=f.receiver_count,
+                        has_claimed=f.has_claimed
                     ),
                     sender_id=f.sender_id,
                     receiver_id=f.receiver_id,
@@ -436,9 +414,7 @@ def update_friend_status_by_sender_id(request: schemas.FriendUpdateBySenderIdReq
                 created_at=db_friend.created_at,
                 updated_at=db_friend.updated_at,
                 custom_logs=db_friend.custom_logs,
-                has_claimed=db_friend.has_claimed,
-                sender_count=db_friend.sender_count,
-                receiver_count=db_friend.receiver_count,
+                has_claimed=db_friend.has_claimed
             ),
             sender_id=db_friend.sender_id,
             receiver_id=db_friend.receiver_id,
@@ -474,9 +450,7 @@ def update_friend_status_by_receiver_id(request: schemas.FriendUpdateByReceiverI
                 created_at=db_friend.created_at,
                 updated_at=db_friend.updated_at,
                 custom_logs=db_friend.custom_logs,
-                has_claimed=db_friend.has_claimed,
-                sender_count=db_friend.sender_count,
-                receiver_count=db_friend.receiver_count,
+                has_claimed=db_friend.has_claimed
             ),
             sender_id=db_friend.sender_id,
             receiver_id=db_friend.receiver_id,
@@ -511,9 +485,7 @@ def batch_update_reward_claimed_by_sender_id(db: Session, sender_id: int) -> Lis
                     has_claimed=f.has_claimed,
                     created_at=f.created_at,
                     updated_at=f.updated_at,
-                    custom_logs=f.custom_logs,
-                    sender_count=f.sender_count,
-                    receiver_count=f.receiver_count,
+                    custom_logs=f.custom_logs
                 ),
                 sender_id=f.sender_id,
                 receiver_id=f.receiver_id,
