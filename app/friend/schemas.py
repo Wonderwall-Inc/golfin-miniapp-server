@@ -33,7 +33,7 @@ class FriendUpdateDetailsSchema(BaseModel):  # what else can be updated
     """Friend Update Details Schema"""
 
     status: FriendStatusType
-    has_claimed: bool
+    has_claimed: Optional[bool] = None
     sender_count: Optional[int] = None
     receiver_count: Optional[int] = None
     custom_logs: Optional[dict] = None
