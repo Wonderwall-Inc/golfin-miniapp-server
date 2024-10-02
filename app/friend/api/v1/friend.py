@@ -42,9 +42,9 @@ def get_friend_from_users(user_ids: List[int] = Query(default=None), skip: int =
 
 
 @router.put("/update", response_model=List[schemas.FriendDetailsResponseSchema])
-def update_friend(friend_status: str, id: Optional[int] = None, sender_id: Optional[int] = None, receiver_id: Optional[int] = None, custom_logs: Optional[dict] = None, db: Session = Depends(get_db)):
+def update_friend(friend_status: str, sender_count: Optional[int] = None, receiver_count: Optional[int] = None, id: Optional[int] = None, sender_id: Optional[int] = None, receiver_id: Optional[int] = None, custom_logs: Optional[dict] = None, db: Session = Depends(get_db)):
     """Update Status"""
-    return service.update_friend(id, sender_id, receiver_id, friend_status, custom_logs, db)
+    return service.update_friend(id, sender_id, receiver_id, friend_status, sender_count, receiver_count, custom_logs, db)
 
 
 @router.patch("/reward-update", response_model=List[schemas.FriendDetailsResponseSchema])
