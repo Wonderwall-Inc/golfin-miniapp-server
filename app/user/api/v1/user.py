@@ -76,17 +76,15 @@ def get_user_list(
     return service.retrieve_users(db, skip, limit)
 
 
-@router.put(
-    "/update",
-    response_model=schemas.UserUpdateResponseSchema,
-    # dependencies=[Depends(auth)],
-)
+@router.put("/update", response_model=schemas.UserUpdateResponseSchema)# dependencies=[Depends(auth)],
 def update_user(
     request: schemas.UserUpdateRequestSchema, db: Session = Depends(get_db)
 ):
     """Update user details"""
     return service.update_user(request, db)
 
+
+@router.get("/referral-ranking")
 def get_referral_ranking(sender_id: int, db: Session = Depends(get_db)):
     """Get sender count"""
     return service.get_referral_ranking(sender_id, db)
