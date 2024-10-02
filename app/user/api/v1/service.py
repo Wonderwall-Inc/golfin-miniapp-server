@@ -910,3 +910,63 @@ def delete_user(id: int, db: Session):
 #             ]
 #         )
 #     return result
+
+def get_referral_ranking(sender_id: int, db: Session):  # no filter
+    """Get referral ranking"""
+    existing_users = (
+        db.query(UserModel)
+        .options(
+            joinedload(UserModel.sender),  # Load sender with the user
+            joinedload(UserModel.receiver),  # Load receiver with the user
+        )
+        .all()
+    )
+    
+    # FIXME
+    # for existing_user in existing_users:
+    #     new_record = RecordModel(action="LIST", table="USER",table_id=existing_user.id)
+    #     db.add(new_record)
+    #     db.commit()
+    #     db.refresh(new_record)
+    
+    user_referrals = [(user.id, len(user.sender)) for user in existing_users]
+    
+    # Sort the list by sender_list_length in descending order
+    sorted_referrals = sorted(user_referrals, key=lambda x: x[1], reverse=True)
+    
+    # Get the top 10 users
+    top_10 = sorted_referrals[:10]
+    
+    # Create the ranking list with rank, sender list length, user_id, and username
+    ranking_list = []
+    for rank, (user_id, sender_count) in enumerate(top_10, start=1):
+        user = next(user for user in existing_users if user.id == user_id)
+        ranking_list.append({
+            "rank": rank,
+            "sender_count": sender_count,
+            "user_id": user_id,
+            "username": user.username
+        })
+    
+    # Find the rank of the given sender_id
+    sender_rank = next((rank for rank, (user_id, _) in enumerate(sorted_referrals, start=1) if user_id == sender_id), None)
+    
+    # Get the sender's record
+    sender_record = next((user for user in existing_users if user.id == sender_id), None)
+    sender_info = None
+    if sender_record:
+        sender_info = {
+            "rank": sender_rank,
+            "sender_count": len(sender_record.sender),
+            "user_id": sender_id,
+            "username": sender_record.username
+        }
+    
+    # Determine if the sender is in the top 10
+    sender_in_top_10 = any(record["user_id"] == sender_id for record in ranking_list)
+    
+    return {
+        "top_10": ranking_list,
+        "sender_info": sender_info,
+        "sender_in_top_10": sender_in_top_10
+    }

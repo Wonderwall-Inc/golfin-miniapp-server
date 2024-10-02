@@ -86,3 +86,8 @@ def update_user(
 ):
     """Update user details"""
     return service.update_user(request, db)
+
+def get_referral_ranking(sender_id: int, db: Session = Depends(get_db)):
+    """Get sender count"""
+    return service.get_referral_ranking(sender_id, db)
+
