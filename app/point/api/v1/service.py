@@ -153,7 +153,7 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                 UserModel.telegram_id
             ).join(UserModel, PointModel.user_id == UserModel.id).subquery()
             
-            query = db.query(subquery.c.rank, subquery.c.total_points, subquery.c.username)
+            query = db.query(subquery.c.rank, subquery.c.total_points, subquery.c.username, subquery.c.telegram_id)
             
             if id is not None: 
                 query = query.filter(subquery.c.id == id)
