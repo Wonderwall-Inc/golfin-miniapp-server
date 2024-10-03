@@ -94,8 +94,8 @@ def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> sc
     except Exception as e:
         logging.error(f"An error occurred: {e}")  
 
-def get_point_ranking(user_id: int, db: Session) -> int:
-    """Retrieve Point Details from Single User"""
+def get_point_ranking(user_id: int, db: Session):
+    """Get point ranking"""
     if not user_id:
         logging.error("Missing user_id")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing user_id")
