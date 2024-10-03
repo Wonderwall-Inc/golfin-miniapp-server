@@ -5,6 +5,8 @@ from typing import List, Optional
 from sqlalchemy import desc, distinct, func, literal, union
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, BackgroundTasks
+from sqlalchemy import func, desc, distinct, literal, union
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.friend import schemas
 from app.user.models import UserModel
@@ -166,10 +168,6 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
                
     except Exception as e:
         logging.error(f"An error occured: {e}")
-
-from sqlalchemy import func, desc, distinct, literal, union
-from sqlalchemy.exc import SQLAlchemyError
-
 
 # FIXME
 def get_referral_ranking(user_id: int, db: Session) -> dict:

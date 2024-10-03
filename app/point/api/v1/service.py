@@ -5,6 +5,8 @@ from typing import List, Optional
 from sqlalchemy import desc, func
 from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException, status, BackgroundTasks
+from sqlalchemy import func, desc, distinct, literal, union
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.point import schemas
 from app.point.models import PointModel
@@ -92,92 +94,69 @@ def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> sc
     except Exception as e:
         logging.error(f"An error occurred: {e}")  
 
-def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) -> int:
+def get_point_ranking(user_id: int, db: Session) -> int:
     """Retrieve Point Details from Single User"""
-    try:
-        if not id and not user_id:
-            subquery = db.query(
-                PointModel.id,
-                PointModel.user_id,
-                (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
-                func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank'),
-                UserModel.username,
-                UserModel.telegram_id
-            ).join(UserModel, PointModel.user_id == UserModel.id).subquery()
-            
-            query = db.query(
-                subquery.c.id,
-                subquery.c.user_id,
-                subquery.c.total_points,
-                subquery.c.rank,
-                subquery.c.username,
-                subquery.c.telegram_id
-            ).order_by(subquery.c.rank)
-            
-            results = query.limit(10).all()
-            
-            if not results:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rankings found")
-            
-            response = [
-                {
-                    "rank": result.rank,
-                    "total_points": result.total_points,
-                    "user_id": result.user_id,
-                    "id": result.id,
-                    "username": result.username, 
-                    "telegram_id": result.telegram_id
-                } for result in results
-            ]
-            logging.info(f"Returning top {len(response)} rankings")
-            return response
-        
-        else:
-            user_query = db.query(PointModel)
-            if id is not None:
-                user_query.filter(PointModel.id == id)
-            elif user_id is not None:
-                user_query.filter(PointModel.user_id == user_id)        
-            
-            user=user_query.first()
-            
-            if not user: 
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Point not found")
-            
-            subquery = db.query(
-                PointModel.id,
-                PointModel.user_id,
-                (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
-                func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank'),
-                UserModel.username,
-                UserModel.telegram_id
-            ).join(UserModel, PointModel.user_id == UserModel.id).subquery()
-            
-            query = db.query(subquery.c.rank, subquery.c.total_points, subquery.c.username, subquery.c.telegram_id)
-            
-            if id is not None: 
-                query = query.filter(subquery.c.id == id)
-            elif user_id is not None:
-                query = query.filter(subquery.c.user_id == user_id)
+    if not user_id:
+        logging.error("Missing user_id")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing user_id")
     
-            result = query.first()
-            
-            if result is None:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ranking not found for the user")
-            
-            response = {
-                "rank": result.rank,
-                "total_points": result.total_points,
-                "user_id": user_id or user.user_id,
-                "id": id or user.id,
-                "username": result.username,
-                "telegram_id": result.telegram_id
-            }
-            logging.info(f"Returning response: {response}")
-            return response
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")  
+    try:
+        # Query to rank users based on total points from login amaunt and referral amount
+        point_subquery = db.query(
+            PointModel.user_id,
+            (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
+        ).subquery()
+        
+        ranking_query = db.query(
+            UserModel.id,
+            UserModel.username,
+            UserModel.telegram_id,
+            point_subquery.c.total_points,
+            func.rank().over(order_by=desc(point_subquery.c.total_points)).label('rank'),
+        ).join(point_subquery, UserModel.id == point_subquery.c.user_id)
 
+        # Get all rankings
+        all_rankings = ranking_query.all()
+        
+        # Get the top 10 users  
+        top_10 = all_rankings[:10]
+        
+        # Create the ranking list with rank, total points, user_id, username, and telegram_id
+        ranking_list = [
+            {
+                "rank": record.rank,
+                "total_points": record.total_points,
+                "user_id": record.user_id,
+                "username": record.username, 
+                "telegram_id": record.telegram_id
+            } for record in top_10
+        ]
+        
+        user_info = next((record for record in all_rankings if record.id == user_id), None)
+
+        if user_info:
+            user_rank_info = {
+                "rank": user_info.rank,
+                "total_points": user_info.total_points,
+                "user_id": user_info.user_id,
+                "username": user_info.username,
+                "telegram_id": user_info.telegram_id
+            }
+        user_in_top_10 = any(record.id == user_id for record in top_10)
+        
+        return {
+            "top_10": ranking_list,
+            "user_info": user_rank_info,
+            "user_in_top_10": user_in_top_10
+        }
+    
+    except SQLAlchemyError as e:
+        logging.error(f"Database error occurred: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error occurred: {str(e)}")
+    
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An unexpected error occurred: {str(e)}")
 
 def retrieve_point_by_user_id(user_id: int, db: Session) -> schemas.PointRetrievalResponseSchema:
     """Retrieve Point Details from Single User by user_id"""
