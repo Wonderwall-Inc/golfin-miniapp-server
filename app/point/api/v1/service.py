@@ -96,10 +96,7 @@ def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> sc
 
 def get_point_ranking(user_id: int, db: Session):
     """Get point ranking"""
-    if not user_id:
-        logging.error("Missing user_id")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing user_id")
-    
+    logging.info(f"get_point_ranking called with user_id={user_id}")
     try:
         # Query to rank users based on total points from login amaunt and referral amount
         point_subquery = db.query(
@@ -126,9 +123,9 @@ def get_point_ranking(user_id: int, db: Session):
             {
                 "rank": record.rank,
                 "total_points": record.total_points,
-                "user_id": record.user_id,
+                "user_id": record.id,
+                "telegram_id": record.telegram_id,
                 "username": record.username, 
-                "telegram_id": record.telegram_id
             } for record in top_10
         ]
         
@@ -138,9 +135,9 @@ def get_point_ranking(user_id: int, db: Session):
             user_rank_info = {
                 "rank": user_info.rank,
                 "total_points": user_info.total_points,
-                "user_id": user_info.user_id,
+                "user_id": user_info.id,
+                "telegram_id": user_info.telegram_id,
                 "username": user_info.username,
-                "telegram_id": user_info.telegram_id
             }
         user_in_top_10 = any(record.id == user_id for record in top_10)
         
