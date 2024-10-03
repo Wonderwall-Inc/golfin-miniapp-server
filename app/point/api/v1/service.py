@@ -101,7 +101,8 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                 PointModel.user_id,
                 (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
                 func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank'),
-                UserModel.username
+                UserModel.username,
+                UserModel.telegram_id
             ).join(UserModel, PointModel.user_id == UserModel.id).subquery()
             
             query = db.query(
@@ -109,7 +110,8 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                 subquery.c.user_id,
                 subquery.c.total_points,
                 subquery.c.rank,
-                subquery.c.username
+                subquery.c.username,
+                subquery.c.telegram_id
             ).order_by(subquery.c.rank)
             
             results = query.limit(10).all()
@@ -123,7 +125,8 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                     "total_points": result.total_points,
                     "user_id": result.user_id,
                     "id": result.id,
-                    "username": result.username,
+                    "username": result.username, 
+                    "telegram_id": result.telegram_id
                 } for result in results
             ]
             logging.info(f"Returning top {len(response)} rankings")
@@ -146,7 +149,8 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                 PointModel.user_id,
                 (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
                 func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank'),
-                UserModel.username
+                UserModel.username,
+                UserModel.telegram_id
             ).join(UserModel, PointModel.user_id == UserModel.id).subquery()
             
             query = db.query(subquery.c.rank, subquery.c.total_points, subquery.c.username)
@@ -166,7 +170,8 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                 "total_points": result.total_points,
                 "user_id": user_id or user.user_id,
                 "id": id or user.id,
-                "username": result.username
+                "username": result.username,
+                "telegram_id": result.telegram_id
             }
             logging.info(f"Returning response: {response}")
             return response
