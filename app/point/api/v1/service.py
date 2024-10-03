@@ -3,11 +3,12 @@
 import logging
 from typing import List, Optional
 from sqlalchemy import desc, func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException, status, BackgroundTasks
 
 from app.point import schemas
 from app.point.models import PointModel
+from app.user.models import UserModel
 
 def create_point(request: schemas.PointCreateRequestSchema, db: Session) -> schemas.PointCreateResponseSchema:
     """Create Point"""
@@ -99,14 +100,16 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                 PointModel.id,
                 PointModel.user_id,
                 (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
-                func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank')
-            ).subquery()
+                func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank'),
+                UserModel.username
+            ).join(UserModel, PointModel.user_id == UserModel.id).subquery()
             
             query = db.query(
                 subquery.c.id,
                 subquery.c.user_id,
                 subquery.c.total_points,
-                subquery.c.rank
+                subquery.c.rank,
+                subquery.c.username
             ).order_by(subquery.c.rank)
             
             results = query.limit(10).all()
@@ -119,7 +122,8 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                     "rank": result.rank,
                     "total_points": result.total_points,
                     "user_id": result.user_id,
-                    "id": result.id
+                    "id": result.id,
+                    "username": result.username,
                 } for result in results
             ]
             logging.info(f"Returning top {len(response)} rankings")
@@ -141,10 +145,11 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                 PointModel.id,
                 PointModel.user_id,
                 (PointModel.login_amount + PointModel.referral_amount).label('total_points'),
-                func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank')
-            ).subquery()
+                func.rank().over(order_by=desc(PointModel.login_amount + PointModel.referral_amount)).label('rank'),
+                UserModel.username
+            ).join(UserModel, PointModel.user_id == UserModel.id).subquery()
             
-            query = db.query(subquery.c.rank, subquery.c.total_points)
+            query = db.query(subquery.c.rank, subquery.c.total_points, subquery.c.username)
             
             if id is not None: 
                 query = query.filter(subquery.c.id == id)
@@ -160,7 +165,8 @@ def get_point_ranking(id: Optional[int], user_id: Optional[int], db: Session) ->
                 "rank": result.rank,
                 "total_points": result.total_points,
                 "user_id": user_id or user.user_id,
-                "id": id or user.id
+                "id": id or user.id,
+                "username": result.username
             }
             logging.info(f"Returning response: {response}")
             return response
