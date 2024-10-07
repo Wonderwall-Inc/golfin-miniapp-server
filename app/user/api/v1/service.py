@@ -333,6 +333,79 @@ def retrieve_user(
         filters.append(UserModel.wallet_address == wallet_address)
 
     if filters:
+        existing_user = base_query.filter(*filters).first()
+    if not existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with {id} not found",
+        )
+
+    user_app_info = UserAppInfoSchema(
+        active=existing_user.active,
+        in_game_items=existing_user.in_game_items,
+        admin=existing_user.admin,
+        skin=existing_user.skin,
+    )
+
+    user_personal_info = UserPersonalInfoSchema(
+        location=existing_user.location,
+        nationality=existing_user.nationality,
+        age=existing_user.age,
+        gender=existing_user.gender,
+        email=existing_user.email,
+    )
+
+    user_telegram_info = UserTelegramInfoSchema(
+        username=existing_user.username,
+        telegram_id=existing_user.telegram_id,
+        token_balance=existing_user.token_balance,
+        premium=existing_user.premium,
+        wallet_address=existing_user.wallet_address,
+        chat_id=existing_user.chat_id,
+        start_param=existing_user.start_param
+    )
+
+
+    return UserDetailsResponseSchema(
+        user_details=UserDetailsSchema(
+            user_base=UserSchema(
+                id=existing_user.id,
+                app_info=user_app_info,
+                personal_info=user_personal_info,
+                telegram_info=user_telegram_info,
+                created_at=existing_user.created_at,
+                updated_at=existing_user.updated_at,
+                custom_logs=existing_user.custom_logs,
+            )
+        )
+    )
+
+def retrieve_user_extra_detail(
+    id: Optional[int],
+    username: Optional[str],
+    telegram_id: Optional[str],
+    wallet_address: Optional[str],
+    db: Session,
+    # background_tasks: BackgroundTasks
+):
+    if not id and not username and not telegram_id and not wallet_address:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Missing required parameter",
+        )
+
+    base_query = db.query(UserModel)
+    filters = []  # inclusive AND case
+    if id is not None:
+        filters.append(UserModel.id == id)
+    if username is not None:
+        filters.append(UserModel.username == username)
+    if telegram_id is not None:
+        filters.append(UserModel.telegram_id == telegram_id)
+    if wallet_address is not None:
+        filters.append(UserModel.wallet_address == wallet_address)
+
+    if filters:
         base_query = base_query.filter(*filters)
         existing_user = base_query.options(
             joinedload(UserModel.point),  # Load point with the user

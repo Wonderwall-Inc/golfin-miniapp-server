@@ -44,6 +44,11 @@ def get_user(id: Optional[int] = None, username: Optional[str] = None, telegram_
     """Get User details of single user"""
     return service.retrieve_user(id, username, telegram_id, wallet_address, db)
 
+@router.get("/extra-detail")
+def get_user_extra_detail(id: Optional[int] = None, username: Optional[str] = None, telegram_id: Optional[str] = None, wallet_address: Optional[str] = None, db: Session = Depends(get_db)):
+    """Get User details of single user including information from other tables"""
+    return service.retrieve_user_extra_detail(id, username, telegram_id, wallet_address, db)
+
 
 @router.get("/details", response_model=List[schemas.UserDetailsResponseSchema])# dependencies=[Depends(auth)],
 def get_user_list(
