@@ -1,7 +1,7 @@
 """Actvity App Business Logics"""
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
@@ -233,8 +233,8 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
         logged_in=existing_activity.logged_in,
         login_streak=existing_activity.login_streak,
         total_logins=existing_activity.total_logins,
-        last_action_time=existing_activity.last_action_time.now().astimezone(timezone('Asia/Singapore')),
-        last_login_time=existing_activity.last_login_time.now().astimezone(timezone('Asia/Singapore')),
+        last_action_time=existing_activity.last_action_time.replace(tzinfo=None),
+        last_login_time=existing_activity.last_login_time.replace(tzinfo=None),
         created_at=existing_activity.created_at,
         updated_at=existing_activity.updated_at,
         custom_logs=existing_activity.custom_logs
