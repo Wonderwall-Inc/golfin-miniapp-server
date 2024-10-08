@@ -210,32 +210,41 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
                 
     current_time = datetime.now()
     last_login_time = existing_activity.last_login_time
-    
-    if current_time.date() > last_login_time.date():
+    if last_login_time is None:
         existing_activity.logged_in = True
         existing_activity.total_logins += 1
         existing_activity.last_login_time = current_time
-        
-        if (current_time.date() - last_login_time.date())>timedelta(days=1):
-            existing_activity.login_streak = 1
-        else:
-            existing_activity.login_streak += 1
-            
+        existing_activity.login_streak += 1
         existing_point.login_amount += 2
-        
-    # WEEKLY LOGIN STREAKS CHECK
-    if existing_activity.login_streak == 7:
-        existing_activity.logged_in = True
-        existing_activity.login_streak = 0
-        existing_activity.last_login_time = current_time
-            
-        existing_point.login_amount += 15 
-        
         db.commit()
         db.refresh(existing_activity)
         db.refresh(existing_point)
-       
-        
+    else:
+        if current_time.date() > last_login_time.date():
+            existing_activity.logged_in = True
+            existing_activity.total_logins += 1
+            existing_activity.last_login_time = current_time
+            
+            if (current_time.date() - last_login_time.date())>timedelta(days=1):
+                existing_activity.login_streak = 1
+            else:
+                existing_activity.login_streak += 1
+                
+            existing_point.login_amount += 2
+            
+        # WEEKLY LOGIN STREAKS CHECK
+        if existing_activity.login_streak == 7:
+            existing_activity.logged_in = True
+            existing_activity.login_streak = 0
+            existing_activity.last_login_time = current_time
+                
+            existing_point.login_amount += 15 
+            
+        db.commit()
+        db.refresh(existing_activity)
+        db.refresh(existing_point)
+           
+            
     return schemas.DailyCheckInResponseSchema(
         activity=schemas.ActivityBaseSchema(
         id=existing_activity.id,
