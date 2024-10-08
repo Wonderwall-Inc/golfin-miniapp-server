@@ -212,7 +212,11 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
     last_login_time = existing_activity.last_login_time
     
     print('check')
+    
+    print(current_time)
     print(current_time.date())
+    
+    print(last_login_time)
     print(last_login_time.date())
     print(current_time.date() > last_login_time.date())
     print((current_time.date() - last_login_time.date())>timedelta(days=1))
