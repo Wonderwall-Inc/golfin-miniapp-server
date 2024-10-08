@@ -224,7 +224,7 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
     if last_login_time is None:
         existing_activity.logged_in = True
         existing_activity.total_logins += 1
-        existing_activity.last_login_time = current_time
+        existing_activity.last_login_time = datetime.now()
         existing_activity.login_streak += 1
         existing_point.login_amount += 2
         db.commit()
@@ -235,7 +235,7 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
             print('on case: current_time.date() > last_login_time.date():')
             existing_activity.logged_in = True
             existing_activity.total_logins += 1
-            existing_activity.last_login_time = current_time
+            existing_activity.last_login_time = datetime.now()
             
             if (current_time.date() - last_login_time.date())>timedelta(days=1):
                 existing_activity.login_streak = 1
@@ -250,7 +250,7 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
         if existing_activity.login_streak == 7:
             existing_activity.logged_in = True
             existing_activity.login_streak = 0
-            existing_activity.last_login_time = current_time
+            existing_activity.last_login_time = datetime.now()
                 
             existing_point.login_amount += 15 
         
