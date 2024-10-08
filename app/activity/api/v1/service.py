@@ -207,6 +207,7 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"User {request.user_id} not found"
         )
+                
     current_time = datetime.now()
     last_login_time = existing_activity.last_login_time
     
@@ -221,6 +222,14 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
             existing_activity.login_streak += 1
             
         existing_point.login_amount += 2
+        
+    # WEEKLY LOGIN STREAKS CHECK
+    if existing_activity.login_streak == 7:
+        existing_activity.logged_in = True
+        existing_activity.login_streak = 0
+        existing_activity.last_login_time = current_time
+            
+        existing_point.login_amount += 15 
         
         db.commit()
         db.refresh(existing_activity)
