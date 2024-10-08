@@ -3,6 +3,7 @@
 import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
+import pytz
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
@@ -208,7 +209,7 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
             status_code=status.HTTP_404_NOT_FOUND, detail=f"User {request.user_id} not found"
         )
                 
-    current_time = datetime.now()
+    current_time = datetime.now(pytz.timezone('Asia/Singapore'))  # Get current time in SGT
     last_login_time = existing_activity.last_login_time
     
     print('check')

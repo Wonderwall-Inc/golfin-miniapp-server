@@ -18,3 +18,4 @@ requests==2.31.0
 sqlalchemy==2.0.29
 trio==0.25.0
 uvicorn==0.29.0
+pytz==2024.2
