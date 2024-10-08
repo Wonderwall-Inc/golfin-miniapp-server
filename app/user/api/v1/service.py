@@ -21,7 +21,7 @@ from app.user.schemas import (
 )
 from app.friend.schemas import FriendBaseSchema, FriendIds
 from app.game_character.schemas import GameCharacterBaseSchema
-from app.point.schemas import PointScehma
+from app.point.schemas import PointSchema
 from app.social_media.schemas import SocialMediaBaseSchema
 from app.activity.schemas import ActivityBaseSchema
 # from core.utils import UserSchemaFactory
@@ -236,7 +236,7 @@ def create_user(
 #     ]
 
 #     point_payload = [
-#         PointScehma(
+#         PointSchema(
 #             id=p.id,
 #             amount=p.amount,
 #             extra_profit_per_hour=p.extra_profit_per_hour,
@@ -474,7 +474,7 @@ def retrieve_user_extra_detail(
     ]
 
     point_payload = [
-        PointScehma(
+        PointSchema(
             id=p.id,
             login_amount=p.login_amount,
             referral_amount=p.referral_amount,
@@ -659,7 +659,7 @@ def retrieve_users(
                     for single_game_character in existing_user.game_characters
                 ],
                 point=[
-                    PointScehma(
+                    PointSchema(
                         id=p.id,
                         login_amount=p.login_amount,
                         referral_amount=p.referral_amount,
@@ -871,7 +871,7 @@ def update_user(
             ]
 
             point_payload = [
-                PointScehma(
+                PointSchema(
                     id=p.id,
                     login_amount=p.login_amount,
                     referral_amount=p.referral_amount,

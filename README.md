@@ -182,7 +182,7 @@ venv.bak/
     - updated_at: A datetime column showing the time when the user was updated.
     - skin: A string column showing the skin of the user #affect the reward
     - chat_id: A string column showing which chat does the user belong to with bot  #marketing
-    -  start_param: A string column showing the start param that user with # telegram
+    - start_param: A string column showing the start param that user with # telegram
     - location: A string column showing where is the user. #marketing  #prefecture
     - nationality: A string column showing which conuntry the user belong to. #marketing
     - age: A string column showing the age of the user. #marketing
@@ -228,7 +228,7 @@ Fields:
 
     Fields:
     - id: An integer column representing the primary key of the "activity" table.
-    - logged_in: An boolena column showing if the user is logged in right now.
+    - logged_in: An boolean column showing if the user is logged in right now.
     - login_streak: An integer column showing the day that user logged in continously.
     - total_logins: An integer column showing the total login time of the user, +1 for each login time # REVIEW how long does it count as a login?
     - last_action_time: A dateime column showing when did the user trigger the action, if no action more than 2 hrs >>> inactive or force logout

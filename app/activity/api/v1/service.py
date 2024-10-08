@@ -1,13 +1,15 @@
 """Actvity App Business Logics"""
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 from app.activity import schemas
 from app.activity.models import ActivityModel
+from app.point.models import PointModel
+from app.point.schemas import PointSchema
 
 def create_activity(request: schemas.ActivityCreateRequestSchema, db:Session) -> schemas.ActivityCreateResponseSchema:
     """Create Activity"""
@@ -193,3 +195,35 @@ def delete_activity(id: int, db: Session):
 
     
 #TODO: get by date range
+
+def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> schemas.DailyCheckInResponseSchema:
+    """Daily check in for user"""
+    existing_point = db.query(PointModel).filter(PointModel.user_id == request.user_id).first()
+    existing_activity = db.query(ActivityModel).filter(ActivityModel.user_id == request.user_id).first()
+    
+    if not existing_point or not existing_activity:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"User {request.user_id} not found"
+        )
+    current_time = datetime.now()
+    last_login_time = existing_activity.last_login_time
+    
+    if current_time.date() > last_login_time.date():
+        existing_activity.logged_in = True
+        existing_activity.total_logins += 1
+        existing_activity.last_login_time = current_time
+        
+        if (current_time.date() - last_login_time.date())>timedelta(days=1):
+            existing_activity.login_streak = 1
+        else:
+            existing_activity.login_streak += 1
+            
+        existing_point.login_amount += 2
+        
+        db.commit()
+        db.refresh(existing_activity)
+        db.refresh(existing_point)
+    return schemas.DailyCheckInResponseSchema(
+        activity=schemas.ActivityBaseSchema(existing_activity),
+        point=PointSchema(existing_point)
+    )

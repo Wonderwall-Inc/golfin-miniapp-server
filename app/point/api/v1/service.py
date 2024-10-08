@@ -40,7 +40,7 @@ def create_point(request: schemas.PointCreateRequestSchema, db: Session) -> sche
 
         return schemas.PointCreateResponseSchema(
             point_base=schemas.PointDetailsSchema(
-                point=schemas.PointScehma(
+                point=schemas.PointSchema(
                     id=new_point.id,
                     login_amount=new_point.login_amount,
                     referral_amount=new_point.referral_amount,
@@ -80,7 +80,7 @@ def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> sc
             return schemas.PointRetrievalResponseSchema(
                 point_base=schemas.PointDetailsSchema(
                     user_id=existing_point.user_id,
-                    point=schemas.PointScehma(
+                    point=schemas.PointSchema(
                         id=existing_point.id,
                         login_amount=existing_point.login_amount,
                         referral_amount=existing_point.referral_amount,
@@ -169,7 +169,7 @@ def retrieve_point_by_user_id(user_id: int, db: Session) -> schemas.PointRetriev
         return schemas.PointRetrievalResponseSchema(
             point_base=schemas.PointDetailsSchema(
                 user_id=existing_point.user_id,
-                point=schemas.PointScehma(
+                point=schemas.PointSchema(
                     id=existing_point.id,
                     login_amount=existing_point.login_amount,
                     referral_amount=existing_point.referral_amount,
@@ -197,7 +197,7 @@ def retrieve_point_list(db: Session, user_ids: List[int], skip: int = 0, limit: 
             schemas.PointRetrievalResponseSchema(
                 point_base=schemas.PointDetailsSchema(
                     user_id=ex.user_id,
-                    point=schemas.PointScehma(
+                    point=schemas.PointSchema(
                         id=ex.id,
                         login_amount=ex.login_amount,
                         referral_amount=ex.referral_amount,
@@ -250,7 +250,7 @@ def update_point(request: schemas.PointUpdateByIdRequestSchema, db: Session) -> 
         
         return schemas.PointUpdateResponseSchema(
             point_base=schemas.PointDetailsSchema(
-                point=schemas.PointScehma(
+                point=schemas.PointSchema(
                     id=existing_point.id,
                     login_amount=existing_point.login_amount,
                     referral_amount=existing_point.referral_amount,

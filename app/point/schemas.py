@@ -4,7 +4,7 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
-class PointScehma(BaseModel):  # defaulf = false
+class PointSchema(BaseModel):  # defaulf = false
     """Point Schema"""
 
     id: int
@@ -17,7 +17,7 @@ class PointScehma(BaseModel):  # defaulf = false
 
 
 class PointDetailsSchema(BaseModel):
-    point: PointScehma
+    point: PointSchema
     user_id: Optional[int] = None
 
 

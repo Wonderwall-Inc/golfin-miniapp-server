@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
-
+from app.point.schemas import PointSchema
 
 class ActivityBaseSchema(BaseModel):
     """
@@ -78,3 +78,12 @@ class ActivityUpdateRequestSchema(BaseModel):
 class ActivityUpdateResponseSchema(BaseModel):
     user_id: int
     activity: ActivityBaseSchema
+
+
+class DailyCheckInRequestSchema(BaseModel):
+    user_id: int
+    access_token: str
+
+class DailyCheckInResponseSchema(BaseModel):
+    activity: ActivityBaseSchema
+    point: PointSchema

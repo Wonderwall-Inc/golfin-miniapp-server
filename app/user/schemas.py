@@ -4,7 +4,7 @@ from typing import Optional, List
 from pydantic import BaseModel
 from datetime import datetime
 from app.game_character.schemas import GameCharacterBaseSchema
-from app.point.schemas import PointScehma
+from app.point.schemas import PointSchema
 from app.activity.schemas import ActivityBaseSchema
 from app.social_media.schemas import SocialMediaBaseSchema
 from app.friend.schemas import FriendBaseSchema, FriendIds
@@ -77,7 +77,7 @@ class UserDetailsSchema(BaseModel):  # show the based + relationship
 
     user_base: UserSchema
     game_characters: Optional[List[GameCharacterBaseSchema]] = []
-    point: Optional[List[PointScehma]] = []
+    point: Optional[List[PointSchema]] = []
     activity: Optional[List[ActivityBaseSchema]] = []
     social_media: Optional[List[SocialMediaBaseSchema]] = []
     sender: Optional[List[FriendBaseSchema]] = []  # friends are multiple as list
