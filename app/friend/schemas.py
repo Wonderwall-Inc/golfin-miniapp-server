@@ -67,6 +67,7 @@ class FriendCreateRequestSchema(BaseModel):
 
     access_token: str
     sender_id: int
+    receiver_id: int
     status: FriendStatusType
     has_claimed: bool
 
