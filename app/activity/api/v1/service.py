@@ -241,9 +241,11 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
         ),
         point=PointSchema(
             id=existing_point.id,
-            user_id=existing_point.user_id,
             login_amount=existing_point.login_amount,
+            referral_amount=existing_point.referral_amount,
+            extra_profit_per_hour=existing_point.extra_profit_per_hour,
             created_at=existing_point.created_at,
-            updated_at=existing_point.updated_at
+            updated_at=existing_point.updated_at,
+            custom_logs=existing_point.custom_logs
         )
     )
