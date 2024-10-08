@@ -249,3 +249,52 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
             custom_logs=existing_point.custom_logs
         )
     )
+    
+    
+def weekly_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> schemas.DailyCheckInResponseSchema:
+    """Weekly check in for user"""
+    existing_point = db.query(PointModel).filter(PointModel.user_id == request.user_id).first()
+    existing_activity = db.query(ActivityModel).filter(ActivityModel.user_id == request.user_id).first()
+    print(existing_activity)
+    print(existing_point)
+    
+    if not existing_point or not existing_activity:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"User {request.user_id} not found"
+        )
+    current_time = datetime.now()
+    
+    if existing_activity.login_streak == 7:
+        existing_activity.logged_in = True
+        existing_activity.login_streak = 0
+        existing_activity.last_login_time = current_time
+            
+        existing_point.login_amount += 15
+        
+        db.commit()
+        db.refresh(existing_activity)
+        db.refresh(existing_point)
+       
+    return schemas.DailyCheckInResponseSchema(
+        activity=schemas.ActivityBaseSchema(
+        id=existing_activity.id,
+        logged_in=existing_activity.logged_in,
+        login_streak=existing_activity.login_streak,
+        total_logins=existing_activity.total_logins,
+        last_action_time=existing_activity.last_action_time, # UTC TIME FORMAT
+        last_login_time=existing_activity.last_login_time, # UTC TIME FORMAT
+        created_at=existing_activity.created_at,
+        updated_at=existing_activity.updated_at,
+        custom_logs=existing_activity.custom_logs
+        ),
+        point=PointSchema(
+            id=existing_point.id,
+            login_amount=existing_point.login_amount,
+            referral_amount=existing_point.referral_amount,
+            extra_profit_per_hour=existing_point.extra_profit_per_hour,
+            created_at=existing_point.created_at,
+            updated_at=existing_point.updated_at,
+            custom_logs=existing_point.custom_logs
+        )
+    )
+    
