@@ -200,6 +200,8 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
     """Daily check in for user"""
     existing_point = db.query(PointModel).filter(PointModel.user_id == request.user_id).first()
     existing_activity = db.query(ActivityModel).filter(ActivityModel.user_id == request.user_id).first()
+    print(existing_activity)
+    print(existing_point)
     
     if not existing_point or not existing_activity:
         raise HTTPException(
@@ -223,7 +225,25 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
         db.commit()
         db.refresh(existing_activity)
         db.refresh(existing_point)
+       
+        
     return schemas.DailyCheckInResponseSchema(
-        activity=schemas.ActivityBaseSchema(existing_activity),
-        point=PointSchema(existing_point)
+        activity=schemas.ActivityBaseSchema(
+        id=existing_activity.id,
+        logged_in=existing_activity.logged_in,
+        login_streak=existing_activity.login_streak,
+        total_logins=existing_activity.total_logins,
+        last_action_time=existing_activity.last_action_time,
+        last_login_time=existing_activity.last_login_time,
+        created_at=existing_activity.created_at,
+        updated_at=existing_activity.updated_at,
+        custom_logs=existing_activity.custom_logs
+        ),
+        point=PointSchema(
+            id=existing_point.id,
+            user_id=existing_point.user_id,
+            login_amount=existing_point.login_amount,
+            created_at=existing_point.created_at,
+            updated_at=existing_point.updated_at
+        )
     )
