@@ -38,7 +38,7 @@ def update_activity(db: Session=Depends(get_db)):
     """Update Activity"""
     return service.update_activity_logged_in(db) 
 
-@router.post('/daily-check-in', response_model=schemas.DailyCheckInResponseSchema)
+@router.put('/daily-check-in', response_model=schemas.DailyCheckInResponseSchema)
 def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session=Depends(get_db)):
     """Daily check in for user"""
     return service.daily_check_in(request, db) 
