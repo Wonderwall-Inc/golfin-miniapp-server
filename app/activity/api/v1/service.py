@@ -206,38 +206,42 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"User {request.user_id} not found"
         )
-                
-    current_time = datetime.now(pytz.timezone('Asia/Singapore'))  # Get current time in SGT
-    last_login_time = existing_activity.last_login_time
+    
+    current_time_utc = datetime.now()            
+    current_time_sgt = datetime.now(pytz.timezone('Asia/Singapore'))  # Get current time in SGT
+    
+    last_login_time_utc = existing_activity.last_login_time
+    last_login_time_sgt = existing_activity.last_login_time.astimezone(pytz.timezone('Asia/Singapore')) if existing_activity.last_login_time else None, # UTC TIME FORMAT
 
-    if last_login_time is None:
+    if last_login_time_sgt is None:
         existing_activity.logged_in = True
         existing_activity.total_logins += 1
-        existing_activity.last_login_time = datetime.now()
+        existing_activity.last_login_time = current_time_utc
         existing_activity.login_streak += 1
         existing_point.login_amount += 2
         db.commit()
         db.refresh(existing_activity)
         db.refresh(existing_point)
     else:
-        if current_time.date() > last_login_time.date():
+        if current_time_sgt.date() > last_login_time_sgt.date():
             print('on case: current_time.date() > last_login_time.date():')
             existing_activity.logged_in = True
             existing_activity.total_logins += 1
-            existing_activity.last_login_time = datetime.now()
+            #existing_activity.last_login_time = datetime.now()
             
-            if (current_time.date() - last_login_time.date())>timedelta(days=1):
+            if (current_time_sgt.date() - last_login_time_sgt.date())>timedelta(days=1):
                 existing_activity.login_streak = 1
             else:
                 existing_activity.login_streak += 1
                 
+            existing_activity.last_login_time = current_time_utc
             existing_point.login_amount += 2
             
         # WEEKLY LOGIN STREAKS CHECK
         if existing_activity.login_streak == 7:
             existing_activity.logged_in = True
             existing_activity.login_streak = 0
-            existing_activity.last_login_time = datetime.now()
+            existing_activity.last_login_time = current_time_utc
                 
             existing_point.login_amount += 15 
         
