@@ -1,9 +1,9 @@
 """Actvity App Business Logics"""
 
 import logging
+import pytz
 from datetime import datetime, timedelta
 from typing import List, Optional
-import pytz
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 

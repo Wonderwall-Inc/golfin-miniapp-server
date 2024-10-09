@@ -1,6 +1,7 @@
 """Friend App Business Logics"""
 
 import logging
+import pytz
 from typing import List, Optional
 from sqlalchemy import desc, distinct, func, literal, union
 from sqlalchemy.orm import Session
@@ -46,8 +47,8 @@ def create_friend(request: schemas.FriendCreateRequestSchema, db: Session) -> sc
                 id=new_friend.id,
                 status=new_friend.status,
                 has_claimed=new_friend.has_claimed,
-                created_at=new_friend.created_at,
-                updated_at=new_friend.updated_at,
+                created_at=new_friend.created_at.astimezone(pytz.timezone('Asia/Singapore')) if new_friend.created_at else None, 
+                updated_at=new_friend.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if new_friend.updated_at else None, 
                 custom_logs=new_friend.custom_logs
             ),
             sender_id=new_friend.sender_id,
@@ -70,8 +71,8 @@ def get_friends_as_sender(user_id: int, db: Session) -> List[schemas.FriendRetri
                     id=friend.sender.id,
                     status=friend.sender.status,
                     has_claimed=friend.has_claimed,
-                    created_at=friend.sender.created_at,
-                    updated_at=friend.sender.updated_at,
+                    created_at=friend.sender.created_at.astimezone(pytz.timezone('Asia/Singapore')) if friend.sender.created_at else None, 
+                    updated_at=friend.sender.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if friend.sender.updated_at else None, 
                     custom_logs=friend.sender.custom_logs
                 ),
                 sender_id=friend.sender.sender_id,
@@ -97,8 +98,8 @@ def get_friends_as_receiver(user_id: int, db: Session) -> List[schemas.FriendRet
                     id=friend.receiver.id,
                     status=friend.receiver.status,
                     has_claimed=friend.has_claimed,
-                    created_at=friend.receiver.created_at,
-                    updated_at=friend.receiver.updated_at,
+                    created_at=friend.receiver.created_at.astimezone(pytz.timezone('Asia/Singapore')) if friend.receiver.created_at else None, 
+                    updated_at=friend.receiver.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if friend.receiver.updated_at else None, 
                     custom_logs=friend.receiver.custom_logs
                 ),
                 sender_id=friend.receiver.sender_id,
@@ -144,8 +145,8 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
                     id=fs.id,
                     sender_id=fs.sender_id,
                     receiver_id=fs.receiver_id,
-                    created_at=fs.created_at,
-                    updated_at=fs.updated_at,
+                    created_at=fs.created_at.astimezone(pytz.timezone('Asia/Singapore')) if fs.created_at else None, 
+                    updated_at=fs.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if fs.updated_at else None, 
                     status=fs.status,
                     has_claimed=fs.has_claimed
                 )
@@ -157,8 +158,8 @@ def retrieve_friends(id: Optional[int], user_id: Optional[int], db: Session) -> 
                     id=fr.id,
                     sender_id=fr.sender_id,
                     receiver_id=fr.receiver_id,
-                    created_at=fr.created_at,
-                    updated_at=fr.updated_at,
+                    created_at=fr.created_at.astimezone(pytz.timezone('Asia/Singapore')) if fr.created_at else None, 
+                    updated_at=fr.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if fr.updated_at else None, 
                     status=fr.status,
                     has_claimed=fr.has_claimed
                 )
@@ -244,8 +245,8 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
                 id=friend_from_as_sender.id,
                 sender_id=friend_from_as_sender.sender_id,
                 receiver_id=friend_from_as_sender.receiver_id,
-                created_at=friend_from_as_sender.created_at,
-                updated_at=friend_from_as_sender.updated_at,
+                created_at=friend_from_as_sender.created_at.astimezone(pytz.timezone('Asia/Singapore')) if friend_from_as_sender.created_at else None,
+                updated_at=friend_from_as_sender.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if friend_from_as_sender.updated_at else None,
                 status=friend_from_as_sender.status,
                 has_claimed=friend_from_as_sender.has_claimed
             )
@@ -257,8 +258,8 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
                 id=friend_from_as_receiver.id,
                 sender_id=friend_from_as_receiver.sender_id,
                 receiver_id=friend_from_as_receiver.receiver_id,
-                created_at=friend_from_as_receiver.created_at,
-                updated_at=friend_from_as_receiver.updated_at,
+                created_at=friend_from_as_receiver.created_at.astimezone(pytz.timezone('Asia/Singapore')) if friend_from_as_receiver.created_at else None,
+                updated_at=friend_from_as_receiver.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if friend_from_as_receiver.updated_at else None,
                 status=friend_from_as_receiver.status,
                 has_claimed=friend_from_as_receiver.has_claimed
             )
@@ -282,8 +283,8 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
                             id=friend.id,
                             sender_id=friend.sender_id,
                             receiver_id=friend.receiver_id,
-                            created_at=friend.created_at,
-                            updated_at=friend.updated_at,
+                            created_at=friend.created_at.astimezone(pytz.timezone('Asia/Singapore')) if friend.created_at else None,
+                            updated_at=friend.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if friend.updated_at else None,
                             status=friend.status,
                             has_claimed=friend.has_claimed
                         )
@@ -294,8 +295,8 @@ def retrieve_friend_list(db: Session, user_ids: List[int], skip: int = 0, limit:
                             id=friend.id,
                             sender_id=friend.sender_id,
                             receiver_id=friend.receiver_id,
-                            created_at=friend.created_at,
-                            updated_at=friend.updated_at,
+                            created_at=friend.created_at.astimezone(pytz.timezone('Asia/Singapore')) if friend.created_at else None,
+                            updated_at=friend.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if friend.updated_at else None,
                             status=friend.status,
                             has_claimed=friend.has_claimed
                         )
@@ -322,8 +323,8 @@ def get_Friend_by_sender_id_receiver_id(sender_id: int, db: Session, receiver_id
             friend_base=schemas.FriendSchema(
                 id=existing_friend.id,
                 status=existing_friend.status,
-                created_at=existing_friend.created_at,
-                updated_at=existing_friend.updated_at,
+                created_at=existing_friend.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_friend.created_at else None,
+                updated_at=existing_friend.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_friend.updated_at else None,
                 custom_logs=existing_friend.custom_logs,
                 has_claimed=existing_friend.has_claimed
             ),
@@ -373,8 +374,8 @@ def update_friend(id: Optional[int], sender_id: Optional[int], receiver_id: Opti
                     friend_base=schemas.FriendSchema(
                         id=f.id,
                         status=f.status,
-                        created_at=f.created_at,
-                        updated_at=f.updated_at,
+                        created_at=f.created_at.astimezone(pytz.timezone('Asia/Singapore')) if f.created_at else None,
+                        updated_at=f.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if f.updated_at else None,
                         custom_logs=f.custom_logs,
                         has_claimed=f.has_claimed
                     ),
@@ -409,8 +410,8 @@ def update_friend_status_by_sender_id(request: schemas.FriendUpdateBySenderIdReq
             friend_base=schemas.FriendSchema(
                 id=db_friend.id,
                 status=db_friend.status,
-                created_at=db_friend.created_at,
-                updated_at=db_friend.updated_at,
+                created_at=db_friend.created_at.astimezone(pytz.timezone('Asia/Singapore')) if db_friend.created_at else None, 
+                updated_at=db_friend.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if db_friend.updated_at else None, 
                 custom_logs=db_friend.custom_logs,
                 has_claimed=db_friend.has_claimed
             ),
@@ -445,8 +446,8 @@ def update_friend_status_by_receiver_id(request: schemas.FriendUpdateByReceiverI
             friend_base=schemas.FriendSchema(
                 id=db_friend.id,
                 status=db_friend.status,
-                created_at=db_friend.created_at,
-                updated_at=db_friend.updated_at,
+                created_at=db_friend.created_at.astimezone(pytz.timezone('Asia/Singapore')) if db_friend.created_at else None, 
+                updated_at=db_friend.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if db_friend.updated_at else None, 
                 custom_logs=db_friend.custom_logs,
                 has_claimed=db_friend.has_claimed
             ),
@@ -481,8 +482,8 @@ def batch_update_reward_claimed_by_sender_id(db: Session, sender_id: int) -> Lis
                     id=f.id,
                     status=f.status,
                     has_claimed=f.has_claimed,
-                    created_at=f.created_at,
-                    updated_at=f.updated_at,
+                    created_at=f.created_at.astimezone(pytz.timezone('Asia/Singapore')) if f.created_at else None, 
+                    updated_at=f.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if f.updated_at else None, 
                     custom_logs=f.custom_logs
                 ),
                 sender_id=f.sender_id,

@@ -24,7 +24,7 @@ class PointModel(Base):
     
     extra_profit_per_hour: Mapped[int] = mapped_column(Integer, default=0)
     
-    created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
     custom_logs: Mapped[Optional[dict]] = mapped_column(JSON)
 

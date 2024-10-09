@@ -1,5 +1,6 @@
 """Game Character App Business Logics"""
 import logging
+import pytz
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
@@ -56,8 +57,8 @@ def create_game_character(request: schemas.GameCharacterCreateRequestSchema, db:
                 stamina=stats.stamina,
                 recovery=stats.recovery,
                 condition=stats.recovery,
-                created_at=stats.created_at,
-                updated_at=stats.updated_at,
+                created_at=stats.created_at.astimezone(pytz.timezone('Asia/Singapore')) if stats.created_at else None,
+                updated_at=stats.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if stats.updated_at else None,
                 custom_logs=stats.custom_logs,
             ),
         )
@@ -95,8 +96,8 @@ def retrieve_game_character(game_character_id: Optional[int], user_id: Optional[
                             last_name=game_character.last_name,
                             gender=game_character.gender,
                             title=game_character.title,
-                            created_at=game_character.created_at,
-                            updated_at=game_character.updated_at,
+                            created_at=game_character.created_at.astimezone(pytz.timezone('Asia/Singapore')) if game_character.created_at else None,
+                            updated_at=game_character.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if game_character.updated_at else None,
                             custom_logs=game_character.custom_logs,
                         )
                     ),
@@ -110,8 +111,8 @@ def retrieve_game_character(game_character_id: Optional[int], user_id: Optional[
                                 stamina=stat.stamina,
                                 recovery=stat.recovery,
                                 condition=stat.condition,
-                                created_at=stat.created_at,
-                                updated_at=stat.updated_at,
+                                created_at=stat.created_at.astimezone(pytz.timezone('Asia/Singapore')) if stat.created_at else None,
+                                updated_at=stat.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if stat.updated_at else None,
                                 custom_logs=stat.custom_logs,
                             ),
                         )
@@ -153,8 +154,8 @@ def retrieve_game_character_stat(id: Optional[int], game_character_id: Optional[
                     stamina=existing_stats.stamina,
                     recovery=existing_stats.recovery,
                     condition=existing_stats.condition,
-                    created_at=existing_stats.created_at,
-                    updated_at=existing_stats.updated_at,
+                    created_at=existing_stats.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_stats.created_at else None,
+                    updated_at=existing_stats.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_stats.updated_at else None,
                     custom_logs=existing_stats.custom_logs,
                     ),
                 )
@@ -178,8 +179,8 @@ def retrieve_game_character_all_list(db: Session, user_ids: List[int], skip: int
                         last_name=existing_game_character.last_name,
                         gender=existing_game_character.gender,
                         title=existing_game_character.title,
-                        created_at=existing_game_character.created_at,
-                        updated_at=existing_game_character.updated_at,
+                        created_at=existing_game_character.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_game_character.created_at else None,
+                        updated_at=existing_game_character.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_game_character.updated_at else None,
                         custom_logs=existing_game_character.custom_logs,
                     )
                 ),
@@ -193,8 +194,8 @@ def retrieve_game_character_all_list(db: Session, user_ids: List[int], skip: int
                             stamina=stat.stamina,
                             recovery=stat.recovery,
                             condition=stat.condition,
-                            created_at=stat.created_at,
-                            updated_at=stat.updated_at,
+                            created_at=stat.created_at.astimezone(pytz.timezone('Asia/Singapore')) if stat.created_at else None,
+                            updated_at=stat.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if stat.updated_at else None,
                             custom_logs=stat.custom_logs,
                         ),
                     )
@@ -221,8 +222,8 @@ def retrieve_game_character_list_from_one_user(db: Session, user_id: int, skip: 
                 last_name=existing_game_character.last_name,
                 gender=existing_game_character.gender,
                 title=existing_game_character.title,
-                created_at=existing_game_character.created_at,
-                updated_at=existing_game_character.updated_at,
+                created_at=existing_game_character.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_game_character.created_at else None,
+                updated_at=existing_game_character.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_game_character.updated_at else None,
                 custom_logs=existing_game_character.custom_logs,
             )
             for existing_game_character in existing_game_characters
@@ -264,8 +265,8 @@ def update_game_character(request: schemas.GameCharacterUpdateRequestSchema, db:
                 last_name=game_character.last_name,
                 gender=game_character.gender,
                 title=game_character.title,
-                created_at=game_character.created_at,
-                updated_at=game_character.updated_at,
+                created_at=game_character.created_at.astimezone(pytz.timezone('Asia/Singapore')) if game_character.created_at else None,
+                updated_at=game_character.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if game_character.updated_at else None,
                 custom_logs=game_character.custom_logs,
             ),
             character_stats=schemas.GameCharacterStatsSchema(
@@ -275,8 +276,8 @@ def update_game_character(request: schemas.GameCharacterUpdateRequestSchema, db:
                 stamina=stats.stamina,
                 recovery=stats.recovery,
                 condition=stats.condition,
-                created_at=stats.created_at,
-                updated_at=stats.updated_at,
+                created_at=stats.created_at.astimezone(pytz.timezone('Asia/Singapore')) if stats.created_at else None,
+                updated_at=stats.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if stats.updated_at else None,
                 custom_logs=stats.custom_logs,
             )
         )

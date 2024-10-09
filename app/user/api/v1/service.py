@@ -1,6 +1,7 @@
 """User App Business Logics"""
 
 from fastapi import HTTPException, status, BackgroundTasks
+import pytz
 from typing import List, Optional
 from sqlalchemy.orm import Session, joinedload
 from app.user.models import UserModel
@@ -133,8 +134,8 @@ def create_user(
                 app_info=user_app_info,
                 personal_info=user_personal_info,
                 telegram_info=user_telegram_info,
-                created_at=new_user.created_at,
-                updated_at=new_user.updated_at,
+                created_at=new_user.created_at.astimezone(pytz.timezone('Asia/Singapore')) if new_user.created_at else None, 
+                updated_at=new_user.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if new_user.updated_at else None, 
                 custom_logs=new_user.custom_logs,
             ),
         ),
@@ -373,8 +374,8 @@ def retrieve_user(
                 app_info=user_app_info,
                 personal_info=user_personal_info,
                 telegram_info=user_telegram_info,
-                created_at=existing_user.created_at,
-                updated_at=existing_user.updated_at,
+                created_at=existing_user.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_user.created_at else None, 
+                updated_at=existing_user.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_user.updated_at else None, 
                 custom_logs=existing_user.custom_logs,
             )
         )
@@ -641,8 +642,8 @@ def retrieve_users(
                         chat_id=existing_user.chat_id,
                         start_param=existing_user.start_param
                     ),
-                    created_at=existing_user.created_at,
-                    updated_at=existing_user.updated_at,
+                    created_at=existing_user.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_user.created_at else None, 
+                    updated_at=existing_user.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_user.updated_at else None, 
                     custom_logs=existing_user.custom_logs,
                 ),
                 game_characters=[
@@ -652,8 +653,8 @@ def retrieve_users(
                         last_name=single_game_character.last_name,
                         gender=single_game_character.gender,
                         title=single_game_character.title,
-                        created_at=single_game_character.created_at,
-                        updated_at=single_game_character.updated_at,
+                        created_at=single_game_character.created_at.astimezone(pytz.timezone('Asia/Singapore')) if single_game_character.created_at else None, 
+                        updated_at=single_game_character.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if single_game_character.updated_at else None, 
                         custom_logs=single_game_character.custom_logs,
                     )
                     for single_game_character in existing_user.game_characters
@@ -664,8 +665,8 @@ def retrieve_users(
                         login_amount=p.login_amount,
                         referral_amount=p.referral_amount,
                         extra_profit_per_hour=p.extra_profit_per_hour,
-                        created_at=p.created_at,
-                        updated_at=p.updated_at,
+                        created_at=p.created_at.astimezone(pytz.timezone('Asia/Singapore')) if p.created_at else None, 
+                        updated_at=p.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if p.updated_at else None, 
                         custom_logs=p.custom_logs,
                     )
                     for p in existing_user.point
@@ -676,10 +677,10 @@ def retrieve_users(
                         logged_in=a.logged_in,
                         login_streak=a.login_streak,
                         total_logins=a.total_logins,
-                        last_action_time=a.last_action_time,
-                        last_login_time=a.last_login_time,
-                        created_at=a.created_at,
-                        updated_at=a.updated_at,
+                        last_action_time=a.last_action_time.astimezone(pytz.timezone('Asia/Singapore')) if a.last_action_time else None, 
+                        last_login_time=a.last_login_time.astimezone(pytz.timezone('Asia/Singapore')) if a.last_login_time else None, 
+                        created_at=a.created_at.astimezone(pytz.timezone('Asia/Singapore')) if a.created_at else None, 
+                        updated_at=a.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if a.updated_at else None, 
                         custom_logs=a.custom_logs,
                     )
                     for a in existing_user.activity
@@ -690,30 +691,30 @@ def retrieve_users(
                         youtube_id=so.youtube_id,
                         youtube_following=so.youtube_following,
                         youtube_viewed=so.youtube_viewed,
-                        youtube_view_date=so.youtube_view_date,
+                        youtube_view_date=so.youtube_view_date.astimezone(pytz.timezone('Asia/Singapore')) if so.youtube_view_date else None, 
                         facebook_id=so.facebook_id,
                         facebook_following=so.facebook_following,
-                        facebook_followed_date=so.facebook_followed_date,
+                        facebook_followed_date=so.facebook_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.facebook_followed_date else None, 
                         instagram_id=so.instagram_id,
                         instagram_following=so.instagram_following,
-                        instagram_follow_trigger_verify_date=so.instagram_follow_trigger_verify_date,
-                        instagram_followed_date=so.instagram_followed_date,
+                        instagram_follow_trigger_verify_date=so.instagram_follow_trigger_verify_date.astimezone(pytz.timezone('Asia/Singapore')) if so.instagram_follow_trigger_verify_date else None, 
+                        instagram_followed_date=so.instagram_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.instagram_followed_date else None, 
                         instagram_tagged=so.instagram_tagged,
-                        instagram_tagged_date=so.instagram_tagged_date,
+                        instagram_tagged_date=so.instagram_tagged_date.astimezone(pytz.timezone('Asia/Singapore')) if so.instagram_tagged_date else None, 
                         instagram_reposted=so.instagram_reposted,
-                        instagram_reposted_date=so.instagram_reposted_date,
+                        instagram_reposted_date=so.instagram_reposted_date.astimezone(pytz.timezone('Asia/Singapore')) if so.instagram_reposted_date else None, 
                         telegram_id=so.telegram_id,
                         telegram_following=so.telegram_following,
-                        telegram_followed_date=so.telegram_followed_date,
+                        telegram_followed_date=so.telegram_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.telegram_followed_date else None, 
                         x_id=so.x_id,
                         x_following=so.x_following,
-                        x_followed_date=so.x_followed_date,
+                        x_followed_date=so.x_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.x_followed_date else None, 
                         discord_id=so.discord_id,
                         discord_following=so.discord_following,
-                        discord_followed_date=so.discord_followed_date,
+                        discord_followed_date=so.discord_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.discord_followed_date else None, 
                         custom_logs=so.custom_logs,
-                        updated_at=so.updated_at,
-                        created_at=so.created_at,
+                        updated_at=so.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if so.updated_at else None, 
+                        created_at=so.created_at.astimezone(pytz.timezone('Asia/Singapore')) if so.created_at else None,
                     )
                     for so in existing_user.social_media
                 ],
@@ -722,8 +723,8 @@ def retrieve_users(
                         id=single_sender.id,
                         sender_id=single_sender.sender_id,
                         receiver_id=single_sender.receiver_id,
-                        created_at=single_sender.created_at,
-                        updated_at=single_sender.updated_at,
+                        created_at=single_sender.created_at.astimezone(pytz.timezone('Asia/Singapore')) if single_sender.created_at else None,
+                        updated_at=single_sender.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if single_sender.updated_at else None,
                         status=single_sender.status,
                         has_claimed=single_sender.has_claimed
                     )
@@ -734,8 +735,8 @@ def retrieve_users(
                         id=single_receiver.id,
                         sender_id=single_receiver.sender_id,
                         receiver_id=single_receiver.receiver_id,
-                        created_at=single_receiver.created_at,
-                        updated_at=single_receiver.updated_at,
+                        created_at=single_receiver.created_at.astimezone(pytz.timezone('Asia/Singapore')) if single_receiver.created_at else None,
+                        updated_at=single_receiver.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if single_receiver.updated_at else None,
                         status=single_receiver.status,
                         has_claimed=single_receiver.has_claimed
                     )
@@ -835,8 +836,8 @@ def update_user(
                     id=single_sender.id,
                     sender_id=single_sender.sender_id,
                     receiver_id=single_sender.receiver_id,
-                    created_at=single_sender.created_at,
-                    updated_at=single_sender.updated_at,
+                    created_at=single_sender.created_at.astimezone(pytz.timezone('Asia/Singapore')) if single_sender.created_at else None,
+                    updated_at=single_sender.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if single_sender.updated_at else None,
                     status=single_sender.status,
                     has_claimed=single_sender.has_claimed
                 )
@@ -848,8 +849,8 @@ def update_user(
                     id=single_receiver.id,
                     sender_id=single_receiver.sender_id,
                     receiver_id=single_receiver.receiver_id,
-                    created_at=single_receiver.created_at,
-                    updated_at=single_receiver.updated_at,
+                    created_at=single_receiver.created_at.astimezone(pytz.timezone('Asia/Singapore')) if single_receiver.created_at else None,
+                    updated_at=single_receiver.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if single_receiver.updated_at else None,
                     status=single_receiver.status,
                     has_claimed=single_receiver.has_claimed
                 )
@@ -863,8 +864,8 @@ def update_user(
                     last_name=single_game_character.last_name,
                     gender=single_game_character.gender,
                     title=single_game_character.title,
-                    created_at=single_game_character.created_at,
-                    updated_at=single_game_character.updated_at,
+                    created_at=single_game_character.created_at.astimezone(pytz.timezone('Asia/Singapore')) if single_game_character.created_at else None,
+                    updated_at=single_game_character.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if single_game_character.updated_at else None,
                     custom_logs=single_game_character.custom_logs,
                 )
                 for single_game_character in existing_user.game_characters
@@ -876,8 +877,8 @@ def update_user(
                     login_amount=p.login_amount,
                     referral_amount=p.referral_amount,
                     extra_profit_per_hour=p.extra_profit_per_hour,
-                    created_at=p.created_at,
-                    updated_at=p.updated_at,
+                    created_at=p.created_at.astimezone(pytz.timezone('Asia/Singapore')) if p.created_at else None,
+                    updated_at=p.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if p.updated_at else None,
                     custom_logs=p.custom_logs,
                 )
                 for p in existing_user.point
@@ -889,30 +890,30 @@ def update_user(
                     youtube_id=so.youtube_id,
                     youtube_following=so.youtube_following,
                     youtube_viewed=so.youtube_viewed,
-                    youtube_view_date=so.youtube_view_date,
+                    youtube_view_date=so.youtube_view_date.astimezone(pytz.timezone('Asia/Singapore')) if so.youtube_view_date else None,
                     facebook_id=so.facebook_id,
                     facebook_following=so.facebook_following,
-                    facebook_followed_date=so.facebook_followed_date,
+                    facebook_followed_date=so.facebook_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.facebook_followed_date else None,
                     instagram_id=so.instagram_id,
                     instagram_following=so.instagram_following,
-                    instagram_follow_trigger_verify_date=so.instagram_follow_trigger_verify_date,
-                    instagram_followed_date=so.instagram_followed_date,
+                    instagram_follow_trigger_verify_date=so.instagram_follow_trigger_verify_date.astimezone(pytz.timezone('Asia/Singapore')) if so.instagram_follow_trigger_verify_date else None,
+                    instagram_followed_date=so.instagram_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.instagram_followed_date else None,
                     instagram_tagged=so.instagram_tagged,
-                    instagram_tagged_date=so.instagram_tagged_date,
+                    instagram_tagged_date=so.instagram_tagged_date.astimezone(pytz.timezone('Asia/Singapore')) if so.instagram_tagged_date else None,
                     instagram_reposted=so.instagram_reposted,
-                    instagram_reposted_date=so.instagram_reposted_date,
+                    instagram_reposted_date=so.instagram_reposted_date.astimezone(pytz.timezone('Asia/Singapore')) if so.instagram_reposted_date else None,
                     telegram_id=so.telegram_id,
                     telegram_following=so.telegram_following,
-                    telegram_followed_date=so.telegram_followed_date,
+                    telegram_followed_date=so.telegram_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.telegram_followed_date else None,
                     x_id=so.x_id,
                     x_following=so.x_following,
-                    x_followed_date=so.x_followed_date,
+                    x_followed_date=so.x_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.x_followed_date else None,
                     discord_id=so.discord_id,
                     discord_following=so.discord_following,
-                    discord_followed_date=so.discord_followed_date,
+                    discord_followed_date=so.discord_followed_date.astimezone(pytz.timezone('Asia/Singapore')) if so.discord_followed_date else None,
                     custom_logs=so.custom_logs,
-                    updated_at=so.updated_at,
-                    created_at=so.created_at,
+                    created_at=so.created_at.astimezone(pytz.timezone('Asia/Singapore')) if so.created_at else None,
+                    updated_at=so.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if so.updated_at else None,
                 )
                 for so in existing_user.social_media
             ]
@@ -923,10 +924,10 @@ def update_user(
                     logged_in=a.logged_in,
                     login_streak=a.login_streak,
                     total_logins=a.total_logins,
-                    last_action_time=a.last_action_time,
-                    last_login_time=a.last_login_time,
-                    created_at=a.created_at,
-                    updated_at=a.updated_at,
+                    last_action_time=a.last_action_time.astimezone(pytz.timezone('Asia/Singapore')) if a.last_action_time else None,
+                    last_login_time=a.last_login_time.astimezone(pytz.timezone('Asia/Singapore')) if a.last_login_time else None,
+                    created_at=a.created_at.astimezone(pytz.timezone('Asia/Singapore')) if a.created_at else None,
+                    updated_at=a.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if a.updated_at else None,
                     custom_logs=a.custom_logs,
                 )
                 for a in existing_user.activity
@@ -939,8 +940,8 @@ def update_user(
                     app_info=user_app_info,
                     personal_info=user_personal_info,
                     telegram_info=user_telegram_info,
-                    created_at=existing_user.created_at,
-                    updated_at=existing_user.updated_at,
+                    created_at=existing_user.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_user.created_at else None,
+                    updated_at=existing_user.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_user.updated_at else None,
                     custom_logs=existing_user.custom_logs,
                 ),
                 game_characters=game_character_payload,

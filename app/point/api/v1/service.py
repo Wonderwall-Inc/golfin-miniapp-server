@@ -1,11 +1,12 @@
 """Point App Business Logics"""
 
 import logging
+import pytz
 from typing import List, Optional
 from sqlalchemy import desc, func
-from sqlalchemy.orm import Session, joinedload
-from fastapi import HTTPException, status, BackgroundTasks
-from sqlalchemy import func, desc, distinct, literal, union
+from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
+from sqlalchemy import func, desc
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.point import schemas
@@ -45,8 +46,8 @@ def create_point(request: schemas.PointCreateRequestSchema, db: Session) -> sche
                     login_amount=new_point.login_amount,
                     referral_amount=new_point.referral_amount,
                     extra_profit_per_hour=new_point.extra_profit_per_hour,
-                    created_at=new_point.created_at,
-                    updated_at=new_point.updated_at,
+                    created_at=new_point.created_at.astimezone(pytz.timezone('Asia/Singapore')) if new_point.created_at else None, 
+                    updated_at=new_point.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if new_point.updated_at else None, 
                     custom_logs=new_point.custom_logs,
                 )
             )
@@ -85,8 +86,8 @@ def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> sc
                         login_amount=existing_point.login_amount,
                         referral_amount=existing_point.referral_amount,
                         extra_profit_per_hour=existing_point.extra_profit_per_hour,
-                        created_at=existing_point.created_at,
-                        updated_at=existing_point.updated_at,
+                        created_at=existing_point.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_point.created_at else None, 
+                        updated_at=existing_point.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_point.updated_at else None, 
                         custom_logs=existing_point.custom_logs,
                     ),
                 )
@@ -174,8 +175,8 @@ def retrieve_point_by_user_id(user_id: int, db: Session) -> schemas.PointRetriev
                     login_amount=existing_point.login_amount,
                     referral_amount=existing_point.referral_amount,
                     extra_profit_per_hour=existing_point.extra_profit_per_hour,
-                    created_at=existing_point.created_at,
-                    updated_at=existing_point.updated_at,
+                    created_at=existing_point.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_point.created_at else None, 
+                    updated_at=existing_point.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_point.updated_at else None, 
                     custom_logs=existing_point.custom_logs,
                 ),
             )
@@ -255,8 +256,8 @@ def update_point(request: schemas.PointUpdateByIdRequestSchema, db: Session) -> 
                     login_amount=existing_point.login_amount,
                     referral_amount=existing_point.referral_amount,
                     extra_profit_per_hour=existing_point.extra_profit_per_hour,
-                    created_at=existing_point.created_at,
-                    updated_at=existing_point.updated_at,
+                    created_at=existing_point.created_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_point.created_at else None, 
+                    updated_at=existing_point.updated_at.astimezone(pytz.timezone('Asia/Singapore')) if existing_point.updated_at else None, 
                     custom_logs=existing_point.custom_logs,
                 ),
             user_id=existing_point.user_id
