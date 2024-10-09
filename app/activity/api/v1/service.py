@@ -228,7 +228,7 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
             existing_activity.total_logins += 1
             #existing_activity.last_login_time = datetime.now()
             
-            if (current_time_sgt.date() - last_login_time_sgt_date)>timedelta(days=1):
+            if (current_time_sgt.date() - last_login_time_sgt_date.date())>timedelta(days=1):
                 existing_activity.login_streak = 1
             else:
                 existing_activity.login_streak += 1
