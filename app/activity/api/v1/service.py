@@ -233,16 +233,17 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
             else:
                 existing_activity.login_streak += 1
                 
-            existing_activity.last_login_time = current_time_utc
-            existing_point.login_amount += 2
+            #existing_activity.last_login_time = current_time_utc
             
         # WEEKLY LOGIN STREAKS CHECK
         if existing_activity.login_streak == 7:
             existing_activity.logged_in = True
             existing_activity.login_streak = 0
-            existing_activity.last_login_time = current_time_utc
                 
             existing_point.login_amount += 15 
+        
+        existing_point.login_amount += 2 # DAILY CHECK IN REWARD
+        existing_activity.last_login_time = current_time_utc
         
         print('on commit')
         db.commit()
