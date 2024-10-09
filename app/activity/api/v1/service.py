@@ -47,8 +47,8 @@ def create_activity(request: schemas.ActivityCreateRequestSchema, db:Session) ->
                 last_action_time=new_activity.last_action_time,
                 last_login_time=new_activity.last_login_time,
                 custom_logs=new_activity.custom_logs,
-                updated_at=new_activity.updated_at,
-                created_at=new_activity.created_at
+                updated_at=new_activity.updated_at.astimezone(pytz.timezone('Asia/Singapore')),
+                created_at=new_activity.created_at.astimezone(pytz.timezone('Asia/Singapore')),
             )
         )
 
@@ -84,10 +84,10 @@ def retrieve_activity(id:Optional[int], user_id:Optional[int], db: Session) -> s
                     logged_in=existing_activity.logged_in,
                     login_streak=existing_activity.login_streak,
                     total_logins=existing_activity.total_logins,
-                    last_action_time=existing_activity.last_action_time,
-                    last_login_time=existing_activity.last_login_time,
-                    created_at=existing_activity.created_at,
-                    updated_at=existing_activity.updated_at,
+                    last_action_time=existing_activity.last_action_time.astimezone(pytz.timezone('Asia/Singapore')),
+                    last_login_time=existing_activity.last_login_time.astimezone(pytz.timezone('Asia/Singapore')),
+                    created_at=existing_activity.created_at.astimezone(pytz.timezone('Asia/Singapore')),
+                    updated_at=existing_activity.updated_at.astimezone(pytz.timezone('Asia/Singapore')),
                     custom_logs=existing_activity.custom_logs
                 )
             )
@@ -111,10 +111,10 @@ def retrieve_activity_list(db: Session, user_ids: List[int], skip: int = 0, limi
                     logged_in=existing_activity.logged_in,
                     login_streak=existing_activity.login_streak,
                     total_logins=existing_activity.total_logins,
-                    last_action_time=existing_activity.last_action_time,
-                    last_login_time=existing_activity.last_login_time,
-                    created_at=existing_activity.created_at,
-                    updated_at=existing_activity.updated_at,
+                    last_action_time=existing_activity.last_action_time.astimezone(pytz.timezone('Asia/Singapore')),
+                    last_login_time=existing_activity.last_login_time.astimezone(pytz.timezone('Asia/Singapore')),
+                    created_at=existing_activity.created_at.astimezone(pytz.timezone('Asia/Singapore')),
+                    updated_at=existing_activity.updated_at.astimezone(pytz.timezone('Asia/Singapore')),
                     custom_logs=existing_activity.custom_logs
                 )
             )
@@ -150,10 +150,10 @@ def update_activity(request: schemas.ActivityUpdateRequestSchema, db: Session) -
                 logged_in=existing_activity.logged_in,
                 login_streak=existing_activity.login_streak,
                 total_logins=existing_activity.total_logins,
-                last_action_time=existing_activity.last_action_time,
-                last_login_time=existing_activity.last_login_time,
-                created_at=existing_activity.created_at,
-                updated_at=existing_activity.updated_at,
+                last_action_time=existing_activity.last_action_time.astimezone(pytz.timezone('Asia/Singapore')),
+                last_login_time=existing_activity.last_login_time.astimezone(pytz.timezone('Asia/Singapore')),
+                created_at=existing_activity.created_at.astimezone(pytz.timezone('Asia/Singapore')),
+                updated_at=existing_activity.updated_at.astimezone(pytz.timezone('Asia/Singapore')),
                 custom_logs=existing_activity.custom_logs
             )
         )
@@ -269,8 +269,8 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
         last_action_time=existing_activity.last_action_time.astimezone(pytz.timezone('Asia/Singapore')), # UTC TIME FORMAT
         #last_login_time=existing_activity.last_login_time, # UTC TIME FORMAT
         last_login_time=existing_activity.last_login_time.astimezone(pytz.timezone('Asia/Singapore')), # UTC TIME FORMAT
-        created_at=existing_activity.created_at,
-        updated_at=existing_activity.updated_at,
+        created_at=existing_activity.created_at.astimezone(pytz.timezone('Asia/Singapore')),
+        updated_at=existing_activity.updated_at.astimezone(pytz.timezone('Asia/Singapore')),
         custom_logs=existing_activity.custom_logs
         ),
         point=PointSchema(
@@ -278,8 +278,8 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
             login_amount=existing_point.login_amount,
             referral_amount=existing_point.referral_amount,
             extra_profit_per_hour=existing_point.extra_profit_per_hour,
-            created_at=existing_point.created_at,
-            updated_at=existing_point.updated_at,
+            created_at=existing_point.created_at.astimezone(pytz.timezone('Asia/Singapore')),
+            updated_at=existing_point.updated_at.astimezone(pytz.timezone('Asia/Singapore')),
             custom_logs=existing_point.custom_logs
         )
     )
