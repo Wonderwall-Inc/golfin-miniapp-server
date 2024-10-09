@@ -8,16 +8,17 @@
       "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
     }
   ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "main.py"
+    }
+  ],
   "crons": [
     {
       "path": "/api/v1/activity/update/logged-in",
       "schedule": "5 * * * *"
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/"
-    }
-  ]
+  ] 
 }
+
