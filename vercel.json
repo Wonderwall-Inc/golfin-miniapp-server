@@ -19,5 +19,12 @@
       "path": "/api/v1/activity/update/logged-in",
       "schedule": "5 * * * *"
     }
+  ],
+  "rewrite": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
   ]
 }
+
