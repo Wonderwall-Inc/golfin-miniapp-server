@@ -208,12 +208,9 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
         )
     
     current_time_utc = datetime.now()            
-    current_time_sgt = datetime.now(pytz.timezone('Asia/Singapore'))  # Get current time in SGT
-    
     last_login_time_utc = existing_activity.last_login_time
-    last_login_time_sgt = existing_activity.last_login_time.astimezone(pytz.timezone('Asia/Singapore')) if existing_activity.last_login_time else None, # UTC TIME FORMAT
-
-    if last_login_time_sgt is None:
+    
+    if last_login_time_utc is None:
         existing_activity.logged_in = True
         existing_activity.total_logins += 1
         existing_activity.last_login_time = current_time_utc
@@ -223,13 +220,15 @@ def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session) -> s
         db.refresh(existing_activity)
         db.refresh(existing_point)
     else:
-        if current_time_sgt.date() > last_login_time_sgt.date():
+        current_time_sgt = datetime.now(pytz.timezone('Asia/Singapore'))  # Get current time in SGT
+        last_login_time_sgt_date = existing_activity.last_login_time.astimezone(pytz.timezone('Asia/Singapore')).date() if existing_activity.last_login_time else None, # UTC TIME FORMAT
+        if current_time_sgt.date() > last_login_time_sgt_date:
             print('on case: current_time.date() > last_login_time.date():')
             existing_activity.logged_in = True
             existing_activity.total_logins += 1
             #existing_activity.last_login_time = datetime.now()
             
-            if (current_time_sgt.date() - last_login_time_sgt.date())>timedelta(days=1):
+            if (current_time_sgt.date() - last_login_time_sgt_date)>timedelta(days=1):
                 existing_activity.login_streak = 1
             else:
                 existing_activity.login_streak += 1
