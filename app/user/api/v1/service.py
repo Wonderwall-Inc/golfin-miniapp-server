@@ -19,6 +19,8 @@ from app.user.schemas import (
     UserDetailsSchema,
     UserSchema,
     UserDetailsResponseSchema,
+    ReferralRankingRequest,
+    ReferralRankingResponse
 )
 from app.friend.schemas import FriendBaseSchema, FriendIds
 from app.game_character.schemas import GameCharacterBaseSchema
@@ -762,9 +764,7 @@ def retrieve_users(
     ]
 
 
-def update_user(
-    request: UserUpdateRequestSchema, db: Session
-) -> UserUpdateResponseSchema:
+def update_user(request: UserUpdateRequestSchema, db: Session) -> UserUpdateResponseSchema:
     if not request.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Missing paramters"
@@ -985,7 +985,7 @@ def delete_user(id: int, db: Session):
 #         )
 #     return result
 
-def get_referral_ranking(sender_id: int, db: Session):  # no filter
+def get_referral_ranking(request: ReferralRankingRequest, db: Session) -> ReferralRankingResponse:  # no filter
     """Get referral ranking"""
     existing_users = (
         db.query(UserModel)
@@ -1024,22 +1024,22 @@ def get_referral_ranking(sender_id: int, db: Session):  # no filter
         })
     
     # Find the rank of the given sender_id
-    sender_rank = next((rank for rank, (user_id, _) in enumerate(sorted_referrals, start=1) if user_id == sender_id), None)
+    sender_rank = next((rank for rank, (user_id, _) in enumerate(sorted_referrals, start=1) if user_id == request.sender_id), None)
     
     # Get the sender's record
-    sender_record = next((user for user in existing_users if user.id == sender_id), None)
+    sender_record = next((user for user in existing_users if user.id == request.sender_id), None)
     sender_info = None
     if sender_record:
         sender_info = {
             "rank": sender_rank,
             "sender_count": len(sender_record.sender),
-            "user_id": sender_id,
+            "user_id": request.sender_id,
             "telegram_id": sender_record.telegram_id,
             "username": sender_record.username
         }
     
     # Determine if the sender is in the top 10
-    sender_in_top_10 = any(record["user_id"] == sender_id for record in ranking_list)
+    sender_in_top_10 = any(record["user_id"] == request.sender_id for record in ranking_list)
     
     return {
         "top_10": ranking_list,

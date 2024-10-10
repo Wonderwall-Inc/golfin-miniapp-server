@@ -37,7 +37,7 @@ class UserTelegramInfoSchema(BaseModel):
     premium: bool
     wallet_address: Optional[str] = None
     chat_id: str
-    start_param:  Optional[str] = None
+    start_param: Optional[str] = None
 
 
 class UserAppInfoSchema(BaseModel):
@@ -141,3 +141,26 @@ class UserDetailsResponseSchema(BaseModel):
     """User Details Response Schema"""
 
     user_details: UserDetailsSchema
+
+
+class ReferralRankingList(BaseModel):
+    """Referral Ranking List"""
+
+    rank: int
+    sender_count: int
+    user_id: int
+    telegram_id: str
+    username: str
+
+
+class ReferralRankingRequest(BaseModel):
+    """Referral Ranking Request"""
+    sender_id: int
+
+
+class ReferralRankingResponse(BaseModel):
+    """Referral Ranking Response"""
+
+    top_10: List[ReferralRankingList]
+    sender_info: ReferralRankingList
+    sender_in_top_10: bool

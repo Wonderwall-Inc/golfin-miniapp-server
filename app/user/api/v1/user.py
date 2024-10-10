@@ -68,8 +68,8 @@ def update_user(request: schemas.UserUpdateRequestSchema, db: Session = Depends(
     return service.update_user(request, db)
 
 
-@router.get("/referral-ranking")
-def get_referral_ranking(sender_id: int, db: Session = Depends(get_db)):
-    """Get sender count"""
-    return service.get_referral_ranking(sender_id, db)
+@router.get("/referral-ranking", response_model=schemas.ReferralRankingResponse)
+def get_referral_ranking(request: schemas.ReferralRankingRequest, db: Session = Depends(get_db)):
+    """Get referral ranking"""
+    return service.get_referral_ranking(request, db)
 
