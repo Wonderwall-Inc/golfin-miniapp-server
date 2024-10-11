@@ -33,10 +33,10 @@ def update_activity(request: schemas.ActivityUpdateRequestSchema, db: Session=De
     """Update Activity"""
     return service.update_activity(request, db) 
 
-@router.put('/update/logged-in')
-def update_activity(db: Session=Depends(get_db)):
-    """Update Activity"""
-    return service.update_activity_logged_in(db) 
+#@router.put('/update/logged-in')
+#def update_activity(db: Session=Depends(get_db)):
+#    """Update Activity"""
+#    return service.update_activity_logged_in(db) 
 
 @router.put('/daily-check-in', response_model=schemas.DailyCheckInResponseSchema)
 def daily_check_in(request: schemas.DailyCheckInRequestSchema, db: Session=Depends(get_db)):

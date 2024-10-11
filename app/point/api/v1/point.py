@@ -36,7 +36,7 @@ def update_point(request: schemas.PointUpdateByIdRequestSchema, db: Session = De
     """Update Point"""
     return service.update_point(request, db)
 
-@router.get('/ranking')
+@router.get('/ranking', response_model=schemas.PointRankingResponse)
 def get_point_ranking(user_id: int, db: Session = Depends(get_db)):
     """Get Point Ranking"""
     return service.get_point_ranking(user_id, db)

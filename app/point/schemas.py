@@ -1,6 +1,6 @@
 """Point Pydantic Schemas"""
 
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -64,3 +64,26 @@ class PointUpdateByUserIdRequestSchema(BaseModel):
 
 class PointUpdateResponseSchema(BaseModel):
     point_base: PointDetailsSchema
+
+
+class PointRankingList(BaseModel):
+    """Point Ranking List"""
+
+    rank: int
+    total_points: int
+    user_id: int
+    telegram_id: str
+    username: str
+
+
+class PointRankingRequest(BaseModel):
+    """Point Ranking Request"""
+    user_id: int
+
+
+class PointRankingResponse(BaseModel):
+    """Point Ranking Response"""
+
+    top_10: List[PointRankingList]
+    user_info: PointRankingList
+    user_in_top_10: bool

@@ -95,7 +95,7 @@ def retrieve_point(id: Optional[int], user_id: Optional[int], db: Session) -> sc
     except Exception as e:
         logging.error(f"An error occurred: {e}")  
 
-def get_point_ranking(user_id: int, db: Session):
+def get_point_ranking(user_id: int, db: Session) -> schemas.PointRankingResponse:
     """Get point ranking"""
     logging.info(f"get_point_ranking called with user_id={user_id}")
     try:
