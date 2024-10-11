@@ -8,7 +8,7 @@ from fastapi import HTTPException, status, BackgroundTasks
 from app.record import schemas
 from app.record.models import RecordModel
 
-async def create_record(request: schemas.RecordCreateRequestSchema, db: Session) -> schemas.RecordCreateResponseSchema:
+def create_record(request: schemas.RecordCreateRequestSchema, db: Session) -> schemas.RecordCreateResponseSchema:
     """Create Record"""
     if not request.user_id or not request.record_details:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User id, record details are required")
