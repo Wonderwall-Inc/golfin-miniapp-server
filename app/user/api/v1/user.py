@@ -2,11 +2,9 @@
 from typing import List, Optional
 from fastapi import (
     APIRouter,
-    BackgroundTasks,
     Depends,
     HTTPException,
-    status,
-    BackgroundTasks,
+    status
 )
 from sqlalchemy.orm import Session
 
