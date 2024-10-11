@@ -15,6 +15,7 @@ from core import database
 from app.user import schemas
 from app.user.api.v1 import service
 
+from app.record.api.v1.service import create_record
 # from core.auth import auth, get_current_user
 
 
@@ -24,8 +25,9 @@ get_db = database.get_db
 
 @router.post("/create", response_model=schemas.UserCreateResponseSchema)# dependencies=[Depends(auth)],
 # def create_user(request: schemas.UserCreateRequestSchema, background_tasks: BackgroundTasks, db: Session = Depends(get_db),):
-def create_user(request: schemas.UserCreateRequestSchema, db: Session = Depends(get_db)):
+async def create_user(request: schemas.UserCreateRequestSchema, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """Login with existing account"""
+    background_tasks.add_task(create_record)
     return service.create_user(request, db)
 
 

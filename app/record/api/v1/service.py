@@ -1,94 +1,91 @@
-# """Record App Business Logics"""
+"""Record App Business Logics"""
 
-# import logging
-# from typing import List, Optional
-# from sqlalchemy.orm import Session
-# from fastapi import HTTPException, status, BackgroundTasks
+import logging
+from typing import List, Optional
+from sqlalchemy.orm import Session
+from fastapi import HTTPException, status, BackgroundTasks
 
-# from app.record import schemas
-# from app.record.models import RecordModel
+from app.record import schemas
+from app.record.models import RecordModel
 
-# def create_record(request: schemas.RecordCreateRequestSchema, db: Session) -> schemas.RecordCreateResponseSchema:
-#     """Create Record"""
-#     if not request.user_id or not request.record_details:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User id, record details are required")
+def create_record(request: schemas.RecordCreateRequestSchema, db: Session) -> schemas.RecordCreateResponseSchema:
+    """Create Record"""
+    if not request.user_id or not request.record_details:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User id, record details are required")
     
-#     # if not request.record_details.amount or not request.record_details.extra_profit_per_hour:
-#     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount and extra profit per hour are required")
-    
-#     try:
-#         record = db.query(RecordModel).filter(RecordModel.user_id == request.user_id).first()
+     # if not request.record_details.amount or not request.record_details.extra_profit_per_hour:
+     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount and extra profit per hour are required")
+    try:
+        record = db.query(RecordModel).filter(RecordModel.user_id == request.user_id).first()
 
-#         if record:
-#             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Record already exists")
+        if record:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Record already exists")
 
-#         new_record = RecordModel(
-#             user_id=request.user_id,
-#             action=request.record_details.action,
-#             table=request.record_details.table,
-#             table_id=request.record_details.table_id,
-#             custom_logs=request.record_details.custom_logs,
-#         )
+        new_record = RecordModel(
+            user_id=request.user_id,
+            action=request.record_details.action,
+            table=request.record_details.table,
+            table_id=request.record_details.table_id,
+            custom_logs=request.record_details.custom_logs,
+        )
 
-#         db.add(new_record)
-#         db.commit()
-#         db.refresh(new_record)
+        db.add(new_record)
+        db.commit()
+        db.refresh(new_record)
 
-#         return schemas.RecordCreateResponseSchema(
-#             record_base=schemas.RecordDetailsSchema(
-#                 record=schemas.RecordSchema(
-#                     id=new_record.id,
-#                     action=new_record.action,
-#                     table=new_record.table,
-#                     table_id=new_record.table_id,
-#                     created_at=new_record.created_at,
-#                     updated_at=new_record.updated_at,
-#                     custom_logs=new_record.custom_logs,
-#                 )
-#             )
-#         )
+        return schemas.RecordCreateResponseSchema(
+             record_base=schemas.RecordDetailsSchema(
+                 record=schemas.RecordSchema(
+                     id=new_record.id,
+                     action=new_record.action,
+                     table=new_record.table,
+                     table_id=new_record.table_id,
+                     created_at=new_record.created_at,
+                     updated_at=new_record.updated_at,
+                     custom_logs=new_record.custom_logs,
+                 )
+             )
+         )
         
-#     except Exception as e:
-#         logging.error(f"An error occured: {e}")
+    except Exception as e:
+         logging.error(f"An error occured: {e}")
 
 
-# def retrieve_record(id: Optional[int], user_id: Optional[int], db: Session) -> schemas.RecordRetrievalResponseSchema:
-#     """Retrieve Record Details from Single User"""
-#     if not id and not user_id:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Missing id or user_id")
-    
-#     try:
-#         base_query = db.query(RecordModel)
-#         filters = []
-    
-#         if id is not None: 
-#             filters.append(RecordModel.id == id)
-
-#         if user_id is not None:
-#             filters.append(RecordModel.user_id == user_id)
-
-#         if filters: 
-#             existing_record = base_query.filter(*filters).first()
+def retrieve_record(id: Optional[int], user_id: Optional[int], db: Session) -> schemas.RecordRetrievalResponseSchema:
+    """Retrieve Record Details from Single User"""
+    if not id and not user_id:
+         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Missing id or user_id")
+   
+    try:
+        base_query = db.query(RecordModel)
+        filters = []
+   
+        if id is not None: 
+            filters.append(RecordModel.id == id)
+        if user_id is not None:
+            filters.append(RecordModel.user_id == user_id)
+        if filters: 
+            existing_record = base_query.filter(*filters).first()
+           
+            if not existing_record:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Record not found")
             
-#             if not existing_record:
-#                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Record not found")
-            
-#             return schemas.RecordRetrievalResponseSchema(
-#                 record_base=schemas.RecordDetailsSchema(
-#                     user_id=existing_record.user_id,
-#                     record=schemas.RecordSchema(
-#                         id=existing_record.id,
-#                         action=existing_record.action,
-#                         table=existing_record.table,
-#                         table_id=existing_record.table_id,
-#                         created_at=existing_record.created_at,
-#                         updated_at=existing_record.updated_at,
-#                         custom_logs=existing_record.custom_logs,
-#                     ),
-#                 )
-#             )
-#     except Exception as e:
-#         logging.error(f"An error occurred: {e}")  
+            return schemas.RecordRetrievalResponseSchema(
+                record_base=schemas.RecordDetailsSchema(
+                    user_id=existing_record.user_id,
+                    record=schemas.RecordSchema(
+                        id=existing_record.id,
+                        action=existing_record.action,
+                        table=existing_record.table,
+                        table_id=existing_record.table_id,
+                        created_at=existing_record.created_at,
+                        updated_at=existing_record.updated_at,
+                        custom_logs=existing_record.custom_logs,
+                    ),
+                )
+            )
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")  
 
 
 # def retrieve_record_by_user_id(user_id: int, db: Session) -> schemas.RecordRetrievalResponseSchema:
