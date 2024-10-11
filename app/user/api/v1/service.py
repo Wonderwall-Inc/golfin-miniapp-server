@@ -127,7 +127,7 @@ async def create_user(
     # Create Point for the new user with bg task
 
     # new_user_schema_factory = UserSchemaFactory(new_user)
-       
+    print(new_user)
     return UserCreateResponseSchema(
         access_token=new_user.access_token,
         user_details=UserDetailsSchema(
