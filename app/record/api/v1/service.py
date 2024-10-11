@@ -36,7 +36,7 @@
 
 #         return schemas.RecordCreateResponseSchema(
 #             record_base=schemas.RecordDetailsSchema(
-#                 record=schemas.RecordScehma(
+#                 record=schemas.RecordSchema(
 #                     id=new_record.id,
 #                     action=new_record.action,
 #                     table=new_record.table,
@@ -76,7 +76,7 @@
 #             return schemas.RecordRetrievalResponseSchema(
 #                 record_base=schemas.RecordDetailsSchema(
 #                     user_id=existing_record.user_id,
-#                     record=schemas.RecordScehma(
+#                     record=schemas.RecordSchema(
 #                         id=existing_record.id,
 #                         action=existing_record.action,
 #                         table=existing_record.table,
@@ -105,7 +105,7 @@
 #         return schemas.RecordRetrievalResponseSchema(
 #             record_base=schemas.RecordDetailsSchema(
 #                 user_id=existing_record.user_id,
-#                 record=schemas.RecordScehma(
+#                 record=schemas.RecordSchema(
 #                     id=existing_record.id,
 #                     action=existing_record.action,
 #                     table=existing_record.table,table_id=existing_record.table_id,
@@ -132,7 +132,7 @@
 #             schemas.RecordRetrievalResponseSchema(
 #                 record_base=schemas.RecordDetailsSchema(
 #                     user_id=ex.user_id,
-#                     record=schemas.RecordScehma(
+#                     record=schemas.RecordSchema(
 #                         id=ex.id,
 #                         action=ex.action,
 #                         table=ex.table,
@@ -185,7 +185,7 @@
         
 # #         return schemas.RecordUpdateResponseSchema(
 # #             record_base=schemas.RecordDetailsSchema(
-# #                 record=schemas.RecordScehma(
+# #                 record=schemas.RecordSchema(
 # #                     id=existing_record.id,
 # #                     login_amount=existing_record.login_amount,
 # #                     referral_amount=existing_record.referral_amount,

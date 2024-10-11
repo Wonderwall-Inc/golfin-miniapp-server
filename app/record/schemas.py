@@ -9,7 +9,7 @@ RecordActionType = Literal["GET", "LIST", "CREATE", "UPDATE", "BATCH_UPDATE", ]
 TableType = Literal["USER", "POINT", "ACTIVITY", "FRIEND", "SOCIAL_MEDIA", "GAME_CHARACTER", "RECORD"]
 
 
-class RecordScehma(BaseModel):  # defaulf = false
+class RecordSchema(BaseModel):  # defaulf = false
     """Record Schema"""
 
     id: int
@@ -24,7 +24,7 @@ class RecordScehma(BaseModel):  # defaulf = false
 
 
 class RecordDetailsSchema(BaseModel):
-    record: RecordScehma
+    record: RecordSchema
     user_id: Optional[int] = None
 
 

@@ -58,7 +58,7 @@ class SocialMediaSchema(BaseModel):
     custom_logs: Optional[dict] = None
 
 
-class SocialMediaCategrizedBaseScehma(SocialMediaSchema):
+class SocialMediaCategrizedBaseSchema(SocialMediaSchema):
     id: int
 
 
@@ -101,7 +101,7 @@ class SocialMediaBaseSchema(BaseModel):
     custom_logs: Optional[dict] = None
 
 
-class SocialMediaCreateDetailScheam(BaseModel):  # without id
+class SocialMediaCreateDetailSchema(BaseModel):  # without id
     youtube: Optional[YoutubeSocialMediaSchema] = None
     facebook: Optional[FacebookSocialMediaSchema] = None
     instagram: Optional[InstagramSocialMediaSchema] = None
@@ -115,7 +115,7 @@ class SocialMediaCreateRequestSchema(BaseModel):
     user_id: int
     access_token: str
     type: str  # FIXME: enum
-    social_media: SocialMediaCreateDetailScheam
+    social_media: SocialMediaCreateDetailSchema
 
 
 class SocialMediaCreateResponseSchema(BaseModel):
@@ -143,12 +143,12 @@ class SocialMediaUpdateRequestSchema(BaseModel):
     access_token: str
     user_id: Optional[int] = None
     type: str  # FIXME: enum
-    social_media: SocialMediaCreateDetailScheam
+    social_media: SocialMediaCreateDetailSchema
 
 
 class SocialMediaUpdateResponseSchema(BaseModel):
     user_id: int
-    social_media: SocialMediaCategrizedBaseScehma
+    social_media: SocialMediaCategrizedBaseSchema
 
 # TikTokSocialMediaSchema,
 # PinterestSocialMediaSchema,

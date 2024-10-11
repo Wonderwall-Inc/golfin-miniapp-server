@@ -28,7 +28,7 @@ from app.social_media.schemas import SocialMediaBaseSchema
 from app.activity.schemas import ActivityBaseSchema
 # from core.utils import UserSchemaFactory
 # from app.record.models import RecordModel
-# from app.record.schemas import RecordScehma 
+# from app.record.schemas import RecordSchema 
 # from app.record.api.v1.service import create_record, retrieve_record_by_user_id
 # from app.record import schemas
 
@@ -544,7 +544,7 @@ def retrieve_user_extra_detail(
     # existing_user.record.append(new_record)
     
     # record_payload = [
-    #     RecordScehma(
+    #     RecordSchema(
     #         id=r.id,
     #         action=r.action,
     #         table=r.table,
@@ -745,7 +745,7 @@ def retrieve_users(
                 ],
                 # FIXME
                 # record_payload = [
-                #     RecordScehma(
+                #     RecordSchema(
                 #         id=r.id,
                 #         action=r.action,
                 #         table=r.table,

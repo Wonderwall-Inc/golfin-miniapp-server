@@ -320,7 +320,7 @@ def update_social_media(request: schemas.SocialMediaUpdateRequestSchema, db: Ses
                 db.refresh(existing_social_media)
                 return schemas.SocialMediaUpdateResponseSchema(
                     user_id=existing_social_media.user_id,
-                    social_media=schemas.SocialMediaCategrizedBaseScehma(
+                    social_media=schemas.SocialMediaCategrizedBaseSchema(
                         id=existing_social_media.id,
                         youtube=schemas.YoutubeSocialMediaSchema(
                             youtube_id=existing_social_media.youtube_id,
@@ -344,7 +344,7 @@ def update_social_media(request: schemas.SocialMediaUpdateRequestSchema, db: Ses
                 db.refresh(existing_social_media)
                 return schemas.SocialMediaUpdateResponseSchema(
                     user_id=existing_social_media.user_id,
-                    social_media=schemas.SocialMediaCategrizedBaseScehma(
+                    social_media=schemas.SocialMediaCategrizedBaseSchema(
                         id=existing_social_media.id,
                         facebook=schemas.FacebookSocialMediaSchema(
                             facebook_id=existing_social_media.facebook_id,
@@ -372,7 +372,7 @@ def update_social_media(request: schemas.SocialMediaUpdateRequestSchema, db: Ses
                 db.refresh(existing_social_media)
                 return schemas.SocialMediaUpdateResponseSchema(
                     user_id=existing_social_media.user_id,
-                    social_media=schemas.SocialMediaCategrizedBaseScehma(
+                    social_media=schemas.SocialMediaCategrizedBaseSchema(
                         id=existing_social_media.id,
                         instagram=schemas.InstagramSocialMediaSchema(
                             instagram_id=existing_social_media.instagram_id,
@@ -400,7 +400,7 @@ def update_social_media(request: schemas.SocialMediaUpdateRequestSchema, db: Ses
                 db.refresh(existing_social_media)
                 return schemas.SocialMediaUpdateResponseSchema(
                     user_id=existing_social_media.user_id,
-                    social_media=schemas.SocialMediaCategrizedBaseScehma(
+                    social_media=schemas.SocialMediaCategrizedBaseSchema(
                         id=existing_social_media.id,
                         instagram=schemas.InstagramSocialMediaSchema(
                             telegram_id=existing_social_media.telegram_id,
@@ -423,7 +423,7 @@ def update_social_media(request: schemas.SocialMediaUpdateRequestSchema, db: Ses
                 db.refresh(existing_social_media)
                 return schemas.SocialMediaUpdateResponseSchema(
                     user_id=existing_social_media.user_id,
-                    social_media=schemas.SocialMediaCategrizedBaseScehma(
+                    social_media=schemas.SocialMediaCategrizedBaseSchema(
                         id=existing_social_media.id,
                         x=schemas.XSocialMediaSchema(
                             x_id=existing_social_media.x_id,
@@ -446,7 +446,7 @@ def update_social_media(request: schemas.SocialMediaUpdateRequestSchema, db: Ses
                 db.refresh(existing_social_media)
                 return schemas.SocialMediaUpdateResponseSchema(
                     user_id=existing_social_media.user_id,
-                    social_media=schemas.SocialMediaCategrizedBaseScehma(
+                    social_media=schemas.SocialMediaCategrizedBaseSchema(
                         id=existing_social_media.id,
                         instagram=schemas.InstagramSocialMediaSchema(
                             discord_id=existing_social_media.discord_id,
