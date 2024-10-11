@@ -32,10 +32,10 @@ from app.activity.schemas import ActivityBaseSchema
 from app.record.api.v1.service import create_record
 from app.record.schemas import RecordCreateRequestSchema, RecordCreateDetailsSchema
 
-async def create_user(
+def create_user(
     request: UserCreateRequestSchema, 
     db: Session, 
-    background_tasks: BackgroundTasks
+    #background_tasks: BackgroundTasks
 ):
     """Create new user account"""
     print(request)
@@ -122,7 +122,8 @@ async def create_user(
             table_id=new_user.id,
         )
     )
-    background_tasks.add_task(create_record, record_req, db)
+    new_record = create_record(record_req, db)
+    print(new_record)
     # FIXME: Create Game Character for the new user with bg task
     # Create Point for the new user with bg task
 
