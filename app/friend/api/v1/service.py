@@ -5,7 +5,7 @@ import pytz
 from typing import List, Optional
 from sqlalchemy import desc, distinct, func, literal, union
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status, BackgroundTasks
+from fastapi import HTTPException, status
 from sqlalchemy import func, desc, distinct, literal, union
 from sqlalchemy.exc import SQLAlchemyError
 

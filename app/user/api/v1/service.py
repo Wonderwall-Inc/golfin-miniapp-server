@@ -1,5 +1,5 @@
 """User App Business Logics"""
-from fastapi import HTTPException, status, BackgroundTasks
+from fastapi import HTTPException, status
 import pytz
 from typing import List, Optional
 from sqlalchemy.orm import Session, joinedload
@@ -28,8 +28,8 @@ from app.activity.schemas import ActivityBaseSchema
 # from core.utils import UserSchemaFactory
 # from app.record.models import RecordModel
 # from app.record.schemas import RecordSchema 
-from app.record.api.v1.service import create_record
-from app.record.schemas import RecordCreateRequestSchema, RecordCreateDetailsSchema
+#from app.record.api.v1.service import create_record
+#from app.record.schemas import RecordCreateRequestSchema, RecordCreateDetailsSchema
 
 def create_user(
     request: UserCreateRequestSchema, 
