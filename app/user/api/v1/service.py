@@ -113,22 +113,22 @@ def create_user(
     db.refresh(new_user)
     
     # FIXME
-    record_req = RecordCreateRequestSchema(
-        user_id = new_user.id,
-        access_token='',
-        record_details=RecordCreateDetailsSchema(
-            action='CREATE',
-            table='USER',
-            table_id=new_user.id,
-        )
-    )
-    new_record = create_record(record_req, db)
-    print(new_record)
+    # record_req = RecordCreateRequestSchema(
+    #     user_id = new_user.id,
+    #     access_token='',
+    #     record_details=RecordCreateDetailsSchema(
+    #         action='CREATE',
+    #         table='USER',
+    #         table_id=new_user.id,
+    #     )
+    # )
+    # new_record = create_record(record_req, db)
+    # print(new_record)
     # FIXME: Create Game Character for the new user with bg task
     # Create Point for the new user with bg task
 
     # new_user_schema_factory = UserSchemaFactory(new_user)
-    print(new_user)
+    #print(new_user)
     return UserCreateResponseSchema(
         access_token=new_user.access_token,
         user_details=UserDetailsSchema(
