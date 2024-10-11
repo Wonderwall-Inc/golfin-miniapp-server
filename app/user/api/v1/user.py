@@ -1,5 +1,4 @@
 """User App API Routes"""
-import asyncio
 from typing import List, Optional
 from fastapi import (
     APIRouter,

@@ -1,5 +1,4 @@
 """User App Business Logics"""
-import asyncio
 from fastapi import HTTPException, status, BackgroundTasks
 import pytz
 from typing import List, Optional
