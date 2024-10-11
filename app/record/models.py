@@ -47,7 +47,7 @@ class RecordModel(Base):
     
     table_id: Mapped[int] = mapped_column(Integer, nullable=False)
     
-    created_at: Mapped[dateTime] = mapped_column(DateTime, default=datetime.now)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
     custom_logs: Mapped[Optional[dict]] = mapped_column(JSON)
 
