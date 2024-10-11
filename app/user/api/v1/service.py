@@ -29,12 +29,12 @@ from app.activity.schemas import ActivityBaseSchema
 # from core.utils import UserSchemaFactory
 # from app.record.models import RecordModel
 # from app.record.schemas import RecordSchema 
-# from app.record.api.v1.service import create_record, retrieve_record_by_user_id
-# from app.record import schemas
+from app.record.api.v1.service import create_record, retrieve_record_by_user_id
+from app.record.schemas import RecordCreateRequestSchema, RecordCreateDetailsSchema
 
 def create_user(
     request: UserCreateRequestSchema, db: Session, 
-    # background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks
 ):
     """Create new user account"""
     print(request)
@@ -112,16 +112,16 @@ def create_user(
     db.refresh(new_user)
     
     # FIXME
-    # record_req = schemas.RecordCreateRequestSchema(
-    #     user_id = new_user.id,
-    #     access_token='',
-    #     record_details=schemas.RecordCreateDetailsSchema(
-    #         action='CREATE',
-    #         table='USER',
-    #         table_id=new_user.id,
-    #     )
-    # )
-    # background_tasks.add_task(create_record, record_req, db)
+    record_req = RecordCreateRequestSchema(
+        user_id = new_user.id,
+        access_token='',
+        record_details=RecordCreateDetailsSchema(
+            action='CREATE',
+            table='USER',
+            table_id=new_user.id,
+        )
+    )
+    background_tasks.add_task(create_record, record_req, db)
     # FIXME: Create Game Character for the new user with bg task
     # Create Point for the new user with bg task
 
