@@ -29,7 +29,7 @@ from app.activity.schemas import ActivityBaseSchema
 # from core.utils import UserSchemaFactory
 # from app.record.models import RecordModel
 # from app.record.schemas import RecordSchema 
-from app.record.api.v1.service import create_record, retrieve_record_by_user_id
+from app.record.api.v1.service import create_record
 from app.record.schemas import RecordCreateRequestSchema, RecordCreateDetailsSchema
 
 def create_user(
