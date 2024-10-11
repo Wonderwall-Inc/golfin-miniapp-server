@@ -31,7 +31,7 @@ def get_details(user_ids: List[int] = Query(default=None), skip: int = 0, limit:
     return service.retrieve_record_list(db, user_ids, skip, limit)
 
 
-@router.put("/update", response_model=schemas.RecordUpdateResponseSchema)
-def update_record(request: schemas.RecordUpdateByIdRequestSchema, db: Session = Depends(get_db)):
-    """Update Record"""
-    return service.update_record(request, db)
+#@router.put("/update", response_model=schemas.RecordUpdateResponseSchema)
+#def update_record(request: schemas.RecordUpdateByIdRequestSchema, db: Session = Depends(get_db)):
+#    """Update Record"""
+#    return service.update_record(request, db)

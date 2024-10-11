@@ -71,5 +71,5 @@ class RecordRetrievalResponseSchema(BaseModel):
 #     record_payload: Optional[RecordCreateDetailsSchema] = None
 
 
-# class RecordUpdateResponseSchema(BaseModel):
-#     record_base: RecordDetailsSchema
+class RecordUpdateResponseSchema(BaseModel):
+    record_base: RecordDetailsSchema
