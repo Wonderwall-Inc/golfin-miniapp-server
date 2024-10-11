@@ -1,5 +1,5 @@
 """User App API Routes"""
-
+import asyncio
 from typing import List, Optional
 from fastapi import (
     APIRouter,
@@ -24,7 +24,7 @@ get_db = database.get_db
 
 @router.post("/create", response_model=schemas.UserCreateResponseSchema)# dependencies=[Depends(auth)],
 # def create_user(request: schemas.UserCreateRequestSchema, background_tasks: BackgroundTasks, db: Session = Depends(get_db),):
-def create_user(request: schemas.UserCreateRequestSchema, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+async def create_user(request: schemas.UserCreateRequestSchema, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """Login with existing account"""
     return service.create_user(request, db, background_tasks)
 

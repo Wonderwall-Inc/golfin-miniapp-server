@@ -1,5 +1,5 @@
 """User App Business Logics"""
-
+import asyncio
 from fastapi import HTTPException, status, BackgroundTasks
 import pytz
 from typing import List, Optional
@@ -32,8 +32,9 @@ from app.activity.schemas import ActivityBaseSchema
 from app.record.api.v1.service import create_record
 from app.record.schemas import RecordCreateRequestSchema, RecordCreateDetailsSchema
 
-def create_user(
-    request: UserCreateRequestSchema, db: Session, 
+async def create_user(
+    request: UserCreateRequestSchema, 
+    db: Session, 
     background_tasks: BackgroundTasks
 ):
     """Create new user account"""
